@@ -1,12 +1,14 @@
 # Plan
 
-## Fase 0 — La base
+## Fase 0 — La base ✅
 - [x] Instalar Node.js, Git, FFmpeg y Claude Code
 - [x] Cuenta de GitHub `codicevivomx` y repositorio `codicevivomx.github.io`
-- [ ] CLAUDE.md corto y estructura de carpetas
-- [ ] Revisar e instalar skills en el proyecto: Anatomy, hyperframes, hyperframes-cli
-- [ ] Registro de tokens (`docs/registro-tokens.md`)
-- [ ] Prueba: prensa hidráulica (figura con Anatomy → video con HyperFrames)
+- [x] CLAUDE.md corto y estructura de carpetas
+- [x] Revisar e instalar skills en el proyecto: anatomy, hyperframes, hyperframes-cli
+- [x] Registro de tokens con línea base
+
+## Fase 1 — Prueba
+- [ ] Prensa hidráulica: figura con Anatomy → video con HyperFrames (medir consumo)
 
 ## Pendientes de decidir
 - Examen y materia del primer paquete (propuesta: física).
