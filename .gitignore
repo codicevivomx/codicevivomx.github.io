@@ -1,0 +1,17 @@
+# Secretos
+.env
+.env.*
+
+# Dependencias
+node_modules/
+
+# Videos renderizados (pesados; se suben a TikTok, no al repo)
+*.mp4
+*.mov
+
+# Configuración local de Claude Code
+.claude/settings.local.json
+
+# Sistema
+Thumbs.db
+.DS_Store
