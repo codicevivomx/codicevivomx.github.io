@@ -1,0 +1,56 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #ide-kicker {
+      position: absolute;
+      left: 80px;
+      top: 190px;
+      font: 700 34px "JetBrains Mono", monospace;
+      letter-spacing: 0.14em;
+      color: var(--azul);
+    }
+    #ide-texto {
+      position: absolute;
+      left: 80px;
+      top: 240px;
+      width: 920px;
+      font-weight: 900;
+      font-size: 60px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    #ide-formula {
+      position: absolute;
+      left: 80px;
+      top: 1140px;
+      width: 920px;
+      height: 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--tinta);
+      color: var(--fondo);
+      font: 700 76px "JetBrains Mono", monospace;
+    }
+  </style>
+  <div data-hf-id="hf-w63g" id="root" data-composition-id="idea" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-lkf5" id="ide-kicker" class="clip" data-start="0" data-duration="4" data-track-index="0">IDEA</div>
+    <div data-hf-id="hf-ahck" id="ide-texto" class="clip" data-start="0" data-duration="4" data-track-index="1">
+      <div data-hf-id="hf-1dfb" id="ide-texto-in">El líquido transmite la misma presión</div>
+    </div>
+    <div data-hf-id="hf-dcb3" id="ide-formula" class="clip" data-start="0" data-duration="4" data-track-index="2">
+      <div data-hf-id="hf-ikv3" id="ide-formula-in">F₁/A₁ = F₂/A₂</div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#ide-kicker", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0);
+    tl.fromTo("#ide-texto-in", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.1);
+    tl.fromTo("#ide-formula", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 1.6);
+    tl.fromTo("#ide-formula-in", { scale: 0.85 }, { scale: 1, duration: 0.5, ease: "back.out(2)" }, 1.6);
+    window.__timelines["idea"] = tl;
+  </script>
+</template>

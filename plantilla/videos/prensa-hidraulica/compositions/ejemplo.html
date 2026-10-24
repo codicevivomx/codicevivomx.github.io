@@ -1,0 +1,70 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #eje-kicker {
+      position: absolute;
+      left: 80px;
+      top: 190px;
+      font: 700 34px "JetBrains Mono", monospace;
+      letter-spacing: 0.14em;
+      color: var(--azul);
+    }
+    #eje-pasos {
+      position: absolute;
+      left: 80px;
+      top: 250px;
+      width: 920px;
+      display: flex;
+      gap: 28px;
+      font: 700 62px "JetBrains Mono", monospace;
+      white-space: nowrap;
+    }
+    #eje-resultado {
+      position: absolute;
+      left: 80px;
+      top: 1140px;
+      width: 920px;
+      height: 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 26px;
+      background: var(--tinta);
+      color: var(--fondo);
+      font: 700 64px "JetBrains Mono", "Emoji", monospace;
+      white-space: nowrap;
+    }
+    #eje-c {
+      display: inline-block;
+      padding: 6px 22px;
+      background: var(--verde);
+      color: #fff;
+      font-family: "Inter", "Emoji", sans-serif;
+      font-weight: 900;
+    }
+    .eje-flecha { color: var(--borde); }
+  </style>
+  <div data-hf-id="hf-yplz" id="root" data-composition-id="ejemplo" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-q6ok" id="eje-kicker" class="clip" data-start="0" data-duration="6" data-track-index="0">EJEMPLO</div>
+    <div data-hf-id="hf-3zza" id="eje-pasos" class="clip" data-start="0" data-duration="6" data-track-index="1">
+      <span data-hf-id="hf-xlny" id="eje-p1">10&nbsp;÷&nbsp;2&nbsp;=&nbsp;5</span>
+      <span data-hf-id="hf-pihg" id="eje-p2"><span data-hf-id="hf-b7v9" class="eje-flecha">→</span> 5²&nbsp;=&nbsp;25</span>
+    </div>
+    <div data-hf-id="hf-utf6" id="eje-resultado" class="clip" data-start="0" data-duration="6" data-track-index="2">
+      <span data-hf-id="hf-0ioy" id="eje-r1">50&nbsp;×&nbsp;25&nbsp;=&nbsp;1&nbsp;250&nbsp;N</span>
+      <span data-hf-id="hf-n5wu" id="eje-c">✅ C</span>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#eje-kicker", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0);
+    tl.fromTo("#eje-p1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.3);
+    tl.fromTo("#eje-p2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 1.5);
+    tl.fromTo("#eje-r1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 3.0);
+    tl.fromTo("#eje-c", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2.4)" }, 3.8);
+    window.__timelines["ejemplo"] = tl;
+  </script>
+</template>

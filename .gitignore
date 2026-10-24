@@ -5,6 +5,10 @@
 # Dependencias
 node_modules/
 
+# Caché de HyperFrames (checks, snapshots, vista previa, miniaturas)
+.hyperframes/
+.thumbnails/
+
 # Videos renderizados (pesados; se suben a TikTok, no al repo)
 *.mp4
 *.mov

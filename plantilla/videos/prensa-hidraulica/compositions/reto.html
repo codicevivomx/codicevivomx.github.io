@@ -1,0 +1,88 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #ret-kicker {
+      position: absolute;
+      left: 80px;
+      top: 230px;
+      font: 700 34px "JetBrains Mono", monospace;
+      letter-spacing: 0.14em;
+      color: var(--azul);
+    }
+    #ret-texto {
+      position: absolute;
+      left: 80px;
+      top: 290px;
+      width: 920px;
+      font-weight: 900;
+      font-size: 80px;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+    }
+    #ret-cta {
+      position: absolute;
+      left: 80px;
+      top: 820px;
+      width: 920px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: var(--tinta);
+      color: var(--fondo);
+      font-weight: 700;
+      font-size: 58px;
+      white-space: nowrap;
+    }
+    #ret-mano {
+      display: inline-block;
+      font-family: "Emoji", sans-serif;
+    }
+    #ret-logo {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 1130px;
+      text-align: center;
+    }
+    #ret-logo-nombre {
+      font: 700 64px "Playfair Display", serif;
+      letter-spacing: -0.01em;
+    }
+    #ret-logo-linea {
+      width: 120px;
+      height: 6px;
+      margin: 18px auto 0;
+      background: var(--azul);
+    }
+  </style>
+  <div data-hf-id="hf-ejaz" id="root" data-composition-id="reto" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-tsba" id="ret-kicker" class="clip" data-start="0" data-duration="5" data-track-index="0">PONTE A PRUEBA</div>
+    <div data-hf-id="hf-0smq" id="ret-texto" class="clip" data-start="0" data-duration="5" data-track-index="1">
+      <div data-hf-id="hf-ah0n" id="ret-texto-in">Si el pistón chico baja 50&nbsp;cm, ¿cuánto sube el grande?</div>
+    </div>
+    <div data-hf-id="hf-fro1" id="ret-cta" class="clip" data-start="0" data-duration="5" data-track-index="2">
+      <span data-hf-id="hf-cq2i" id="ret-cta-txt">Respuesta en comentarios</span>
+      <span data-hf-id="hf-jamr" id="ret-mano">👇</span>
+    </div>
+    <div data-hf-id="hf-j34p" id="ret-logo" class="clip" data-start="0" data-duration="5" data-track-index="3">
+      <div data-hf-id="hf-wxo9" id="ret-logo-nombre">Códice Vivo</div>
+      <div data-hf-id="hf-9042" id="ret-logo-linea"></div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#ret-kicker", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0);
+    tl.fromTo("#ret-texto-in", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.1);
+    tl.fromTo("#ret-cta-txt", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 1.6);
+    tl.fromTo("#ret-mano", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 1.6);
+    tl.to("#ret-mano", { y: 14, duration: 0.35, ease: "power1.inOut", yoyo: true, repeat: 3 }, 2.1);
+    tl.fromTo("#ret-logo-nombre", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 2.6);
+    tl.fromTo("#ret-logo-linea", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.inOut" }, 2.9);
+    window.__timelines["reto"] = tl;
+  </script>
+</template>
