@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Principio de Arquímedes · Códice Vivo</title>
+<style>
+@font-face{font-family:"EB Garamond"; font-style:normal; font-weight:400 600; font-display:swap; src:url(../../../codice/fuentes/eb-garamond.woff2) format("woff2")}
+@font-face{font-family:"EB Garamond"; font-style:italic; font-weight:400; font-display:swap; src:url(../../../codice/fuentes/eb-garamond-italica.woff2) format("woff2")}
+:root{
+  --bg:#F6F1E6; --sup:#FFFCF6; --texto:#2E2117; --suave:#77634F; --borde:#E5DACA; --borde-fuerte:#CDBEA5;
+  --acento:#2F6F73; --rubrica:#A5352A; --dorado:#B08A3E; --empuje:#A5352A; --bien:#2F7D5B; --mal:#A5352A;
+  --agua-1:#93C7C4; --agua-2:#2F6F73; --agua-sup:#D9EEEC; --vidrio-borde:#9C9282;
+  --mesa:#ECE3D2; --sombra:#3A2716; --metal-osc:#5E6B78;
+  --serif:"EB Garamond","Iowan Old Style",Georgia,serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#17120D; --sup:#211912; --texto:#EFE4CF; --suave:#B6A385; --borde:#382C20; --borde-fuerte:#4D3D2C;
+  --acento:#7FB3B0; --rubrica:#E07A5F; --dorado:#D9B26A; --empuje:#E07A5F; --bien:#7FC9A0; --mal:#E07A5F;
+  --agua-1:#6FB0AE; --agua-2:#245D60; --agua-sup:#A9D6D3; --vidrio-borde:#7D7364;
+  --mesa:#1D160F; --sombra:#000000; --metal-osc:#8A97A4; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#17120D; --sup:#211912; --texto:#EFE4CF; --suave:#B6A385; --borde:#382C20; --borde-fuerte:#4D3D2C;
+  --acento:#7FB3B0; --rubrica:#E07A5F; --dorado:#D9B26A; --empuje:#E07A5F; --bien:#7FC9A0; --mal:#E07A5F;
+  --agua-1:#6FB0AE; --agua-2:#245D60; --agua-sup:#A9D6D3; --vidrio-borde:#7D7364;
+  --mesa:#1D160F; --sombra:#000000; --metal-osc:#8A97A4; color-scheme:dark; }
+html{scroll-padding-top:env(safe-area-inset-top,0px); background:var(--bg)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--texto);
+  font:400 17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  -webkit-text-size-adjust:100%}
+.num,output{font-variant-numeric:tabular-nums}
+sub,sup{font-size:.72em; line-height:0; position:relative; vertical-align:baseline}
+sub{bottom:-.25em} sup{top:-.45em}
+.pagina{max-width:1120px; margin:0 auto; padding:20px 16px 40px}
+header{margin-bottom:18px}
+.marca-casa{font:italic 400 1.05rem/1.2 var(--serif); color:var(--rubrica)}
+h1{margin:2px 0 4px; font:500 clamp(2.1rem,8vw,3.1rem)/1.02 var(--serif); letter-spacing:-.015em}
+.sub{padding-bottom:12px; border-bottom:3px double var(--borde-fuerte)}
+.sub{margin:0; color:var(--suave)}
+.rejilla{display:grid; gap:16px; grid-template-columns:minmax(0,1fr); grid-template-areas:"a" "lab" "b"}
+#pasos-a{grid-area:a} #pasos-b{grid-area:b} .lab{grid-area:lab}
+.pasos{display:grid; gap:16px; align-content:start}
+.tarjeta{background:var(--sup); border:1px solid var(--borde); border-radius:12px; padding:18px 18px 16px}
+.tarjeta h2{display:flex; align-items:center; gap:10px; margin:0 0 8px; font:500 1.4rem/1.15 var(--serif)}
+.n{flex:none; display:grid; place-items:center; width:30px; height:30px; border-radius:50%;
+  border:1.5px solid var(--rubrica); color:var(--rubrica); font:500 1.05rem/1 var(--serif); font-variant-numeric:lining-nums}
+.tarjeta p{margin:6px 0; max-width:62ch}
+.formula{display:inline-block; padding:4px 10px; border-radius:8px; background:var(--bg); font:500 1.2rem var(--serif); font-variant-numeric:lining-nums}
+.opciones{display:grid; gap:8px; margin-top:10px}
+.op{font:inherit; color:var(--texto); text-align:left; background:var(--sup); border:1.5px solid var(--borde);
+  border-radius:12px; padding:12px 14px; min-height:48px; cursor:pointer}
+@media (hover:hover){ .op:hover{border-color:var(--suave)} }
+.op:focus-visible,.boton:focus-visible,input:focus-visible{outline:3px solid var(--acento); outline-offset:2px}
+.op .res{display:block; margin-top:4px; font-size:.92rem; color:var(--suave)}
+.op.bien{border:2px solid var(--bien)} .op.mal{border:2px dashed var(--mal)}
+.ico{width:1em; height:1em; vertical-align:-.15em; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
+.ico.b{stroke:var(--bien)} .ico.m{stroke:var(--mal)}
+.lab{padding:10px 10px 16px; touch-action:pan-y; border:3px double var(--borde-fuerte)}
+.lab svg{display:block; width:100%; height:auto}
+.controles{display:grid; gap:12px; padding:4px 8px 0}
+.fila{display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-weight:600}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:36px; margin:0; background:transparent; cursor:pointer; --p:0%}
+input[type=range]::-webkit-slider-runnable-track{height:8px; border-radius:4px; background:linear-gradient(to right,var(--acento) var(--p),var(--borde) var(--p))}
+input[type=range]::-moz-range-track{height:8px; border-radius:4px; background:var(--borde)}
+input[type=range]::-moz-range-progress{height:8px; border-radius:4px; background:var(--acento)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:26px; height:26px; margin-top:-9px; border-radius:50%; background:var(--sup); border:3px solid var(--acento); box-shadow:inset 0 0 0 4px var(--sup), inset 0 0 0 10px var(--dorado), 0 1px 3px rgba(0,0,0,.25)}
+input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:#fff; border:3px solid var(--acento)}
+.chips{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+.chip{background:var(--bg); border-radius:12px; padding:8px 10px}
+.chip span{display:block; font-size:.78rem; color:var(--suave)}
+.chip output{font:600 1.45rem/1.1 var(--serif); font-variant-numeric:lining-nums tabular-nums}
+.chip.e output{color:var(--empuje)}
+.cuenta{margin:0; font-weight:600} .nota{margin:0; color:var(--suave); min-height:1.55em}
+.botones{display:flex; gap:8px; flex-wrap:wrap}
+.boton{font:inherit; font-weight:600; border-radius:999px; padding:10px 18px; min-height:44px; cursor:pointer; border:1.5px solid var(--acento)}
+.boton.pri{background:var(--acento); color:#fff} .boton.sec{background:transparent; color:var(--acento)}
+/* Escena SVG */
+.mesa{fill:var(--mesa)}
+.cuerda,.hilo{stroke:var(--metal-osc); stroke-width:1.5}
+.aro{fill:none; stroke:var(--metal-osc); stroke-width:2}
+.tapa{fill:#8D99A6}
+.din-cuerpo{fill:url(#gr-din); stroke:#8E9AA6; stroke-width:1.5}
+.din-ventana{fill:#0F1E2E; fill-opacity:.07; stroke:#8E9AA6; stroke-width:1}
+.marcas{stroke:#3D4A57; stroke-width:1.3}
+.resorte{fill:none; stroke:#5E6B78; stroke-width:2; stroke-linejoin:round}
+.varilla{stroke:#5E6B78; stroke-width:3; stroke-linecap:round}
+.indicador{fill:var(--acento)}
+.gancho{fill:none; stroke:#5E6B78; stroke-width:2.5}
+.t-escala{font-size:14px; fill:var(--suave)}
+.t-lectura{font:600 25px var(--serif); font-variant-numeric:lining-nums; fill:var(--acento); font-variant-numeric:tabular-nums; paint-order:stroke; stroke:var(--sup); stroke-width:5px; stroke-linejoin:round}
+.t-rotulo{font-size:17px; fill:var(--suave)}
+.cubo-frente{fill:url(#gr-metal); stroke:#5E6B78; stroke-width:1.2}
+.cubo-arriba{fill:#F1F5F8; stroke:#5E6B78; stroke-width:1.2; stroke-linejoin:round}
+.cubo-lado{fill:url(#gr-metal-lado); stroke:#5E6B78; stroke-width:1.2; stroke-linejoin:round}
+.vidrio-fondo{fill:var(--vidrio-borde); fill-opacity:.08}
+.borde-atras{fill:none; stroke:var(--vidrio-borde); stroke-width:1.5; stroke-opacity:.6}
+.vidrio-frente{fill:url(#gr-vidrio); stroke:var(--vidrio-borde); stroke-width:2; stroke-linejoin:round}
+.borde-frente{fill:none; stroke:var(--vidrio-borde); stroke-width:2.2}
+.brillo{fill:#fff; fill-opacity:.45}
+.superficie{fill:var(--agua-sup); fill-opacity:.7; stroke:#fff; stroke-opacity:.6; stroke-width:1}
+.onda{fill:none; stroke:#fff; stroke-width:1.6}
+.burbuja{fill:#fff; fill-opacity:.75}
+.gota{fill:var(--agua-1)}
+.chorro{fill:none; stroke:var(--agua-1); stroke-width:5; stroke-linecap:round; opacity:0}
+.f-empuje{stroke:var(--empuje); stroke-width:4; stroke-linecap:round} .p-empuje{fill:var(--empuje)}
+.f-peso{stroke:var(--texto); stroke-width:4; stroke-linecap:round} .p-peso{fill:var(--texto)}
+.t-empuje,.t-peso{font-size:23px; font-weight:800; paint-order:stroke; stroke:var(--sup); stroke-width:5px; stroke-linejoin:round}
+.t-empuje{fill:var(--empuje)} .t-peso{fill:var(--texto)}
+@media (min-width:820px){
+  .pagina{padding:36px 28px 56px}
+  .rejilla{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); grid-template-rows:auto 1fr; grid-template-areas:"a lab" "b lab"; column-gap:24px; align-items:start}
+  .lab{position:sticky; top:calc(16px + env(safe-area-inset-top,0px))}
+}
+</style>
+</head>
+<body>
+<main class="pagina">
+  <header>
+    <div class="marca-casa">Códice Vivo · Laboratorio</div>
+    <h1 id="titulo">Principio de Arquímedes</h1>
+    <p class="sub" id="subtitulo"></p>
+  </header>
+  <div class="rejilla">
+    <div id="pasos-a" class="pasos"></div>
+    <section class="tarjeta lab" aria-label="Laboratorio">
+<svg id="escena" viewBox="100 10 690 590" role="img" aria-labelledby="esc-t esc-d">
+<title id="esc-t">Principio de Arquímedes</title>
+<desc id="esc-d">Un cubo de aluminio cuelga de un dinamómetro: fuera del agua marca 26.5 N y sumergido marca 16.7 N. El agua desalojada cae del vaso de derrame al vaso recolector.</desc>
+<defs>
+<linearGradient id="gr-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3E9EF"/><stop offset="1" stop-color="#AEB9C4"/></linearGradient>
+<linearGradient id="gr-metal-lado" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#97A3AF"/><stop offset="1" stop-color="#76828E"/></linearGradient>
+<linearGradient id="gr-din" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C7CFD7"/><stop offset=".35" stop-color="#FBFCFD"/><stop offset="1" stop-color="#AEB8C2"/></linearGradient>
+<linearGradient id="gr-viga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8794A1"/><stop offset="1" stop-color="#4E5A66"/></linearGradient>
+<linearGradient id="gr-agua" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--agua-1)" stop-opacity=".55"/><stop offset="1" style="stop-color:var(--agua-2)" stop-opacity=".8"/></linearGradient>
+<linearGradient id="gr-vidrio" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".3" stop-color="#fff" stop-opacity=".08"/><stop offset=".85" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity=".35"/></linearGradient>
+<radialGradient id="gr-sombra"><stop offset="0" style="stop-color:var(--sombra)" stop-opacity=".5"/><stop offset="1" style="stop-color:var(--sombra)" stop-opacity="0"/></radialGradient>
+<clipPath id="clip-sup"><ellipse id="clip-sup-elipse" cx="540" cy="375" rx="99" ry="12"/></clipPath>
+</defs>
+<rect class="mesa" x="100" y="556" width="690" height="44"/>
+<ellipse fill="url(#gr-sombra)" cx="540" cy="568" rx="125" ry="16"/>
+<ellipse fill="url(#gr-sombra)" cx="715" cy="564" rx="60" ry="10"/>
+<rect fill="url(#gr-viga)" x="110" y="26" width="500" height="12" rx="6"/>
+<g>
+<line class="cuerda" x1="180" y1="38" x2="180" y2="30"/>
+<circle class="aro" cx="180" cy="34" r="4"/>
+<rect class="tapa" x="171" y="40" width="18" height="12" rx="3"/>
+<rect class="din-cuerpo" x="158" y="50" width="44" height="160" rx="11"/>
+<rect class="din-ventana" x="168" y="58" width="24" height="144" rx="5"/>
+<path class="marcas" d="M168 65h6M168 75h3M168 85h6M168 95h3M168 105h6M168 115h3M168 125h6M168 135h3M168 145h6M168 155h3M168 165h6M168 175h3M168 185h6"/>
+<text class="t-escala" x="152" y="70" text-anchor="end">0</text>
+<text class="t-escala" x="152" y="110" text-anchor="end">10</text>
+<text class="t-escala" x="152" y="150" text-anchor="end">20</text>
+<text class="t-escala" x="152" y="190" text-anchor="end">30</text>
+<g><polyline class="resorte" points="180,56 173,65.2 187,74.3 173,83.5 187,92.7 173,101.8 187,111 173,120.2 187,129.3 173,138.5 187,147.7 173,156.8 180,166"/></g>
+<g>
+<line class="varilla" x1="180" y1="171" x2="180" y2="254"/>
+<path class="indicador" d="M163 171l5-5h26v10h-26z"/>
+<text class="t-lectura" x="210" y="178">26.5 N</text>
+<circle class="gancho" cx="180" cy="259" r="5"/>
+<g>
+<line class="hilo" x1="180" y1="264" x2="180" y2="290"/>
+<path class="cubo-lado" d="M212 295l16-10v70l-16 10z"/>
+<path class="cubo-arriba" d="M132 295l16-10h80l-16 10z"/>
+<rect class="cubo-frente" x="132" y="295" width="80" height="80"/>
+</g>
+</g>
+</g>
+<g id="vaso-derrame-fondo">
+<path class="vidrio-fondo" d="M440 345V555A100 13 0 0 0 640 555V345Z"/>
+<ellipse class="borde-atras" cx="540" cy="345" rx="100" ry="13"/>
+</g>
+<g id="vaso-recolector-fondo">
+<path class="vidrio-fondo" d="M670 460V553.5A45 8 0 0 0 760 553.5V460Z"/>
+<ellipse class="borde-atras" cx="715" cy="460" rx="45" ry="8"/>
+</g>
+<g id="cubo">
+<line class="hilo" x1="540" y1="374.8" x2="540" y2="400.8"/>
+<path class="cubo-lado" d="M572 405.8l16-10v70l-16 10z"/>
+<path class="cubo-arriba" d="M492 405.8l16-10h80l-16 10z"/>
+<rect class="cubo-frente" x="492" y="405.8" width="80" height="80"/>
+</g>
+<g id="agua">
+<path id="agua-cuerpo" fill="url(#gr-agua)" d="M440 375A100 12 0 0 0 640 375V555A100 13 0 0 1 440 555Z"/>
+<g id="burbujas"></g>
+<ellipse id="agua-superficie" class="superficie" cx="540" cy="375" rx="99" ry="12"/>
+<g id="ondas" clip-path="url(#clip-sup)"></g>
+</g>
+<g id="agua-desplazada">
+<path id="chorro" class="chorro" d="M690 392Q714 404 715 440V479"/>
+<g id="gotas"></g>
+<path id="recol-cuerpo" fill="url(#gr-agua)" d="M670 479A45 7 0 0 0 760 479V553.5A45 8 0 0 1 670 553.5Z"/>
+<ellipse id="recol-superficie" class="superficie" cx="715" cy="479" rx="44" ry="7"/>
+</g>
+<g id="flecha-peso"><line class="f-peso" x1="544" y1="445.8" x2="544" y2="526.4"/><polygon class="p-peso" points="544,538.4 537,526.4 551,526.4"/><text class="t-peso" x="556" y="534">P</text></g>
+<g id="flecha-empuje"><line class="f-empuje" x1="520" y1="445.8" x2="520" y2="423.5"/><polygon class="p-empuje" points="520,411.5 513,423.5 527,423.5"/><text class="t-empuje" x="508" y="419.5" text-anchor="end">E</text></g>
+<g id="dinamometro-dentro">
+<line id="dinamometro-dentro-cordon" class="cuerda" x1="540" y1="38" x2="540" y2="180"/>
+<circle class="aro" cx="540" cy="184" r="4"/>
+<rect class="tapa" x="531" y="190" width="18" height="12" rx="3"/>
+<rect class="din-cuerpo" x="518" y="200" width="44" height="160" rx="11"/>
+<rect class="din-ventana" x="528" y="208" width="24" height="144" rx="5"/>
+<path class="marcas" d="M528 215h6M528 225h3M528 235h6M528 245h3M528 255h6M528 265h3M528 275h6M528 285h3M528 295h6M528 305h3M528 315h6M528 325h3M528 335h6"/>
+<text class="t-escala" x="512" y="220" text-anchor="end">0</text>
+<text class="t-escala" x="512" y="260" text-anchor="end">10</text>
+<text class="t-escala" x="512" y="300" text-anchor="end">20</text>
+<text class="t-escala" x="512" y="340" text-anchor="end">30</text>
+<g id="dinamometro-dentro-resorte"><polyline class="resorte" points="540,206 533,211.9 547,217.8 533,223.7 547,229.6 533,235.5 547,241.4 533,247.3 547,253.2 533,259.1 547,265 533,270.9 540,276.8"/></g>
+<g id="dinamometro-dentro-indicador">
+<line class="varilla" x1="540" y1="281.8" x2="540" y2="364.8"/>
+<path class="indicador" d="M523 281.8l5-5h26v10h-26z"/>
+<text class="t-lectura" x="570" y="288.8">16.7 N</text>
+<circle class="gancho" cx="540" cy="369.8" r="5"/>
+</g>
+</g>
+<g id="vaso-derrame">
+<path class="vidrio-frente" d="M440 345V555A100 13 0 0 0 640 555V376L690 392V380L640 352V345"/>
+<path class="borde-frente" d="M440 345A100 13 0 0 0 640 345"/>
+<rect class="brillo" x="452" y="362" width="9" height="178" rx="4.5"/>
+</g>
+<g id="vaso-recolector">
+<path class="vidrio-frente" d="M670 460V553.5A45 8 0 0 0 760 553.5V460"/>
+<path class="borde-frente" d="M670 460A45 8 0 0 0 760 460"/>
+<rect class="brillo" x="677" y="472" width="6" height="72" rx="3"/>
+</g>
+<text class="t-rotulo" x="180" y="408" text-anchor="middle">Fuera del agua</text>
+<text class="t-rotulo" x="535" y="594" text-anchor="middle">Dentro del agua</text>
+<text class="t-rotulo" x="712" y="594" text-anchor="middle">Agua desalojada</text>
+</svg>
+      <div class="controles">
+        <div class="fila"><label for="bajar">Bajar el cubo</label></div>
+        <input type="range" id="bajar" min="0" max="1000" step="1" value="0">
+        <div class="chips">
+          <div class="chip"><span>Sumergido</span><output id="o-sum">0 %</output></div>
+          <div class="chip e"><span>Empuje</span><output id="o-emp">0.0 N</output></div>
+          <div class="chip"><span>Dinamómetro</span><output id="o-marca">26.5 N</output></div>
+        </div>
+        <p class="cuenta num" id="o-cuenta"></p>
+        <p class="nota" id="o-nota" aria-live="polite"></p>
+        <div class="botones">
+          <button type="button" class="boton pri" id="animar">Sumergir</button>
+          <button type="button" class="boton sec" id="reiniciar">Reiniciar</button>
+        </div>
+      </div>
+    </section>
+    <div id="pasos-b" class="pasos"></div>
+  </div>
+</main>
+<script>
+(() => {
+const D = {
+  subtitulo: "Física · Examen de admisión UNAM",
+  pasos: [
+    { n:1, titulo:"Pregunta de examen", pregunta:{
+      enunciado:"Un cubo de aluminio (densidad 2&nbsp;700 kg/m<sup>3</sup>) de 10 cm de lado se sumerge por completo en agua. ¿Qué empuje recibe? (g = 9.8 m/s<sup>2</sup>)",
+      opciones:[
+        {t:"A) 9.8 N", ok:true, e:"E = 1&nbsp;000 · 9.8 · 0.001 = 9.8 N. Solo cuentan el líquido y el volumen sumergido."},
+        {t:"B) 26.5 N", e:"Ese es el peso del cubo (2&nbsp;700 · 9.8 · 0.001). El empuje no depende del material del objeto."},
+        {t:"C) 0.98 N", e:"1&nbsp;000 cm<sup>3</sup> son 0.001 m<sup>3</sup>, no 0.0001 m<sup>3</sup>. Revisa la conversión."},
+        {t:"D) 98 N", e:"Usaste 0.1<sup>2</sup>, que es un área. El volumen es 0.1<sup>3</sup> = 0.001 m<sup>3</sup>."}]}},
+    { n:2, titulo:"Idea en una frase", p:[
+      "Todo cuerpo sumergido recibe un empuje hacia arriba igual al peso del líquido que desaloja:",
+      "<span class=\"formula num\">E = ρ<sub>líquido</sub> · g · V<sub>sumergido</sub></span>",
+      "Baja el cubo en el laboratorio: el agua que se derrama pesa lo mismo que el empuje."]},
+    { n:3, titulo:"Ejemplo resuelto", p:[
+      "Volumen: 0.1 m × 0.1 m × 0.1 m = <b class=\"num\">0.001 m<sup>3</sup></b>.",
+      "Empuje: 1&nbsp;000 × 9.8 × 0.001 = <b class=\"num\">9.8 N</b> → respuesta A.",
+      "La densidad del aluminio no se usa: el empuje solo depende del líquido y del volumen sumergido."]},
+    { n:4, titulo:"La trampa", p:[
+      "Calcular el peso del cubo (2&nbsp;700 × 9.8 × 0.001 = 26.5 N) da la opción B, puesta para quien cree que el empuje depende del peso del objeto.",
+      "Usar 0.1<sup>2</sup> en vez de 0.1<sup>3</sup> da 98 N (opción D): esa cuenta es un área, no un volumen.",
+      "Convertir mal 1&nbsp;000 cm<sup>3</sup> a 0.0001 m<sup>3</sup> da 0.98 N (opción C)."]},
+    { n:5, titulo:"Truco de examen", p:[
+      "Mismo volumen sumergido, mismo empuje, sin importar de qué esté hecho el objeto.",
+      "Pasa el volumen a m<sup>3</sup> (lado en metros, al cubo) antes de multiplicar."]},
+    { n:6, titulo:"Ponte a prueba", pregunta:{
+      enunciado:"Con el cubo de aluminio colgado de un dinamómetro y sumergido por completo en agua, ¿qué marca el dinamómetro?",
+      opciones:[
+        {t:"A) 26.5 N", e:"Eso marca fuera del agua. Dentro, el agua lo sostiene en parte: el dinamómetro marca el peso menos el empuje."},
+        {t:"B) 16.7 N", ok:true, e:"Peso aparente = peso − empuje = 26.5 − 9.8 = 16.7 N. El agua no le quita masa al cubo, solo lo sostiene en parte."},
+        {t:"C) 9.8 N", e:"Ese es el empuje, no lo que marca. El dinamómetro marca el peso menos el empuje: 26.5 − 9.8 = 16.7 N."},
+        {t:"D) 36.3 N", e:"Sumaste el empuje, pero va hacia arriba y se resta: 26.5 − 9.8 = 16.7 N."}]}}
+  ]
+};
+
+// ---------- Física y geometría (mismas que v1) ----------
+const PESO=26.46, E_MAX=9.8, PX_N=4, DY_MAX=150, LADO=80, NIVEL=375, FONDO=553.5,
+      RECOL_ALTO=74.5, BAJADA=32.5, FLECHA_PX=3.5, CENTRO=445.8, IND_Y=276.8, VIGA=38;
+const LLENO = LADO + PX_N*E_MAX, MARCA0 = PESO - E_MAX;
+const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS = "http://www.w3.org/2000/svg";
+const $ = (s) => document.querySelector(s);
+const el = (tag, cls) => { const e = document.createElementNS(NS, tag); if (cls) e.setAttribute("class", cls); return e; };
+
+const din=$("#dinamometro-dentro"), cordon=$("#dinamometro-dentro-cordon"),
+  resorte=$("#dinamometro-dentro-resorte polyline"), ind=$("#dinamometro-dentro-indicador"),
+  lectura=ind.querySelector("text"), cubo=$("#cubo"), cuerpo=$("#agua-cuerpo"), supf=$("#agua-superficie"),
+  clip=$("#clip-sup-elipse"), ondasG=$("#ondas"), burbG=$("#burbujas"), gotasG=$("#gotas"),
+  chorro=$("#chorro"), rCuerpo=$("#recol-cuerpo"), rSup=$("#recol-superficie"),
+  fE=$("#flecha-empuje"), fP=$("#flecha-peso"), rango=$("#bajar");
+
+let fMax=0, fPrev=0, nivel=NIVEL, wob=0, rWob=0, hRecol=0, ultimoVertido=-1e9, ultimaOnda=0, ultimaGota=0;
+let cuboFondo=0, raf=0, tPrev=0;
+const ondas=[], burbujas=[], gotas=[];
+
+const puntosResorte = (yFin) => { const y0=206, n=12, p=[`540,${y0}`];
+  for (let i=1;i<n;i++) p.push(`${i%2?533:547},${(y0+(yFin-y0)*i/n).toFixed(1)}`);
+  p.push(`540,${yFin.toFixed(1)}`); return p.join(" "); };
+
+function flecha(g, x, y0, largo, arriba){
+  g.style.display = largo < 1 ? "none" : "";
+  const s = arriba?-1:1, punta=y0+s*largo, base = largo>12 ? punta-s*12 : y0;
+  const l=g.querySelector("line"); l.setAttribute("y1",y0.toFixed(1)); l.setAttribute("y2",base.toFixed(1));
+  g.querySelector("polygon").setAttribute("points",`${x},${punta.toFixed(1)} ${x-7},${base.toFixed(1)} ${x+7},${base.toFixed(1)}`);
+  g.querySelector("text").setAttribute("y",(arriba?punta+8:punta-4).toFixed(1));
+}
+
+function actualizar(){
+  const v = +rango.value, dy = DY_MAX*v/1000, ahora = performance.now();
+  rango.style.setProperty("--p", (v/10)+"%");
+  let f = Math.min(1, dy/LLENO);
+  if (f >= fMax){ if (f > fMax+1e-6) ultimoVertido = ahora; fMax = f; }
+  else f = Math.max(0, Math.min(1, (dy - BAJADA*fMax)/(LLENO-BAJADA)));
+  const df = f - fPrev;
+  const E=E_MAX*f, marca=PESO-E, mov=dy-DY_MAX, off=PX_N*(marca-MARCA0);
+  din.setAttribute("transform",`translate(0 ${mov.toFixed(1)})`);
+  cordon.setAttribute("y1",(VIGA-mov).toFixed(1));
+  ind.setAttribute("transform",`translate(0 ${off.toFixed(1)})`);
+  resorte.setAttribute("points", puntosResorte(IND_Y+off));
+  lectura.textContent = `${marca.toFixed(1)} N`;
+  cubo.setAttribute("transform",`translate(0 ${(mov+off).toFixed(1)})`);
+  nivel = NIVEL + BAJADA*(fMax-f);
+  cuboFondo = CENTRO + 40 + mov + off;
+  const cy = CENTRO + mov + off;
+  flecha(fE,520,cy,FLECHA_PX*E,true); flecha(fP,544,cy,FLECHA_PX*PESO,false);
+
+  if (!quieto && df !== 0 && f > 0 && f < 1){
+    wob = Math.min(3.5, wob + Math.abs(df)*40);
+    if (ahora - ultimaOnda > 140){ ultimaOnda = ahora; ondas.push({e:0}); }
+  }
+  if (!quieto && df > 0){
+    const k = Math.min(3, Math.ceil(df*50));
+    for (let i=0;i<k && burbujas.length<25;i++){
+      const b = el("circle","burbuja"); burbG.append(b);
+      burbujas.push({n:b, x:498+Math.random()*68, y:Math.min(cuboFondo-4, 548), r:1.5+Math.random()*2.5, ph:Math.random()*6});
+    }
+  }
+  fPrev = f;
+
+  const pct = Math.round(f*100);
+  $("#o-sum").textContent = `${pct} %`;
+  $("#o-emp").textContent = `${E.toFixed(1)} N`;
+  $("#o-marca").textContent = `${marca.toFixed(1)} N`;
+  $("#o-cuenta").innerHTML = `Marca = P − E = 26.5 − ${E.toFixed(1)} = ${marca.toFixed(1)} N`;
+  $("#o-nota").textContent =
+    f === 0 ? "Fuera del agua: el dinamómetro marca el peso completo."
+    : f < 1 ? "Entra más volumen al agua → más empuje → el dinamómetro marca menos."
+    : dy > LLENO + 1 ? "Más hondo, mismo empuje: el volumen sumergido ya no cambia."
+    : "Sumergido por completo: marca peso − empuje.";
+  rango.setAttribute("aria-valuetext", `${pct} % sumergido, el dinamómetro marca ${marca.toFixed(1)} N`);
+  if (quieto) { hRecol = RECOL_ALTO*fMax; pintarAgua(0); } else arrancar();
+}
+
+function pintarAgua(t){
+  const y = nivel + wob*Math.sin(t/85);
+  cuerpo.setAttribute("d",`M440 ${y.toFixed(1)}A100 12 0 0 0 640 ${y.toFixed(1)}V555A100 13 0 0 1 440 555Z`);
+  supf.setAttribute("cy", y.toFixed(1)); clip.setAttribute("cy", y.toFixed(1));
+  const yr = FONDO - hRecol + rWob*Math.sin(t/70);
+  const hay = hRecol > 0.4;
+  rCuerpo.style.display = rSup.style.display = hay ? "" : "none";
+  rCuerpo.setAttribute("d",`M670 ${yr.toFixed(1)}A45 7 0 0 0 760 ${yr.toFixed(1)}V553.5A45 8 0 0 1 670 553.5Z`);
+  rSup.setAttribute("cy", yr.toFixed(1));
+  chorro.setAttribute("d",`M690 392Q714 404 715 440V${Math.max(440, yr).toFixed(1)}`);
+  return {y, yr};
+}
+
+function cuadro(t){
+  const dt = Math.min(0.05, (t - tPrev)/1000 || 0.016); tPrev = t;
+  wob *= Math.exp(-dt*3); rWob *= Math.exp(-dt*4);
+  hRecol += (RECOL_ALTO*fMax - hRecol)*Math.min(1, dt*3);
+  const {y, yr} = pintarAgua(t);
+  const vertiendo = t - ultimoVertido < 380;
+  chorro.style.opacity = vertiendo ? .85 : Math.max(0, (+chorro.style.opacity||0) - dt*3);
+  if (vertiendo && t - ultimaGota > 45 && gotas.length < 40){
+    ultimaGota = t; const g = el("circle","gota"); gotasG.append(g);
+    gotas.push({n:g, x:690, y:392, vx:25+Math.random()*25, vy:10+Math.random()*30, r:2+Math.random()*2});
+  }
+  for (let i=gotas.length-1;i>=0;i--){ const g=gotas[i];
+    g.vy += 1300*dt; g.x += g.vx*dt; g.y += g.vy*dt;
+    if (g.y >= yr){ g.n.remove(); gotas.splice(i,1); rWob = Math.min(2, rWob+0.25); continue; }
+    g.n.setAttribute("cx",g.x.toFixed(1)); g.n.setAttribute("cy",g.y.toFixed(1)); g.n.setAttribute("r",g.r.toFixed(1)); }
+  for (let i=ondas.length-1;i>=0;i--){ const o=ondas[i]; o.e += dt;
+    if (o.e > .9){ if (o.n) o.n.remove(); ondas.splice(i,1); continue; }
+    if (!o.n){ o.n = el("ellipse","onda"); ondasG.append(o.n); }
+    const rx = 42 + o.e*75; o.n.setAttribute("cx",540); o.n.setAttribute("cy",y.toFixed(1));
+    o.n.setAttribute("rx",rx.toFixed(1)); o.n.setAttribute("ry",(rx*.12).toFixed(1));
+    o.n.setAttribute("stroke-opacity",(0.8*(1-o.e/.9)).toFixed(2)); }
+  for (let i=burbujas.length-1;i>=0;i--){ const b=burbujas[i];
+    b.y -= (55 + b.r*12)*dt; b.ph += dt*6;
+    if (b.y <= y + 2){ b.n.remove(); burbujas.splice(i,1); continue; }
+    b.n.setAttribute("cx",(b.x + Math.sin(b.ph)*2).toFixed(1)); b.n.setAttribute("cy",b.y.toFixed(1)); b.n.setAttribute("r",b.r.toFixed(1)); }
+  const activo = gotas.length || ondas.length || burbujas.length || wob > .05 || rWob > .05 || vertiendo
+    || Math.abs(RECOL_ALTO*fMax - hRecol) > .1 || +chorro.style.opacity > 0;
+  raf = activo ? requestAnimationFrame(cuadro) : 0;
+}
+function arrancar(){ if (!raf){ tPrev = performance.now(); raf = requestAnimationFrame(cuadro); } }
+
+// ---------- Animación del botón ----------
+let anim = 0;
+function animarA(meta){
+  cancelAnimationFrame(anim);
+  if (quieto){ rango.value = meta; actualizar(); return; }
+  const ini = +rango.value, t0 = performance.now(), dur = 2600*Math.abs(meta-ini)/1000 + 1;
+  const paso = (t) => { const k = Math.min(1,(t-t0)/dur), s = k<.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2;
+    rango.value = Math.round(ini + (meta-ini)*s); actualizar(); if (k<1) anim = requestAnimationFrame(paso); else boton(); };
+  anim = requestAnimationFrame(paso);
+}
+const bAnim = $("#animar");
+const boton = () => { bAnim.textContent = +rango.value >= 1000 ? "Sacar" : "Sumergir"; };
+bAnim.addEventListener("click", () => animarA(+rango.value >= 1000 ? 0 : 1000));
+rango.addEventListener("input", () => { cancelAnimationFrame(anim); actualizar(); boton(); });
+$("#reiniciar").addEventListener("click", () => {
+  cancelAnimationFrame(anim); fMax = 0; fPrev = 0; hRecol = 0; rango.value = 0;
+  [...gotas, ...burbujas].forEach(o => o.n.remove()); gotas.length = burbujas.length = 0;
+  actualizar(); boton(); });
+
+// ---------- Pasos ----------
+const BIEN='<svg class="ico b" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>';
+const MAL='<svg class="ico m" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
+$("#subtitulo").textContent = D.subtitulo;
+D.pasos.forEach(p => {
+  const s = document.createElement("section"); s.className = "tarjeta";
+  s.innerHTML = `<h2><span class="n">${p.n}</span>${p.titulo}</h2>` + (p.p||[]).map(t => `<p>${t}</p>`).join("");
+  if (p.pregunta){
+    s.insertAdjacentHTML("beforeend", `<p>${p.pregunta.enunciado}</p>`);
+    const l = document.createElement("div"); l.className = "opciones";
+    p.pregunta.opciones.forEach(o => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "op";
+      b.innerHTML = `<span>${o.t}</span><span class="res" aria-live="polite"></span>`;
+      b.addEventListener("click", () => { b.classList.add(o.ok ? "bien" : "mal");
+        b.querySelector(".res").innerHTML = `${o.ok?BIEN:MAL} <b>${o.ok?"Correcto.":"No."}</b> ${o.e}`; });
+      l.append(b); });
+    s.append(l);
+  }
+  $(p.n <= 2 ? "#pasos-a" : "#pasos-b").append(s);
+});
+
+chorro.style.opacity = 0;
+actualizar(); boton();
+})();
+</script>
+</body>
+</html>
