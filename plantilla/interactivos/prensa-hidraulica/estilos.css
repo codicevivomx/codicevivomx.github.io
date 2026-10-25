@@ -1,112 +1,60 @@
-/* Paleta y tipografía tomadas de contenido/fisica/img/prensa-hidraulica.svg (tema claro) */
-:root {
-  --page: #f2f2ef;
-  --card: #fbfbfa;
-  --text: #57575a;
-  --strong: #18181a;
-  --muted: #8c8c90;
-  --face: #ffffff;
-  --shade: #e5e5e2;
-  --hi: #26262a;
-  --mid: #8a8a8f;
-  --lo: #b4b4b8;
-  --faint: #d4d4d6;
-  --red: #e5484d;
-  --green: #30a46c;
-  --blue: #3e63dd;
-  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --lift: inset 0 1px 0 0 #ffffff, 0 0 0 1px #0000000f, 0 1px 1px -.5px #0000000a,
-    0 3px 3px -1.5px #0000000a, 0 6px 6px -3px #0000000a, 0 12px 12px -6px #0000000a;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--page);
-  color: var(--text);
-  font: 15px/1.45 var(--mono);
-}
+/* Prensa hidráulica: solo acomodo. El estilo sale de plantilla/codice/codice.css */
 
 .lab {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 16px 12px 32px;
   display: grid;
-  gap: 12px;
+  gap: 16px;
+  grid-template-areas: "enc" "fig" "ctl" "lec" "pru";
 }
+.encabezado { grid-area: enc; }
+.figura { grid-area: fig; }
+.controles { grid-area: ctl; display: grid; gap: 4px; }
+.lecturas { grid-area: lec; }
+.prueba { grid-area: pru; }
 
-.cabecera h1 { margin: 0; color: var(--strong); font-size: 1.35rem; }
-.cabecera p { margin: 2px 0 0; color: var(--muted); }
-
-.tarjeta {
-  background: var(--card);
-  border-radius: 12px;
-  box-shadow: var(--lift);
-  padding: 14px;
+/* Figura: el resto de la lámina deja desplazar la página; solo la columna del pistón chico captura el dedo */
+.lienzo { position: relative; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.arrastre {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 9.375%;            /* x 30 a 110 del viewBox de 320 */
+  width: 25%;
+  touch-action: none;
+  cursor: grab;
 }
-
-/* Figura */
-#prensa { display: block; width: 100%; height: auto; touch-action: none; user-select: none; }
-.pista { margin: 6px 0 10px; color: var(--muted); font-size: .85rem; text-align: center; }
-
-.pared { fill: none; stroke: var(--hi); stroke-width: 2.5; stroke-linejoin: round; }
-.fluido { fill: var(--blue); fill-opacity: .18; }
-.solido { fill: var(--face); stroke: var(--hi); stroke-width: 1.2; }
-.varilla { fill: var(--shade); stroke: var(--hi); stroke-width: 1; }
-.flecha1 { stroke: var(--hi); stroke-width: 2.5; }
-.flecha2 { stroke: var(--green); stroke-width: 3; }
-.punta1 { fill: var(--hi); }
-.punta2 { fill: var(--green); }
-.rotulo {
-  font: 600 11px var(--mono);
-  fill: var(--strong);
-  paint-order: stroke;
-  stroke: var(--card);
-  stroke-width: 4px;
-}
-.rotulo.f2 { fill: var(--green); }
-.rotulo.tenue { fill: var(--muted); font-weight: 400; }
-.arrastre { fill: transparent; cursor: grab; }
 .arrastre.activo { cursor: grabbing; }
 
-/* Controles */
-.controles { display: grid; gap: 10px; }
-.control { display: grid; gap: 2px; font-size: .85rem; }
-.control output { color: var(--strong); font-weight: 600; }
-.control input { width: 100%; height: 28px; margin: 0; accent-color: var(--hi); }
-
 /* Lecturas */
-.lecturas { display: grid; gap: 12px; align-content: start; }
-.dato { border-bottom: 1px solid var(--faint); padding-bottom: 10px; }
+.lecturas { display: grid; gap: 10px; align-content: start; }
+.dato { border-bottom: 1px solid var(--filete); padding-bottom: 10px; }
 .dato:last-child { border-bottom: 0; padding-bottom: 0; }
-.etq { display: block; color: var(--muted); font-size: .8rem; }
-.valor { display: block; margin: 2px 0 0; color: var(--strong); font-weight: 600; }
-.valor.grande { font-size: 1.3rem; color: var(--green); }
-.cuadrado { color: var(--red); background: #e5484d1a; border-radius: 4px; padding: 0 3px; }
-.trampa { margin: 4px 0 0; color: var(--muted); font-size: .85rem; }
-.mensaje { margin: 8px 0 0; color: var(--text); }
+.etq { display: block; }
+.valor { display: block; margin: 2px 0 0; font-weight: 500; font-size: 1.1rem; }
+.valor.grande { font-size: 1.4rem; }
+.cuadrado { color: var(--rubrica); font-size: .75em; font-weight: 500; }
+.trampa { margin: 2px 0 0; color: var(--tinta-suave); font-style: italic; }
+.mensaje { margin: 8px 0 0; font-style: italic; }
 
 /* Ponte a prueba */
-.prueba h2 { margin: 0 0 6px; color: var(--strong); font-size: 1.05rem; }
+.prueba { border-top: 3px double var(--filete); padding-top: 12px; }
 .prueba p { margin: 0 0 10px; }
 .opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.opciones button {
-  font: inherit;
-  color: var(--strong);
-  background: var(--face);
-  border: 1px solid var(--faint);
-  border-radius: 10px;
-  padding: 12px 10px;
-  cursor: pointer;
-  text-align: left;
-}
-.opciones button.bien { border-color: var(--green); background: #30a46c14; }
-.opciones button.mal { border-color: var(--red); background: #e5484d14; }
-.retro { min-height: 1.45em; margin-top: 10px !important; color: var(--strong); }
+.retro { min-height: 1.5em; margin-top: 10px !important; }
 
+/* Escritorio: texto y controles a la izquierda, lámina a la derecha */
 @media (min-width: 760px) {
-  .lab { grid-template-columns: 1.15fr 1fr; padding-top: 28px; }
-  .cabecera, .prueba { grid-column: 1 / -1; }
-  .opciones { grid-template-columns: repeat(4, 1fr); }
+  .lab {
+    column-gap: 32px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas: "enc fig" "ctl fig" "lec fig" "pru fig" ". fig";
+    align-items: start;
+  }
+  .encabezado { text-align: left; }
+  .figura { position: sticky; top: 16px; }
+}
+
+@media print {
+  .lab { display: block; }
+  .lab > * { margin-bottom: 14px; }
+  .figura { max-width: 125mm; margin: 0 auto 14px; }
 }

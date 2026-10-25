@@ -16,33 +16,37 @@
   },
   "figura": {
     "aria": "Prensa hidráulica: pistón chico a la izquierda y pistón grande a la derecha, unidos por un fluido.",
-    "f1": "F₁ = {F1} N",
-    "f2": "F₂ = {F2} N",
+    "pie": "Lámina I. Prensa hidráulica. Arrastra el pistón chico.",
+    "f1": "F<sub>1</sub> = {F1} N",
+    "f2": "F<sub>2</sub> = {F2} N",
     "x": "x = {x} cm"
   },
   "lecturas": {
+    "numerales": ["I.", "II.", "III.", "IV.", "V."],
     "razonDiametros": "Razón de diámetros",
     "razonDiametrosValor": "{d2} ÷ {d1} = ×{rd}",
     "razonAreas": "Razón de áreas",
     "razonAreasValor": "{rd}² = ×{ra}",
     "fuerza": "Fuerza que sale",
-    "fuerzaValor": "F₂ = {F2} N",
-    "trampa": "Con ×{rd} (la trampa) saldría {Ftrampa} N ❌",
+    "fuerzaValor": "F<sub>2</sub> = {F2} N",
+    "trampa": "Con ×{rd} (la trampa) saldría {Ftrampa} N",
     "recorrido": "Recorrido del pistón grande",
     "recorridoValor": "{x} ÷ {ra} = {y} cm",
     "trabajo": "Trabajo",
-    "w1": "W₁ = {F1} N × {xm} m = {W1} J",
-    "w2": "W₂ = {F2} N × {ym} m = {W2} J",
+    "w1": "W<sub>1</sub> = {F1} N × {xm} m = {W1} J",
+    "w2": "W<sub>2</sub> = {F2} N × {ym} m = {W2} J",
     "mensaje": "Ganas fuerza, pierdes recorrido. La energía no se multiplica."
   },
   "prueba": {
     "titulo": "Ponte a prueba",
     "pregunta": "Diámetros de 3 cm y 12 cm. Empujas con 40 N. ¿Qué fuerza sale?",
     "opciones": [
-      { "letra": "A", "texto": "160 N", "correcta": false, "retro": "❌ Usaste la razón de diámetros (×4). El área va al cuadrado." },
-      { "letra": "B", "texto": "640 N", "correcta": true, "retro": "✅ Razón 4, áreas 4² = 16, 40 × 16 = 640 N." },
-      { "letra": "C", "texto": "10 N", "correcta": false, "retro": "❌ La invertiste. El pistón grande da más fuerza, no menos." },
-      { "letra": "D", "texto": "40 N", "correcta": false, "retro": "❌ Lo que se transmite igual es la presión, no la fuerza." }
-    ]
+      { "letra": "A", "texto": "160 N", "correcta": false, "retro": "Usaste la razón de diámetros (×4). El área va al cuadrado." },
+      { "letra": "B", "texto": "640 N", "correcta": true, "retro": "Razón 4, áreas 4² = 16, 40 × 16 = 640 N." },
+      { "letra": "C", "texto": "10 N", "correcta": false, "retro": "La invertiste. El pistón grande da más fuerza, no menos." },
+      { "letra": "D", "texto": "40 N", "correcta": false, "retro": "Lo que se transmite igual es la presión, no la fuerza." }
+    ],
+    "marcaCorrecta": "Correcta",
+    "marcaIncorrecta": "Incorrecta"
   }
 }
