@@ -1,0 +1,66 @@
+{
+  "titulo": "Principio de Arquímedes",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pieLamina": "Lámina I. El empuje y el dinamómetro. Baja el cubo con el deslizador.",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "Un cubo de aluminio (densidad 2&nbsp;700 kg/m<sup>3</sup>) de 10 cm de lado se sumerge por completo en agua. ¿Qué empuje recibe? (g = 9.8 m/s<sup>2</sup>)",
+        "opciones": [
+          { "texto": "A) 9.8 N", "correcta": true, "explicacion": "E = 1&nbsp;000 · 9.8 · 0.001 = 9.8 N. Solo cuentan el líquido y el volumen sumergido." },
+          { "texto": "B) 26.5 N", "explicacion": "Ese es el peso del cubo (2&nbsp;700 · 9.8 · 0.001). El empuje no depende del material del objeto." },
+          { "texto": "C) 0.98 N", "explicacion": "1&nbsp;000 cm<sup>3</sup> son 0.001 m<sup>3</sup>, no 0.0001 m<sup>3</sup>. Revisa la conversión." },
+          { "texto": "D) 98 N", "explicacion": "Usaste 0.1<sup>2</sup>, que es un área. El volumen es 0.1<sup>3</sup> = 0.001 m<sup>3</sup>." }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "Todo cuerpo sumergido recibe un empuje hacia arriba igual al peso del líquido que desaloja: <span class=\"numeros\">E = ρ<sub>líquido</sub> · g · V<sub>sumergido</sub></span>."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> Volumen: 0.1 m × 0.1 m × 0.1 m = <span class=\"numeros\">0.001 m<sup>3</sup></span>.",
+        "<span class=\"numeral\">II.</span> Empuje: 1&nbsp;000 × 9.8 × 0.001 = <span class=\"numeros\">9.8 N</span> → respuesta A.",
+        "La densidad del aluminio no se usa: el empuje solo depende del líquido y del volumen sumergido."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Calcular el peso del cubo (2&nbsp;700 × 9.8 × 0.001 = 26.5 N) da la opción B, puesta para quien cree que el empuje depende del peso del objeto.",
+        "Usar 0.1<sup>2</sup> en vez de 0.1<sup>3</sup> da 98 N (opción D): esa cuenta es un área, no un volumen.",
+        "Convertir mal 1&nbsp;000 cm<sup>3</sup> a 0.0001 m<sup>3</sup> da 0.98 N (opción C)."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "Mismo volumen sumergido, mismo empuje, sin importar de qué esté hecho el objeto.",
+        "Pasa el volumen a m<sup>3</sup> (lado en metros, al cubo) antes de multiplicar."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "Con el cubo de aluminio colgado de un dinamómetro y sumergido por completo en agua, ¿qué marca el dinamómetro?",
+        "opciones": [
+          { "texto": "A) 26.5 N", "explicacion": "Eso marca fuera del agua. Dentro, el agua lo sostiene en parte: el dinamómetro marca el peso menos el empuje." },
+          { "texto": "B) 16.7 N", "correcta": true, "explicacion": "Peso aparente = peso − empuje = 26.5 − 9.8 = 16.7 N. El agua no le quita masa al cubo, solo lo sostiene en parte." },
+          { "texto": "C) 9.8 N", "explicacion": "Ese es el empuje, no lo que marca. El dinamómetro marca el peso menos el empuje: 26.5 − 9.8 = 16.7 N." },
+          { "texto": "D) 36.3 N", "explicacion": "Sumaste el empuje, pero va hacia arriba y se resta: 26.5 − 9.8 = 16.7 N." }
+        ]
+      }
+    }
+  ]
+}
