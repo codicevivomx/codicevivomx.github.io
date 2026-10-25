@@ -1,0 +1,64 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #tru-kicker {
+      position: absolute;
+      left: 80px;
+      top: 330px;
+      font: 700 34px "JetBrains Mono", monospace;
+      letter-spacing: 0.14em;
+      color: #2b8a5e;
+    }
+    #tru-texto {
+      position: absolute;
+      left: 80px;
+      top: 400px;
+      width: 920px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    #tru-l1 {
+      display: block;
+      font-size: 100px;
+      line-height: 1.08;
+    }
+    #tru-l2 {
+      display: block;
+      margin-top: 60px;
+      font-size: 76px;
+      line-height: 1.18;
+    }
+    #tru-marca {
+      isolation: isolate;
+      position: relative;
+      white-space: nowrap;
+    }
+    #tru-fondo {
+      position: absolute;
+      left: -8px;
+      right: -8px;
+      top: 10%;
+      bottom: 0;
+      background: #30a46c40;
+      z-index: -1;
+    }
+  </style>
+  <div data-hf-id="hf-gzpy" id="root" data-composition-id="truco" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-nkq6" id="tru-kicker" class="clip" data-start="0" data-duration="4" data-track-index="0">TRUCO</div>
+    <div data-hf-id="hf-ynyx" id="tru-texto" class="clip" data-start="0" data-duration="4" data-track-index="1" data-layout-allow-overlap>
+      <span data-hf-id="hf-2two" id="tru-l1">¿Diámetros o radios?</span>
+      <span data-hf-id="hf-e8bw" id="tru-l2">Eleva la razón <span data-hf-id="hf-kte0" id="tru-marca"><span data-hf-id="hf-nnrk" id="tru-fondo"></span>al cuadrado</span> antes de multiplicar.</span>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#tru-kicker", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0);
+    tl.fromTo("#tru-l1", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.1);
+    tl.fromTo("#tru-l2", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.0);
+    tl.fromTo("#tru-fondo", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.5, ease: "power2.inOut" }, 1.7);
+    window.__timelines["truco"] = tl;
+  </script>
+</template>

@@ -1,0 +1,62 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    #pre-kicker {
+      position: absolute;
+      left: 80px;
+      top: 210px;
+      font: 700 34px "JetBrains Mono", monospace;
+      letter-spacing: 0.14em;
+      color: var(--azul);
+    }
+    #pre-texto {
+      position: absolute;
+      left: 80px;
+      top: 280px;
+      width: 920px;
+      font-weight: 900;
+      font-size: 76px;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+    }
+    .pre-op {
+      position: absolute;
+      width: 445px;
+      height: 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--tarjeta);
+      border: 3px solid var(--borde);
+      font-weight: 700;
+      font-size: 62px;
+      white-space: nowrap;
+    }
+    #pre-a { left: 80px; top: 820px; }
+    #pre-b { left: 555px; top: 820px; }
+    #pre-c { left: 80px; top: 1020px; }
+    #pre-d { left: 555px; top: 1020px; }
+  </style>
+  <div data-hf-id="hf-yu7x" id="root" data-composition-id="pregunta" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-dj9h" id="pre-kicker" class="clip" data-start="0" data-duration="4" data-track-index="0">PREGUNTA</div>
+    <div data-hf-id="hf-06cb" id="pre-texto" class="clip" data-start="0" data-duration="4" data-track-index="1">
+      <div data-hf-id="hf-0ym8" id="pre-texto-in">Pistones de 2&nbsp;cm y 10&nbsp;cm de diámetro. Aplicas 50&nbsp;N. ¿Qué fuerza sale?</div>
+    </div>
+    <div data-hf-id="hf-51sy" id="pre-ops" class="clip" data-start="0" data-duration="4" data-track-index="2">
+      <div data-hf-id="hf-20bh" id="pre-a" class="pre-op">A) 50&nbsp;N</div>
+      <div data-hf-id="hf-e6b3" id="pre-b" class="pre-op">B) 250&nbsp;N</div>
+      <div data-hf-id="hf-1dsw" id="pre-c" class="pre-op">C) 1&nbsp;250&nbsp;N</div>
+      <div data-hf-id="hf-cz9t" id="pre-d" class="pre-op">D) 10&nbsp;N</div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // La pregunta ya está en pantalla en el cuadro 0 (gancho y miniatura)
+    tl.fromTo("#pre-texto-in", { scale: 1.04, transformOrigin: "0% 0%" }, { scale: 1, duration: 0.8, ease: "power3.out" }, 0);
+    tl.fromTo(".pre-op", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", stagger: 0.18 }, 0.5);
+    window.__timelines["pregunta"] = tl;
+  </script>
+</template>

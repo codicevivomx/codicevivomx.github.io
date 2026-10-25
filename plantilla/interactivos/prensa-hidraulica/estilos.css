@@ -1,0 +1,60 @@
+/* Prensa hidráulica: solo acomodo. El estilo sale de plantilla/codice/codice.css */
+
+.lab {
+  display: grid;
+  gap: 16px;
+  grid-template-areas: "enc" "fig" "ctl" "lec" "pru";
+}
+.encabezado { grid-area: enc; }
+.figura { grid-area: fig; }
+.controles { grid-area: ctl; display: grid; gap: 4px; }
+.lecturas { grid-area: lec; }
+.prueba { grid-area: pru; }
+
+/* Figura: el resto de la lámina deja desplazar la página; solo la columna del pistón chico captura el dedo */
+.lienzo { position: relative; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.arrastre {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 9.375%;            /* x 30 a 110 del viewBox de 320 */
+  width: 25%;
+  touch-action: none;
+  cursor: grab;
+}
+.arrastre.activo { cursor: grabbing; }
+
+/* Lecturas */
+.lecturas { display: grid; gap: 10px; align-content: start; }
+.dato { border-bottom: 1px solid var(--filete); padding-bottom: 10px; }
+.dato:last-child { border-bottom: 0; padding-bottom: 0; }
+.etq { display: block; }
+.valor { display: block; margin: 2px 0 0; font-weight: 500; font-size: 1.1rem; }
+.valor.grande { font-size: 1.4rem; }
+.cuadrado { color: var(--rubrica); font-size: .75em; font-weight: 500; }
+.trampa { margin: 2px 0 0; color: var(--tinta-suave); font-style: italic; }
+.mensaje { margin: 8px 0 0; font-style: italic; }
+
+/* Ponte a prueba */
+.prueba { border-top: 3px double var(--filete); padding-top: 12px; }
+.prueba p { margin: 0 0 10px; }
+.opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.retro { min-height: 1.5em; margin-top: 10px !important; }
+
+/* Escritorio: texto y controles a la izquierda, lámina a la derecha */
+@media (min-width: 760px) {
+  .lab {
+    column-gap: 32px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas: "enc fig" "ctl fig" "lec fig" "pru fig" ". fig";
+    align-items: start;
+  }
+  .encabezado { text-align: left; }
+  .figura { position: sticky; top: 16px; }
+}
+
+@media print {
+  .lab { display: block; }
+  .lab > * { margin-bottom: 14px; }
+  .figura { max-width: 125mm; margin: 0 auto 14px; }
+}
