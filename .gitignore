@@ -19,3 +19,4 @@ node_modules/
 # Sistema
 Thumbs.db
 .DS_Store
+.claude/skills/
