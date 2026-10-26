@@ -20,6 +20,9 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
 - **prensa-hidraulica** (tema modelo): sus datos están en `contenido/fisica/prensa-interactivo.json`
   (excepción a la convención; no renombrar fuera de una tanda). Publicado en
   https://codicevivomx.github.io/plantilla/interactivos/prensa-hidraulica/
+  Experimentos Anatomy: `premium/` (lámina 1) y `premium-hero/` (✓ 25-oct: gato hidráulico en corte
+  + modo 3D que se carga al tocar; script `plantilla/figuras/prensa-hidraulica-hero.mjs`; 3D a ~20 fps
+  en perfil celular; pendiente: auditoría 3D completa y 8 avisos de continuidad en la base 3D).
 - **principio-de-arquimedes**: v1 (2D códice) en `plantilla/interactivos/principio-de-arquimedes/`;
   v2 (2.5D fusión códice + moderno) en `.../principio-de-arquimedes/v2/`. Encuesta IG (11 votos):
   fusión 6, 2D 4, moderna 1. La v2 trae el contenido dentro del index.html (aún no lee el JSON).
