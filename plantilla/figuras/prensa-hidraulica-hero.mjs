@@ -10,7 +10,8 @@ import * as G from "../../.claude/skills/anatomy/kit/lathe.mjs";
 import * as A from "../../.claude/skills/anatomy/kit/audit.mjs";
 import { turning } from "../../.claude/skills/anatomy/kit/turn-build.mjs";
 import * as TA from "../../.claude/skills/anatomy/kit/turn-audit.mjs";
-import { kitScript, turnScript } from "../../.claude/skills/anatomy/scripts/inline-kit.mjs";
+import { glCamera } from "../../.claude/skills/anatomy/kit/gl.mjs";
+import { kitScript, turnScript, glScript } from "../../.claude/skills/anatomy/scripts/inline-kit.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../..");
@@ -28,6 +29,9 @@ const Y_MAX = X_MAX / RA; // cm que sube el pistón grande
 const STROKE_CM = 2; // carrera del émbolo por bombeo
 const STROKES = X_MAX / STROKE_CM;
 const PRESSURE_BAR = F1 / (Math.PI * (d1 / 2) ** 2) / 10; // N/cm² → bar
+// Fuerza en el émbolo que se arrastra en la palanca. El JSON no trae rango de F1: 10–100 N deja la
+// presión (hasta 3.2 bar) bajo el ajuste del alivio.
+const F1_RANGO = { min: 10, max: 100, paso: 5 };
 const RELIEF_BAR = 3.4; // la válvula de alivio abre antes del tope del manómetro (4 bar)
 
 // ── Mundo: 1 cm = 6 u ─────────────────────────────────────────────────────
@@ -484,8 +488,115 @@ const flowLines = () =>
     .map(([name, points]) => `<path class="flujo" data-flow-part="${name}" pathLength="100" d="${k.pathOf(points.map(([x, z]) => sec(x, z)))}"/>`)
     .join("");
 
+// ── Capa WebGL: aceite en el plano de corte (y = 0) con las mismas medidas que el SVG ──
+// Conductos de baja (succión, depósito, alivio y descarga tras la aguja) y de alta presión
+// (salida, conducto al pistón y al manómetro); las tapas vivas (pistón, nivel, émbolo) llegan por cuadro.
+const R4 = (x0, z0, x1, z1) => [Math.min(x0, x1), Math.min(z0, z1), Math.max(x0, x1), Math.max(z0, z1)];
+const hR = (x0, x1, z, r = CH) => R4(x0, z - r, x1, z + r);
+const vR = (x, z0, z1, r = CH) => R4(x - r, z0, x + r, z1);
+const GL_FLOWS = Object.entries(FLOWS).flatMap(([name, points]) => {
+  const lengths = points.slice(1).map(([x, z], i) => Math.hypot(x - points[i][0], z - points[i][1]));
+  const total = lengths.reduce((a, b) => a + b, 0);
+  let s = 0;
+  return lengths.map((len, i) => {
+    const seg = { name, a: points[i], b: points[i + 1], s0: (s / total) * 100, s1: ((s + len) / total) * 100 };
+    s += len;
+    return seg;
+  });
+});
+const GL = {
+  camera: glCamera(P),
+  low: [vR(SUCTION.x, SUCTION.z - CH, BASE.h), hR(SUCTION.x - CH, SUCTION.inlet + CH, SUCTION.z), vR(SUCTION.inlet, SUCTION.z, FLOOR, 1.8), vR(RELIEF.x, RELIEF.seat, BASE.h, 2.8), hR(NEEDLE.seat - 2, NEEDLE.seat + 3.8, NEEDLE.z, 1.4), vR(-59, NEEDLE.z, BASE.h, 1.8)],
+  high: [R4(OUTLET.x - 3.2, PRESS_Z - CH, OUTLET.x + 3.2, OUTLET.seat), vR(OUTLET.x, OUTLET.seat, FLOOR, 1.8), hR(-6 - CH, GAUGE.x + CH, PRESS_Z), vR(-6, PRESS_Z, BASE.h), vR(GAUGE.x, PRESS_Z, BASE.h, 1.8), vR(RELIEF.x, PRESS_Z, RELIEF.seat, 1.5), vR(NEEDLE.seat + 2, NEEDLE.z, BASE.h, 1.8)],
+  // Lo que tapa el aceite en el mismo plano: topes del pistón y tapones de los barrenos.
+  occ: [R4(X_R - RB, BASE.h, X_R - RB + 5, RAM_BOTTOM), R4(X_R + RB - 5, BASE.h, X_R + RB, RAM_BOTTOM), ...[GAUGE.x + CH, -6 - CH].map((x) => R4(x - 0.9, PRESS_Z - CH - 0.4, x + 0.9, PRESS_Z + CH + 0.4))],
+  res: [X_R - BOTTLE.rIn, X_R - RCYL.r, X_R + RCYL.r, X_R + BOTTLE.rIn],
+  ram: [X_R - RB, X_R + RB, BASE.h],
+  pump: [X_P - RP, X_P + RP, FLOOR, BASE.h],
+  balls: { x: [SUCTION.inlet, OUTLET.x, RELIEF.x], z: [INLET_BALL, OUTLET_BALL, RELIEF_BALL], r: [BALL, BALL, 2.2] },
+  segs: GL_FLOWS.map(({ a, b }) => [a[0], a[1], b[0], b[1]]),
+  segS: GL_FLOWS.map(({ s0, s1 }) => [s0, s1]),
+  segName: GL_FLOWS.map(({ name }) => name),
+};
+const GL_FRAGMENT = `
+uniform vec4 uLow[${GL.low.length}];
+uniform vec4 uHigh[${GL.high.length}];
+uniform vec4 uOcc[${GL.occ.length}];
+uniform vec4 uSeg[${GL_FLOWS.length}];
+uniform vec4 uSegS[${GL_FLOWS.length}];
+uniform vec4 uRes;
+uniform vec3 uRam;
+uniform vec4 uPump;
+uniform vec3 uBallX;
+uniform vec3 uBallR;
+uniform vec3 uBallZ;
+uniform vec4 uLive;
+uniform float uLight;
+float sdBox(vec2 p,vec4 r){vec2 c=(r.xy+r.zw)*.5,h=(r.zw-r.xy)*.5;vec2 q=abs(p-c)-h;return length(max(q,0.))+min(max(q.x,q.y),0.);}
+float inBox(vec2 p,vec4 r,float px){return 1.-smoothstep(-.7*px,.7*px,sdBox(p,r));}
+float inBall(vec2 p,float x,float z,float r,float px){return 1.-smoothstep(r-.7*px,r+.7*px,length(p-vec2(x,z)));}
+void main(){
+  vec2 vb=viewOf(gl_FragCoord.xy);
+  vec2 p=onWallY(vb,0.).xz;
+  float px=pixelOf()*1.2;
+  float low=0.,high=0.,occ=0.;
+  for(int i=0;i<${GL.low.length};i++)low=max(low,inBox(p,uLow[i],px));
+  for(int i=0;i<${GL.high.length};i++)high=max(high,inBox(p,uHigh[i],px));
+  for(int i=0;i<${GL.occ.length};i++)occ=max(occ,inBox(p,uOcc[i],px));
+  // Tapas vivas: x = fondo del pistón grande, y = nivel del depósito, z = fondo del émbolo.
+  low=max(low,max(inBox(p,vec4(uRes.x,uRam.z,uRes.y,uLive.y),px),inBox(p,vec4(uRes.z,uRam.z,uRes.w,uLive.y),px)));
+  high=max(high,inBox(p,vec4(uRam.x,uRam.z,uRam.y,uLive.x),px));
+  float pump=max(inBox(p,uPump,px),inBox(p,vec4(uPump.x,uPump.w,uPump.y,uLive.z),px));
+  occ=max(occ,inBall(p,uBallX.x,uBallZ.x,uBallR.x,px));
+  occ=max(occ,inBall(p,uBallX.y,uBallZ.y,uBallR.y,px));
+  occ=max(occ,inBall(p,uBallX.z,uBallZ.z,uBallR.z,px));
+  float keep=1.-occ;
+  float oil=max(max(low,high),pump)*keep;
+  if(oil<.002){gl_FragColor=vec4(0.);return;}
+  // Brillo: manchas de luz que suben despacio por el aceite.
+  float n=fbm3(vec3(p.x*.16,p.y*.16-uTime*.35,uTime*.12));
+  float shine=smoothstep(.52,.78,n)*oil;
+  // Flujo: pulsos que avanzan por el centro de cada conducto, al ritmo de las líneas del SVG.
+  float flow=0.;
+  for(int i=0;i<${GL_FLOWS.length};i++){
+    vec4 sg=uSeg[i];vec4 ss=uSegS[i];
+    vec2 ab=sg.zw-sg.xy;float t=clamp(dot(p-sg.xy,ab)/dot(ab,ab),0.,1.);
+    float d=length(p-sg.xy-ab*t);
+    float s=mix(ss.x,ss.y,t)+ss.z;
+    float pulse=pow(.5+.5*cos(6.2832*s/8.),3.);
+    flow+=ss.w*exp(-d*d/6.)*pulse;
+  }
+  flow=min(flow,1.)*oil;
+  // Presión: el aceite de alta se enciende con los bar (uLive.w de 0 a 1), del ámbar al rojo.
+  float pr=uLive.w;
+  float press=high*keep*pr*(.8+.35*n);
+  vec3 hot=mix(vec3(1.,.62,.22),vec3(1.,.32,.16),smoothstep(.4,.85,pr));
+  float dith=(hash12(gl_FragCoord.xy)-.5)/255.;
+  if(uLight<.5){
+    vec3 c=tonemap(hot*press*.9+vec3(1.,.86,.55)*shine*.32+vec3(1.,.93,.7)*flow*.85,1.25);
+    float a=max(c.r,max(c.g,c.b));
+    gl_FragColor=vec4(c+dith,a);
+  }else{
+    // En papel: la presión entinta el aceite hacia el rojo; brillo y flujo lo aclaran.
+    vec3 ink=mix(vec3(.80,.40,.12),vec3(.70,.18,.10),smoothstep(.4,.85,pr));
+    float ap=clamp(press*.55,0.,.6);
+    vec4 c=vec4(ink*ap,ap);
+    float al=clamp(shine*.38+flow*.6,0.,.75);
+    c=vec4(vec3(1.,.95,.80)*al,al)+c*(1.-al);
+    gl_FragColor=vec4(c.rgb+dith,c.a);
+  }
+}`;
+
 // ── Página: modo corte ────────────────────────────────────────────────────
 const fmt = (n, digits = 0) => n.toLocaleString("es-MX", { minimumFractionDigits: digits, maximumFractionDigits: digits }).replace(/,/g, " ");
+// Panel lateral: F₂ grande en vivo; F₁ también se mueve con un deslizador (teclado y lectores de pantalla).
+const panelHtml = () => `<aside class="ph-panel" aria-label="Fuerzas">
+<p class="ph-panel-k">Fuerza que sale</p>
+<p class="ph-panel-f2"><span data-f2>${fmt(F2)}</span> N</p>
+<p class="ph-panel-sub">F<sub>2</sub> = F<sub>1</sub> × ${RA}</p>
+<label class="ph-panel-f1"><span>F<sub>1</sub> en el émbolo: <b data-f1>${fmt(F1)} N</b></span><input type="range" min="${F1_RANGO.min}" max="${F1_RANGO.max}" step="${F1_RANGO.paso}" value="${F1}" data-fuerza aria-valuetext="${fmt(F1)} N; F2 = ${fmt(F2)} N"></label>
+<p class="ph-panel-sub">Presión: <b data-p>${fmt(PRESSURE_BAR, 1)}</b> bar</p>
+</aside>`;
 const bodyCut = [
   bench(),
   baseBack(),
@@ -510,6 +621,8 @@ const bodyCut = [
   bracket(true),
   gauge(),
   `<path data-part="gauge-needle" class="iso-line" data-tone="lit" data-free="start" style="stroke-width:.9" d="${gaugeNeedle(0)}"/>`,
+  // F₁ sobre el puño: flecha que se arrastra (la dibuja el script con la palanca).
+  `<g data-part="fuerza" class="ph-fuerza"></g>`,
 ];
 
 const LABEL = `Gato hidráulico de botella cortado a la mitad sobre un banco. A la derecha, una palanca mueve un émbolo de ${d1} cm que bombea aceite del depósito, por dos válvulas de bola, a un pistón de ${d2} cm que levanta una carga de ${fmt(F2)} N. Una aguja de descarga regresa el aceite al depósito y una válvula de alivio protege el circuito. Un manómetro marca la presión.`;
@@ -693,7 +806,8 @@ const FUSION = `
 .guia{fill:var(--dorado)}
 .zona-roja{stroke:var(--rubrica);stroke-width:1.1}
 .flujo{fill:none;stroke:var(--aceite-claro);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:2.2 5.8;opacity:0}
-.ph-modos{display:flex;gap:6px;margin:0 0 10px}
+.ph-barra{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 12px;margin:0 0 10px}
+.ph-modos{display:flex;gap:6px}
 .ph-modos button,.ph-acciones button{font:600 13px/1 system-ui,sans-serif;border-radius:999px;padding:9px 14px;min-height:40px;cursor:pointer;border:1.5px solid var(--borde-fuerte);background:var(--sup);color:var(--texto)}
 .ph-modos button[aria-pressed="true"]{background:var(--texto);color:var(--sup);border-color:var(--texto)}
 .ph-acciones{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap}
@@ -704,6 +818,27 @@ const FUSION = `
 .ph-escena .iso-stage[hidden]{display:none}
 .ph-escena .iso-turn{cursor:grab;touch-action:pan-y}
 .ph-cargando{position:absolute;inset:auto 0 8px;text-align:center;font-size:12px;color:var(--suave)}
+.ph-escena .iso-stage{position:relative}
+.ph-gl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.iso[data-theme="dark"] .ph-gl{mix-blend-mode:screen}
+.ph-fuerza{cursor:ns-resize;touch-action:none}
+.ph-fuerza .ph-agarre{fill:transparent}
+.ph-cuerpo{display:grid;grid-template-columns:minmax(0,1fr) 136px;gap:14px;align-items:center}
+.ph-panel{border-left:1px solid var(--borde);padding:4px 0 4px 14px;font:13px/1.35 system-ui,sans-serif;color:var(--suave)}
+.ph-panel p{margin:0}
+.ph-panel-k{font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.ph-panel-f2{font:700 34px/1.05 system-ui,sans-serif;color:var(--rubrica);font-variant-numeric:tabular-nums;white-space:nowrap;margin:2px 0 4px!important}
+.ph-panel-f2 span{color:var(--texto)}
+.ph-panel b{color:var(--texto);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ph-panel-f1{display:block;margin:12px 0 6px}
+.ph-panel-f1 input{width:100%;margin:6px 0 0;accent-color:var(--rubrica)}
+@media (max-width:560px){
+  .ph-cuerpo{grid-template-columns:1fr;gap:8px}
+  .ph-panel{border-left:0;border-top:1px solid var(--borde);padding:10px 0 0;display:grid;grid-template-columns:auto 1fr;gap:2px 14px;align-items:end}
+  .ph-panel-k{grid-column:1/-1}
+  .ph-panel-f2{grid-row:2/4}
+  .ph-panel-f1{grid-column:1/-1;order:5;margin:6px 0 0}
+}
 `;
 // Sólidos de corte con su relleno de fondo bajo el rayado: el patrón sólo trae líneas.
 const HATCH_BG = `<style>.corte[data-hatch]{paint-order:normal}</style>`;
@@ -714,11 +849,18 @@ const LIVE = `
 const P = ${JSON.stringify(P)};
 const M = ${JSON.stringify({ RA, X_MAX, Y_MAX, STROKE_CM, STROKES, CM, F2: fmt(F2), PRESSURE_BAR, RELIEF_BAR, X_R, RB, CAP_TOP: CAP.z1, RAM_TOP: RAM.top, X_P, RP, GLAND_TOP: GLAND.z1, PIN_UP, THETA_UP, THETA_DOWN, PIVOT, ARM, LINK, HANDLE, OIL_Z0, RES_AREA, BOTTLE_RIN: BOTTLE.rIn, RCYL_R: RCYL.r, BASE_H: BASE.h, NEEDLE_OPEN: 3, V, LIGHT, GAUGE, BANDS: [0, 0.2, 0.42, 0.62] })};
 const dialAngle = (bar) => ${DIAL_SWEEP[0]} + (${DIAL_SWEEP[1] - DIAL_SWEEP[0]}) * bar / 4;
+const FZ = ${JSON.stringify({ ...F1_RANGO, F1, A1: Math.PI * (d1 / 2) ** 2, W: WIDTH, H: HEIGHT, RAM_BOTTOM, PL_LEN })};
+const GLD = ${JSON.stringify(GL)};
+const GL_FRAGMENT = ${JSON.stringify(GL_FRAGMENT)};
+// Pascal: F₁ en el émbolo → presión (bar) → F₂ en el pistón grande.
+const force = { f: FZ.F1 };
+const pressure = () => force.f / FZ.A1 / 10;
+const fmtN = (n, digits = 0) => n.toLocaleString("es-MX", { minimumFractionDigits: digits, maximumFractionDigits: digits }).replace(/,/g, " ");
 const root = document.querySelector(".ph-escena");
 const stage = root.querySelector(".iso-stage");
 const svg = stage.querySelector("svg");
 const part = (name) => svg.querySelector('[data-part="' + name + '"]');
-const parts = Object.fromEntries(["ram", "ram-back", "plunger", "plunger-back", "lever", "eye", "ball-in", "ball-out", "spring-out", "ball-relief", "needle", "gauge-needle", "res-l", "res-r"].map((n) => [n, part(n)]));
+const parts = Object.fromEntries(["ram", "ram-back", "plunger", "plunger-back", "lever", "eye", "ball-in", "ball-out", "spring-out", "ball-relief", "needle", "gauge-needle", "res-l", "res-r", "fuerza"].map((n) => [n, part(n)]));
 const flows = Object.fromEntries([...svg.querySelectorAll("[data-flow-part]")].map((el) => [el.dataset.flowPart, el]));
 const levels = { l: svg.querySelector(".nivel-l"), r: svg.querySelector(".nivel-r") };
 const readout = document.querySelector("[data-readout]");
@@ -872,7 +1014,7 @@ function step(dt) {
   S.glow.descarga += ((drain > 0 ? 1 : 0) - S.glow.descarga) * kSlow;
   S.glow.alivio += (rate(vented) - S.glow.alivio) * kSlow;
   // Presión: la carga la sostiene mientras el pistón no toque fondo; al alivio sube a su ajuste.
-  const target = vented > 0 ? M.RELIEF_BAR : S.x > 0.05 ? M.PRESSURE_BAR : 0;
+  const target = vented > 0 ? M.RELIEF_BAR : S.x > 0.05 ? pressure() : 0;
   S.bar += (target - S.bar) * (1 - Math.exp(-dt / 0.18));
 }
 let drawnKey = "";
@@ -880,13 +1022,13 @@ function draw() {
   const y = S.x / M.RA;
   const dy = y * M.CM;
   if (window.__ph3d) window.__ph3d.frame(S, y);
-  const key = mode + [S.q, S.x, S.rel, S.inLift, S.outLift, S.reliefLift, S.bar].map((v) => v.toFixed(3)).join() + Object.values(S.glow).map((v) => v.toFixed(2)).join() + Object.values(S.flow).map((v) => v.toFixed(1)).join();
+  const key = mode + force.f + [S.q, S.x, S.rel, S.inLift, S.outLift, S.reliefLift, S.bar].map((v) => v.toFixed(3)).join() + Object.values(S.glow).map((v) => v.toFixed(2)).join() + Object.values(S.flow).map((v) => v.toFixed(1)).join();
   if (key === drawnKey) return;
   drawnKey = key;
   const text = "x = " + S.x.toFixed(0) + " cm · sube " + y.toFixed(2) + " cm · " + S.bar.toFixed(1) + " bar";
   if (readout.textContent !== text) readout.textContent = text;
   stage.setAttribute("aria-valuenow", S.x.toFixed(0));
-  stage.setAttribute("aria-valuetext", text + ", carga " + M.F2 + " N");
+  stage.setAttribute("aria-valuetext", text + ", F2 " + fmtN(force.f * M.RA) + " N");
   // En modo 3D el corte está oculto: no se redibuja.
   if (mode === "3d") return;
   parts.ram.setAttribute("transform", translateAlong(P, [0, 0, dy]));
@@ -894,6 +1036,7 @@ function draw() {
   const theta = M.THETA_DOWN + (M.THETA_UP - M.THETA_DOWN) * S.q;
   const lev = leverSvg(theta);
   parts.lever.innerHTML = lev.svg;
+  parts.fuerza.innerHTML = forceSvg(theta);
   const dz = lev.zp - M.PIN_UP;
   parts.plunger.setAttribute("transform", translateAlong(P, [0, 0, dz]));
   parts.eye.setAttribute("transform", translateAlong(P, [0, 0, dz]));
@@ -917,12 +1060,56 @@ function draw() {
   const gp = (r, ang) => at([g.x + r * Math.cos(ang), 3.1, g.z + r * Math.sin(ang)]);
   parts["gauge-needle"].setAttribute("d", pathOf([gp(2, a + Math.PI), gp(g.r - 2.6, a)]));
 }
+// Flecha de F₁ sobre el puño: su largo crece con la fuerza; se arrastra hacia arriba o abajo.
+function forceSvg(theta) {
+  const s = M.HANDLE - 13;
+  const gx = M.PIVOT[0] + s * Math.cos(theta), gz = M.PIVOT[1] + s * Math.sin(theta);
+  const len = 10 + 30 * (force.f - FZ.min) / (FZ.max - FZ.min);
+  const tip = at([gx, 0, gz + 6]), tail = at([gx, 0, gz + 6 + len]);
+  const head = [[tip[0] - 2.4, tip[1] - 3.4], tip, [tip[0] + 2.4, tip[1] - 3.4]];
+  const mid = at([gx, 0, gz + 6 + len / 2]);
+  return '<circle class="ph-agarre" cx="' + mid[0].toFixed(1) + '" cy="' + mid[1].toFixed(1) + '" r="' + (len * 0.6 + 16).toFixed(1) + '"/>' +
+    '<path class="iso-line" data-tone="lit" style="stroke-width:1.2" d="' + pathOf([tail, tip]) + pathOf(head) + '"/>' +
+    '<g class="iso-dots" data-tone="lit"><circle cx="' + tail[0].toFixed(1) + '" cy="' + tail[1].toFixed(1) + '" r="2.4"/></g>';
+}
+// Capa WebGL del aceite: se crea la primera vez que la lámina está a la vista; sin WebGL queda el SVG.
+const glCanvas = stage.querySelector(".ph-gl");
+let layer = null, glTried = false, glOff = false, glClock = 0;
+function glInit() {
+  if (glTried) return;
+  glTried = true;
+  layer = glLayer({
+    canvas: glCanvas, fragment: GL_FRAGMENT, view: [FZ.W, FZ.H], camera: GLD.camera,
+    uniforms: ["uSegS", "uBallZ", "uLive", "uLight"],
+    fixed: { uLow: GLD.low.flat(), uHigh: GLD.high.flat(), uOcc: GLD.occ.flat(), uSeg: GLD.segs.flat(), uRes: GLD.res, uRam: GLD.ram, uPump: GLD.pump, uBallX: GLD.balls.x, uBallR: GLD.balls.r },
+  });
+  if (layer) stage.setAttribute("data-gl", "");
+}
+function glFrame(dt) {
+  if (!layer) return;
+  if (glOff || mode !== "corte") { layer.clear(); return; }
+  glClock += still.matches ? 0 : dt;
+  const dy = S.x / M.RA * M.CM;
+  const theta = M.THETA_DOWN + (M.THETA_UP - M.THETA_DOWN) * S.q;
+  const [lx, lz] = pinOf(theta);
+  const zp = lz - Math.sqrt(M.LINK * M.LINK - (M.X_P - lx) ** 2);
+  const segS = GLD.segS.flatMap(([s0, s1], i) => [s0, s1, -S.flow[GLD.segName[i]], S.glow[GLD.segName[i]]]);
+  layer.draw({
+    uSegS: segS,
+    uBallZ: [GLD.balls.z[0] + 2.4 * S.inLift, GLD.balls.z[1] - 2.4 * S.outLift, GLD.balls.z[2] + 2.2 * S.reliefLift],
+    uLive: [FZ.RAM_BOTTOM + dy, M.OIL_Z0 - (dy * M.RB * M.RB) / M.RES_AREA, zp - FZ.PL_LEN, clamp(S.bar / 4, 0, 1)],
+    uLight: document.body.dataset.theme === "light" ? 1 : 0,
+  }, 4 + glClock);
+}
 function tick(now) {
   const dt = last ? Math.min((now - last) / 1000, 1 / 20) : 1 / 60;
   last = now;
   step(dt);
   draw();
-  const busy = action || queue.length || touring || S.rel > 0 || Object.values(S.glow).some((v) => v > 0.01) || Math.abs(S.bar - (S.x > 0.05 ? M.PRESSURE_BAR : 0)) > 0.01 || (window.__ph3d && window.__ph3d.busy());
+  glInit();
+  glFrame(dt);
+  const glLive = layer && !glOff && mode === "corte" && !still.matches;
+  const busy = glLive || action || queue.length || touring || S.rel > 0 || Object.values(S.glow).some((v) => v > 0.01) || Math.abs(S.bar - (S.x > 0.05 ? pressure() : 0)) > 0.01 || (window.__ph3d && window.__ph3d.busy());
   frame = visible && busy ? requestAnimationFrame(tick) : 0;
 }
 const run = () => { if (!frame && visible) { last = 0; frame = requestAnimationFrame(tick); } };
@@ -934,8 +1121,44 @@ const hold = () => {
 const pump = () => { hold(); if (queue.filter((q) => q === "bombear").length < 3) queue.push("bombear"); run(); };
 const release = () => { hold(); queue.length = 0; if (action && action.kind === "bombear") queue.push("soltar"); else action = { kind: "soltar", t: 0 }; run(); };
 new IntersectionObserver((entries) => { visible = entries[entries.length - 1].isIntersecting; if (visible) run(); }, { rootMargin: "120px 0px" }).observe(root);
-if (still.matches) { S.x = 24; S.bar = M.PRESSURE_BAR; }
-stage.addEventListener("click", pump);
+if (still.matches) { S.x = 24; S.bar = pressure(); }
+stage.addEventListener("click", (event) => { if (!event.target.closest(".ph-fuerza")) pump(); });
+// F₁: flecha arrastrable en la palanca y deslizador del panel; el panel muestra F₂ = F₁ × razón de áreas.
+const slider = document.querySelector("[data-fuerza]");
+const panelOut = { f2: document.querySelector("[data-f2]"), f1: document.querySelector("[data-f1]"), p: document.querySelector("[data-p]") };
+function setForce(value) {
+  const f = clamp(Math.round(value / FZ.paso) * FZ.paso, FZ.min, FZ.max);
+  if (f === force.f) return;
+  force.f = f;
+  slider.value = f;
+  const f2 = fmtN(f * M.RA) + " N";
+  panelOut.f2.textContent = fmtN(f * M.RA);
+  panelOut.f1.textContent = fmtN(f) + " N";
+  panelOut.p.textContent = fmtN(pressure(), 1);
+  slider.setAttribute("aria-valuetext", fmtN(f) + " N; F2 = " + f2);
+  if (still.matches && S.x > 0.05) S.bar = pressure();
+  drawnKey = "";
+  if (!frame) draw();
+  run();
+}
+slider.addEventListener("input", () => { hold(); setForce(+slider.value); });
+// Todo el rango (10–100 N) en 120 px de arrastre, sea cual sea el tamaño de la lámina: cómodo con el dedo.
+const DRAG_PX = 120;
+let fDrag = null;
+parts.fuerza.addEventListener("pointerdown", (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  hold();
+  fDrag = { y: event.clientY, f: force.f };
+  parts.fuerza.setPointerCapture(event.pointerId);
+});
+parts.fuerza.addEventListener("pointermove", (event) => {
+  if (!fDrag) return;
+  setForce(fDrag.f - (event.clientY - fDrag.y) * (FZ.max - FZ.min) / DRAG_PX);
+});
+const endDrag = () => { fDrag = null; };
+parts.fuerza.addEventListener("pointerup", endDrag);
+parts.fuerza.addEventListener("pointercancel", endDrag);
 stage.addEventListener("keydown", (event) => {
   if (event.key === "ArrowDown" || event.key === " " || event.key === "Enter") { event.preventDefault(); pump(); }
   if (event.key === "ArrowUp" || event.key === "r" || event.key === "R") { event.preventDefault(); release(); }
@@ -968,6 +1191,12 @@ async function setMode(next) {
   run();
 }
 buttons.forEach((b) => b.addEventListener("click", () => setMode(b.dataset.modo)));
+// Selector de paleta: sólo cambia los materiales del dibujo (corte y 3D); el resto sigue en fusión.
+const paletas = [...document.querySelectorAll("button[data-paleta]")];
+paletas.forEach((b) => b.addEventListener("click", () => {
+  document.body.dataset.paleta = b.dataset.paleta;
+  paletas.forEach((p) => p.setAttribute("aria-pressed", String(p === b)));
+}));
 if (location.hash === "#3d") setMode("3d");
 draw();
 `;
@@ -1027,13 +1256,28 @@ const plate = k.plateHtml({
     { mark: "raised", label: `Émbolo de Ø ${d1} cm · pistón de Ø ${d2} cm` },
   ],
   caption: `Cada bombeo baja el émbolo ${STROKE_CM} cm y empuja aceite por la válvula de salida hacia el pistón grande; al subir, la válvula de entrada deja pasar aceite del depósito. El área grande es ${RA} veces la chica (${d2 / d1}² = ${RA}): con ${F1} N en el émbolo, el aceite a ${fmt(PRESSURE_BAR, 1)} bar sostiene ${fmt(F2)} N, pero el pistón sube ${RA} veces menos, ${fmt(Y_MAX, 0)} cm tras ${X_MAX} cm de empuje (${STROKES} bombeos). Si se sigue bombeando en el tope, abre la válvula de alivio; la aguja de descarga regresa el aceite al depósito.`,
-  body: `${HATCH}<div class="ph-modos" role="group" aria-label="Vista"><button type="button" data-modo="corte" aria-pressed="true">Corte</button><button type="button" data-modo="3d" aria-pressed="false">3D</button></div><div class="ph-escena"><div class="iso-stage" tabindex="0" role="slider" aria-label="Gato hidráulico en corte: toca o usa flecha abajo para bombear, flecha arriba para soltar" aria-valuemin="0" aria-valuemax="${X_MAX}" aria-valuenow="0">${svgCut}</div><p class="ph-cargando" hidden>Cargando 3D…</p></div><div class="ph-acciones"><button type="button" data-accion="bombear">Bombear</button><button type="button" data-accion="soltar">Soltar</button></div>`,
+  body: `${HATCH}<div class="ph-barra"><div class="ph-modos" role="group" aria-label="Vista"><button type="button" data-modo="corte" aria-pressed="true">Corte</button><button type="button" data-modo="3d" aria-pressed="false">3D</button></div><div class="ph-modos" role="group" aria-label="Paleta"><button type="button" data-paleta="papel" aria-pressed="true">Papel</button><button type="button" data-paleta="metal" aria-pressed="false">Metal</button></div></div><div class="ph-cuerpo"><div class="ph-escena"><div class="iso-stage" tabindex="0" role="slider" aria-label="Gato hidráulico en corte: toca o usa flecha abajo para bombear, flecha arriba para soltar" aria-valuemin="0" aria-valuemax="${X_MAX}" aria-valuenow="0">${svgCut}<canvas class="ph-gl" aria-hidden="true"></canvas></div><p class="ph-cargando" hidden>Cargando 3D…</p></div>${panelHtml()}</div><div class="ph-acciones"><button type="button" data-accion="bombear">Bombear</button><button type="button" data-accion="soltar">Soltar</button></div>`,
 });
 const THEME = `document.body.dataset.theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";\n`;
+// Paleta Metal: las reglas de materiales del 3D (gris oscuro + cobre) pasan a la página y sólo valen
+// con data-paleta="metal"; así abrir el 3D ya no cambia la paleta del corte (Papel = fusión).
+function splitMetal(source) {
+  const lines = source.split("\n");
+  const i = lines.findIndex((l) => l.startsWith("const CSS = "));
+  const rules = JSON.parse(lines[i].slice("const CSS = ".length).replace(/;\s*$/, "")).split("\n");
+  const isMat = (r) => /^(\.iso\[data-theme="(light|dark)"\] )?\[data-mat="[a-z]+"\]\{/.test(r);
+  const mat = rules.filter(isMat);
+  if (mat.length !== 21) throw new Error(`esperaba 21 reglas de materiales en el 3D, hay ${mat.length}`);
+  lines[i] = "const CSS = " + JSON.stringify(rules.filter((r) => !isMat(r)).join("\n")) + ";";
+  const scoped = mat.map((r) => (r.startsWith(".iso[") ? r.replace(/^\.iso\[/, '.iso[data-paleta="metal"][') : '.iso[data-paleta="metal"] ' + r));
+  return { turn3: lines.join("\n"), metal: "/* Paleta Metal: materiales de la skill (gris oscuro + cobre). Papel hereda la fusión. */\n" + scoped.join("\n") + "\n" };
+}
+const { turn3, metal: METAL_CSS } = splitMetal(`${turnScript()}\n${LIVE3D}`);
+const STYLE = FUSION.replace(".corte{fill:var(--corte)}\n", METAL_CSS +".corte{fill:var(--corte)}\n");
 const html = k
-  .pageHtml({ title: "Gato hidráulico · Códice Vivo", theme: "light", body: `<style>${FUSION}</style>${plate}`, script: THEME + kitScript() + LIVE, width: 640 })
-  .replace('<html lang="en">', '<html lang="es-MX">');
-const turn3 = `${turnScript()}\n${LIVE3D}`;
+  .pageHtml({ title: "Gato hidráulico · Códice Vivo", theme: "light", body: `<style>${STYLE}</style>${plate}`, script: THEME + kitScript() + glScript() + LIVE, width: 640 })
+  .replace('<html lang="en">', '<html lang="es-MX">')
+  .replace('<body class="iso" data-theme="light">', '<body class="iso" data-theme="light" data-paleta="papel">');
 mkdirSync(OUT_DIR, { recursive: true });
 writeFileSync(join(OUT_DIR, "index.html"), html);
 writeFileSync(join(OUT_DIR, "3d.js"), turn3);
