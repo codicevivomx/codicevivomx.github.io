@@ -6,7 +6,8 @@
   "rangos": {
     "d1": { "min": 1, "max": 5, "paso": 1 },
     "d2": { "min": 5, "max": 20, "paso": 1 },
-    "x": { "min": 0, "max": 50, "paso": 1 }
+    "x": { "min": 0, "max": 50, "paso": 1 },
+    "F1": { "min": 10, "max": 100, "paso": 5 }
   },
   "controles": {
     "d1": "Diámetro chico",

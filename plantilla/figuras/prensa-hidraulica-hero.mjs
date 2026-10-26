@@ -29,9 +29,8 @@ const Y_MAX = X_MAX / RA; // cm que sube el pistón grande
 const STROKE_CM = 2; // carrera del émbolo por bombeo
 const STROKES = X_MAX / STROKE_CM;
 const PRESSURE_BAR = F1 / (Math.PI * (d1 / 2) ** 2) / 10; // N/cm² → bar
-// Fuerza en el émbolo que se arrastra en la palanca. El JSON no trae rango de F1: 10–100 N deja la
-// presión (hasta 3.2 bar) bajo el ajuste del alivio.
-const F1_RANGO = { min: 10, max: 100, paso: 5 };
+// Fuerza en el émbolo que se arrastra en la palanca (10–100 N deja la presión bajo el alivio).
+const F1_RANGO = DATA.rangos.F1;
 const RELIEF_BAR = 3.4; // la válvula de alivio abre antes del tope del manómetro (4 bar)
 
 // ── Mundo: 1 cm = 6 u ─────────────────────────────────────────────────────
