@@ -531,6 +531,7 @@ uniform vec3 uBallR;
 uniform vec3 uBallZ;
 uniform vec4 uLive;
 uniform float uLight;
+uniform float uLite;
 float sdBox(vec2 p,vec4 r){vec2 c=(r.xy+r.zw)*.5,h=(r.zw-r.xy)*.5;vec2 q=abs(p-c)-h;return length(max(q,0.))+min(max(q.x,q.y),0.);}
 float inBox(vec2 p,vec4 r,float px){return 1.-smoothstep(-.7*px,.7*px,sdBox(p,r));}
 float inBall(vec2 p,float x,float z,float r,float px){return 1.-smoothstep(r-.7*px,r+.7*px,length(p-vec2(x,z)));}
@@ -553,12 +554,15 @@ void main(){
   float oil=max(max(low,high),pump)*keep;
   if(oil<.002){gl_FragColor=vec4(0.);return;}
   // Brillo: manchas de luz que suben despacio por el aceite.
-  float n=fbm3(vec3(p.x*.16,p.y*.16-uTime*.35,uTime*.12));
+  // Modo ligero (vigilante, nivel 2): una octava de ruido en vez de cuatro.
+  vec3 q=vec3(p.x*.16,p.y*.16-uTime*.35,uTime*.12);
+  float n=uLite>.5?noise3(q):fbm3(q);
   float shine=smoothstep(.52,.78,n)*oil;
   // Flujo: pulsos que avanzan por el centro de cada conducto, al ritmo de las líneas del SVG.
   float flow=0.;
   for(int i=0;i<${GL_FLOWS.length};i++){
     vec4 sg=uSeg[i];vec4 ss=uSegS[i];
+    if(uLite>.5&&ss.w<.01)continue;
     vec2 ab=sg.zw-sg.xy;float t=clamp(dot(p-sg.xy,ab)/dot(ab,ab),0.,1.);
     float d=length(p-sg.xy-ab*t);
     float s=mix(ss.x,ss.y,t)+ss.z;
@@ -1074,16 +1078,48 @@ function forceSvg(theta) {
 // Capa WebGL del aceite: se crea la primera vez que la lámina está a la vista; sin WebGL queda el SVG.
 const glCanvas = stage.querySelector(".ph-gl");
 let layer = null, glTried = false, glOff = false, glClock = 0;
+// El mismo canvas y el mismo contexto: recrear la capa (nivel 1) solo cambia la resolución.
+const makeLayer = () => glLayer({
+  canvas: glCanvas, fragment: GL_FRAGMENT, view: [FZ.W, FZ.H], camera: GLD.camera, maxRatio: fps.level >= 1 ? 1 : 1.5,
+  uniforms: ["uSegS", "uBallZ", "uLive", "uLight", "uLite"],
+  fixed: { uLow: GLD.low.flat(), uHigh: GLD.high.flat(), uOcc: GLD.occ.flat(), uSeg: GLD.segs.flat(), uRes: GLD.res, uRam: GLD.ram, uPump: GLD.pump, uBallX: GLD.balls.x, uBallR: GLD.balls.r },
+});
 function glInit() {
-  if (glTried) return;
+  if (glTried || glOff) return;
   glTried = true;
-  layer = glLayer({
-    canvas: glCanvas, fragment: GL_FRAGMENT, view: [FZ.W, FZ.H], camera: GLD.camera,
-    uniforms: ["uSegS", "uBallZ", "uLive", "uLight"],
-    fixed: { uLow: GLD.low.flat(), uHigh: GLD.high.flat(), uOcc: GLD.occ.flat(), uSeg: GLD.segs.flat(), uRes: GLD.res, uRam: GLD.ram, uPump: GLD.pump, uBallX: GLD.balls.x, uBallR: GLD.balls.r },
-  });
+  layer = makeLayer();
   if (layer) stage.setAttribute("data-gl", "");
 }
+// Vigilante: si el cuadro medio pasa de 33 ms durante 2 s seguidos, baja un nivel de calidad
+// (1: canvas a 1×, 2: efecto ligero, 3: sin WebGL, queda el SVG). Nunca vuelve a subir.
+const fps = { level: 0, avg: 0, slow: 0, fresh: true };
+const watchReset = () => { fps.avg = 0; fps.slow = 0; fps.fresh = true; };
+function watch(ms) {
+  if (!layer || glOff || mode !== "corte" || still.matches || document.hidden || !visible) { watchReset(); return; }
+  // El primer cuadro tras una pausa trae el hueco de la pausa: no cuenta.
+  if (fps.fresh || !ms) { watchReset(); fps.fresh = false; return; }
+  fps.avg = fps.avg ? fps.avg + (ms - fps.avg) * 0.1 : ms;
+  fps.slow = fps.avg > 33 ? fps.slow + ms : 0;
+  if (fps.slow >= 2000) degrade(fps.level + 1);
+}
+function degrade(n) {
+  const next = clamp(Math.round(n), fps.level, 3);
+  if (next === fps.level) return fps.level;
+  const sharp = fps.level < 1;
+  fps.level = next;
+  watchReset();
+  if (next === 3) {
+    glOff = true;
+    if (layer) layer.clear();
+    stage.removeAttribute("data-gl");
+  } else if (layer && sharp) {
+    // Se pinta en el mismo cuadro para que no quede un hueco sin aceite.
+    layer = makeLayer() || layer;
+    glFrame(0);
+  }
+  return fps.level;
+}
+document.addEventListener("visibilitychange", watchReset);
 function glFrame(dt) {
   if (!layer) return;
   if (glOff || mode !== "corte") { layer.clear(); return; }
@@ -1098,15 +1134,18 @@ function glFrame(dt) {
     uBallZ: [GLD.balls.z[0] + 2.4 * S.inLift, GLD.balls.z[1] - 2.4 * S.outLift, GLD.balls.z[2] + 2.2 * S.reliefLift],
     uLive: [FZ.RAM_BOTTOM + dy, M.OIL_Z0 - (dy * M.RB * M.RB) / M.RES_AREA, zp - FZ.PL_LEN, clamp(S.bar / 4, 0, 1)],
     uLight: document.body.dataset.theme === "light" ? 1 : 0,
+    uLite: fps.level >= 2 ? 1 : 0,
   }, 4 + glClock);
 }
 function tick(now) {
-  const dt = last ? Math.min((now - last) / 1000, 1 / 20) : 1 / 60;
+  const ms = last ? now - last : 0;
+  const dt = last ? Math.min(ms / 1000, 1 / 20) : 1 / 60;
   last = now;
   step(dt);
   draw();
   glInit();
   glFrame(dt);
+  watch(ms);
   const glLive = layer && !glOff && mode === "corte" && !still.matches;
   const busy = glLive || action || queue.length || touring || S.rel > 0 || Object.values(S.glow).some((v) => v > 0.01) || Math.abs(S.bar - (S.x > 0.05 ? pressure() : 0)) > 0.01 || (window.__ph3d && window.__ph3d.busy());
   frame = visible && busy ? requestAnimationFrame(tick) : 0;
@@ -1120,6 +1159,12 @@ const hold = () => {
 const pump = () => { hold(); if (queue.filter((q) => q === "bombear").length < 3) queue.push("bombear"); run(); };
 const release = () => { hold(); queue.length = 0; if (action && action.kind === "bombear") queue.push("soltar"); else action = { kind: "soltar", t: 0 }; run(); };
 new IntersectionObserver((entries) => { visible = entries[entries.length - 1].isIntersecting; if (visible) run(); }, { rootMargin: "120px 0px" }).observe(root);
+// Ganchos de prueba del vigilante: el navegador sin GPU no llega a degradar solo.
+window.__phFps = {
+  level: () => fps.level,
+  degrade: (n) => { const level = degrade(n); run(); return level; },
+  stats: () => ({ level: fps.level, avg: +fps.avg.toFixed(1), slow: Math.round(fps.slow), gl: !!layer && !glOff, ratio: glCanvas.width / Math.max(1, glCanvas.getBoundingClientRect().width), looping: !!frame }),
+};
 if (still.matches) { S.x = 24; S.bar = pressure(); }
 stage.addEventListener("click", (event) => { if (!event.target.closest(".ph-fuerza")) pump(); });
 // F₁: flecha arrastrable en la palanca y deslizador del panel; el panel muestra F₂ = F₁ × razón de áreas.

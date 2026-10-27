@@ -1075,7 +1075,7 @@ const M = {"RA":25,"X_MAX":50,"Y_MAX":2,"STROKE_CM":2,"STROKES":25,"CM":6,"F2":"
 const dialAngle = (bar) => 3.9269908169872414 + (-4.71238898038469) * bar / 4;
 const FZ = {"min":10,"max":100,"paso":5,"F1":50,"A1":3.141592653589793,"W":600,"H":470,"RAM_BOTTOM":42,"PL_LEN":90.33435906678758};
 const GLD = {"camera":{"origin":[305.3343451075513,346.52354101297385],"k":1.4974954556959732,"cam":[0.8660254037844386,0.5000000000000001,0.49999999999999994,0.8660254037844387]},"low":[[18.8,11.8,23.2,34],[18.8,11.8,59.2,16.2],[55.2,14,58.8,24],[12.7,16,18.3,34],[-46,14.6,-40.2,17.4],[-60.8,16,-57.2,34]],"high":[[63.8,4.8,70.2,21],[65.2,21,68.8,24],[-8.2,4.8,90.2,9.2],[-8.2,7,-3.8,34],[86.2,7,89.8,34],[14,7,17,16],[-43.8,16,-40.2,34]],"occ":[[-50,34,-45,42],[5,34,10,42],[89.3,4.3999999999999995,91.10000000000001,9.6],[-9.1,4.3999999999999995,-7.299999999999999,9.6]],"res":[-64,-54,14,24],"ram":[-50,10,34],"pump":[56,68,24,34],"balls":{"x":[57,67,15.5],"z":[25.876166303929374,19.123833696070626,17.609347693943107],"r":[2.6,2.6,2.2]},"segs":[[21,120,21,14],[21,14,57,14],[57,14,57,30],[62,32,67,24],[67,24,67,7],[67,7,-6,7],[-6,7,-6,40],[-42,40,-42,16],[-42,16,-59,16],[-59,16,-59,110],[15.5,7,15.5,54]],"segS":[[0,67.08860759493672],[67.08860759493672,89.87341772151899],[89.87341772151899,100],[0,7.123535101349483],[7.123535101349483,19.960119680837764],[19.960119680837764,75.08192405158157],[75.08192405158157,100],[0,17.77777777777778],[17.77777777777778,30.37037037037037],[30.37037037037037,100],[0,100]],"segName":["succion","succion","succion","presion","presion","presion","presion","descarga","descarga","descarga","alivio"]};
-const GL_FRAGMENT = "\nuniform vec4 uLow[6];\nuniform vec4 uHigh[7];\nuniform vec4 uOcc[4];\nuniform vec4 uSeg[11];\nuniform vec4 uSegS[11];\nuniform vec4 uRes;\nuniform vec3 uRam;\nuniform vec4 uPump;\nuniform vec3 uBallX;\nuniform vec3 uBallR;\nuniform vec3 uBallZ;\nuniform vec4 uLive;\nuniform float uLight;\nfloat sdBox(vec2 p,vec4 r){vec2 c=(r.xy+r.zw)*.5,h=(r.zw-r.xy)*.5;vec2 q=abs(p-c)-h;return length(max(q,0.))+min(max(q.x,q.y),0.);}\nfloat inBox(vec2 p,vec4 r,float px){return 1.-smoothstep(-.7*px,.7*px,sdBox(p,r));}\nfloat inBall(vec2 p,float x,float z,float r,float px){return 1.-smoothstep(r-.7*px,r+.7*px,length(p-vec2(x,z)));}\nvoid main(){\n  vec2 vb=viewOf(gl_FragCoord.xy);\n  vec2 p=onWallY(vb,0.).xz;\n  float px=pixelOf()*1.2;\n  float low=0.,high=0.,occ=0.;\n  for(int i=0;i<6;i++)low=max(low,inBox(p,uLow[i],px));\n  for(int i=0;i<7;i++)high=max(high,inBox(p,uHigh[i],px));\n  for(int i=0;i<4;i++)occ=max(occ,inBox(p,uOcc[i],px));\n  // Tapas vivas: x = fondo del pistón grande, y = nivel del depósito, z = fondo del émbolo.\n  low=max(low,max(inBox(p,vec4(uRes.x,uRam.z,uRes.y,uLive.y),px),inBox(p,vec4(uRes.z,uRam.z,uRes.w,uLive.y),px)));\n  high=max(high,inBox(p,vec4(uRam.x,uRam.z,uRam.y,uLive.x),px));\n  float pump=max(inBox(p,uPump,px),inBox(p,vec4(uPump.x,uPump.w,uPump.y,uLive.z),px));\n  occ=max(occ,inBall(p,uBallX.x,uBallZ.x,uBallR.x,px));\n  occ=max(occ,inBall(p,uBallX.y,uBallZ.y,uBallR.y,px));\n  occ=max(occ,inBall(p,uBallX.z,uBallZ.z,uBallR.z,px));\n  float keep=1.-occ;\n  float oil=max(max(low,high),pump)*keep;\n  if(oil<.002){gl_FragColor=vec4(0.);return;}\n  // Brillo: manchas de luz que suben despacio por el aceite.\n  float n=fbm3(vec3(p.x*.16,p.y*.16-uTime*.35,uTime*.12));\n  float shine=smoothstep(.52,.78,n)*oil;\n  // Flujo: pulsos que avanzan por el centro de cada conducto, al ritmo de las líneas del SVG.\n  float flow=0.;\n  for(int i=0;i<11;i++){\n    vec4 sg=uSeg[i];vec4 ss=uSegS[i];\n    vec2 ab=sg.zw-sg.xy;float t=clamp(dot(p-sg.xy,ab)/dot(ab,ab),0.,1.);\n    float d=length(p-sg.xy-ab*t);\n    float s=mix(ss.x,ss.y,t)+ss.z;\n    float pulse=pow(.5+.5*cos(6.2832*s/8.),3.);\n    flow+=ss.w*exp(-d*d/6.)*pulse;\n  }\n  flow=min(flow,1.)*oil;\n  // Presión: el aceite de alta se enciende con los bar (uLive.w de 0 a 1), del ámbar al rojo.\n  float pr=uLive.w;\n  float press=high*keep*pr*(.8+.35*n);\n  vec3 hot=mix(vec3(1.,.62,.22),vec3(1.,.32,.16),smoothstep(.4,.85,pr));\n  float dith=(hash12(gl_FragCoord.xy)-.5)/255.;\n  if(uLight<.5){\n    vec3 c=tonemap(hot*press*.9+vec3(1.,.86,.55)*shine*.32+vec3(1.,.93,.7)*flow*.85,1.25);\n    float a=max(c.r,max(c.g,c.b));\n    gl_FragColor=vec4(c+dith,a);\n  }else{\n    // En papel: la presión entinta el aceite hacia el rojo; brillo y flujo lo aclaran.\n    vec3 ink=mix(vec3(.80,.40,.12),vec3(.70,.18,.10),smoothstep(.4,.85,pr));\n    float ap=clamp(press*.55,0.,.6);\n    vec4 c=vec4(ink*ap,ap);\n    float al=clamp(shine*.38+flow*.6,0.,.75);\n    c=vec4(vec3(1.,.95,.80)*al,al)+c*(1.-al);\n    gl_FragColor=vec4(c.rgb+dith,c.a);\n  }\n}";
+const GL_FRAGMENT = "\nuniform vec4 uLow[6];\nuniform vec4 uHigh[7];\nuniform vec4 uOcc[4];\nuniform vec4 uSeg[11];\nuniform vec4 uSegS[11];\nuniform vec4 uRes;\nuniform vec3 uRam;\nuniform vec4 uPump;\nuniform vec3 uBallX;\nuniform vec3 uBallR;\nuniform vec3 uBallZ;\nuniform vec4 uLive;\nuniform float uLight;\nuniform float uLite;\nfloat sdBox(vec2 p,vec4 r){vec2 c=(r.xy+r.zw)*.5,h=(r.zw-r.xy)*.5;vec2 q=abs(p-c)-h;return length(max(q,0.))+min(max(q.x,q.y),0.);}\nfloat inBox(vec2 p,vec4 r,float px){return 1.-smoothstep(-.7*px,.7*px,sdBox(p,r));}\nfloat inBall(vec2 p,float x,float z,float r,float px){return 1.-smoothstep(r-.7*px,r+.7*px,length(p-vec2(x,z)));}\nvoid main(){\n  vec2 vb=viewOf(gl_FragCoord.xy);\n  vec2 p=onWallY(vb,0.).xz;\n  float px=pixelOf()*1.2;\n  float low=0.,high=0.,occ=0.;\n  for(int i=0;i<6;i++)low=max(low,inBox(p,uLow[i],px));\n  for(int i=0;i<7;i++)high=max(high,inBox(p,uHigh[i],px));\n  for(int i=0;i<4;i++)occ=max(occ,inBox(p,uOcc[i],px));\n  // Tapas vivas: x = fondo del pistón grande, y = nivel del depósito, z = fondo del émbolo.\n  low=max(low,max(inBox(p,vec4(uRes.x,uRam.z,uRes.y,uLive.y),px),inBox(p,vec4(uRes.z,uRam.z,uRes.w,uLive.y),px)));\n  high=max(high,inBox(p,vec4(uRam.x,uRam.z,uRam.y,uLive.x),px));\n  float pump=max(inBox(p,uPump,px),inBox(p,vec4(uPump.x,uPump.w,uPump.y,uLive.z),px));\n  occ=max(occ,inBall(p,uBallX.x,uBallZ.x,uBallR.x,px));\n  occ=max(occ,inBall(p,uBallX.y,uBallZ.y,uBallR.y,px));\n  occ=max(occ,inBall(p,uBallX.z,uBallZ.z,uBallR.z,px));\n  float keep=1.-occ;\n  float oil=max(max(low,high),pump)*keep;\n  if(oil<.002){gl_FragColor=vec4(0.);return;}\n  // Brillo: manchas de luz que suben despacio por el aceite.\n  // Modo ligero (vigilante, nivel 2): una octava de ruido en vez de cuatro.\n  vec3 q=vec3(p.x*.16,p.y*.16-uTime*.35,uTime*.12);\n  float n=uLite>.5?noise3(q):fbm3(q);\n  float shine=smoothstep(.52,.78,n)*oil;\n  // Flujo: pulsos que avanzan por el centro de cada conducto, al ritmo de las líneas del SVG.\n  float flow=0.;\n  for(int i=0;i<11;i++){\n    vec4 sg=uSeg[i];vec4 ss=uSegS[i];\n    if(uLite>.5&&ss.w<.01)continue;\n    vec2 ab=sg.zw-sg.xy;float t=clamp(dot(p-sg.xy,ab)/dot(ab,ab),0.,1.);\n    float d=length(p-sg.xy-ab*t);\n    float s=mix(ss.x,ss.y,t)+ss.z;\n    float pulse=pow(.5+.5*cos(6.2832*s/8.),3.);\n    flow+=ss.w*exp(-d*d/6.)*pulse;\n  }\n  flow=min(flow,1.)*oil;\n  // Presión: el aceite de alta se enciende con los bar (uLive.w de 0 a 1), del ámbar al rojo.\n  float pr=uLive.w;\n  float press=high*keep*pr*(.8+.35*n);\n  vec3 hot=mix(vec3(1.,.62,.22),vec3(1.,.32,.16),smoothstep(.4,.85,pr));\n  float dith=(hash12(gl_FragCoord.xy)-.5)/255.;\n  if(uLight<.5){\n    vec3 c=tonemap(hot*press*.9+vec3(1.,.86,.55)*shine*.32+vec3(1.,.93,.7)*flow*.85,1.25);\n    float a=max(c.r,max(c.g,c.b));\n    gl_FragColor=vec4(c+dith,a);\n  }else{\n    // En papel: la presión entinta el aceite hacia el rojo; brillo y flujo lo aclaran.\n    vec3 ink=mix(vec3(.80,.40,.12),vec3(.70,.18,.10),smoothstep(.4,.85,pr));\n    float ap=clamp(press*.55,0.,.6);\n    vec4 c=vec4(ink*ap,ap);\n    float al=clamp(shine*.38+flow*.6,0.,.75);\n    c=vec4(vec3(1.,.95,.80)*al,al)+c*(1.-al);\n    gl_FragColor=vec4(c.rgb+dith,c.a);\n  }\n}";
 // Pascal: F₁ en el émbolo → presión (bar) → F₂ en el pistón grande.
 const force = { f: FZ.F1 };
 const pressure = () => force.f / FZ.A1 / 10;
@@ -1299,16 +1299,48 @@ function forceSvg(theta) {
 // Capa WebGL del aceite: se crea la primera vez que la lámina está a la vista; sin WebGL queda el SVG.
 const glCanvas = stage.querySelector(".ph-gl");
 let layer = null, glTried = false, glOff = false, glClock = 0;
+// El mismo canvas y el mismo contexto: recrear la capa (nivel 1) solo cambia la resolución.
+const makeLayer = () => glLayer({
+  canvas: glCanvas, fragment: GL_FRAGMENT, view: [FZ.W, FZ.H], camera: GLD.camera, maxRatio: fps.level >= 1 ? 1 : 1.5,
+  uniforms: ["uSegS", "uBallZ", "uLive", "uLight", "uLite"],
+  fixed: { uLow: GLD.low.flat(), uHigh: GLD.high.flat(), uOcc: GLD.occ.flat(), uSeg: GLD.segs.flat(), uRes: GLD.res, uRam: GLD.ram, uPump: GLD.pump, uBallX: GLD.balls.x, uBallR: GLD.balls.r },
+});
 function glInit() {
-  if (glTried) return;
+  if (glTried || glOff) return;
   glTried = true;
-  layer = glLayer({
-    canvas: glCanvas, fragment: GL_FRAGMENT, view: [FZ.W, FZ.H], camera: GLD.camera,
-    uniforms: ["uSegS", "uBallZ", "uLive", "uLight"],
-    fixed: { uLow: GLD.low.flat(), uHigh: GLD.high.flat(), uOcc: GLD.occ.flat(), uSeg: GLD.segs.flat(), uRes: GLD.res, uRam: GLD.ram, uPump: GLD.pump, uBallX: GLD.balls.x, uBallR: GLD.balls.r },
-  });
+  layer = makeLayer();
   if (layer) stage.setAttribute("data-gl", "");
 }
+// Vigilante: si el cuadro medio pasa de 33 ms durante 2 s seguidos, baja un nivel de calidad
+// (1: canvas a 1×, 2: efecto ligero, 3: sin WebGL, queda el SVG). Nunca vuelve a subir.
+const fps = { level: 0, avg: 0, slow: 0, fresh: true };
+const watchReset = () => { fps.avg = 0; fps.slow = 0; fps.fresh = true; };
+function watch(ms) {
+  if (!layer || glOff || mode !== "corte" || still.matches || document.hidden || !visible) { watchReset(); return; }
+  // El primer cuadro tras una pausa trae el hueco de la pausa: no cuenta.
+  if (fps.fresh || !ms) { watchReset(); fps.fresh = false; return; }
+  fps.avg = fps.avg ? fps.avg + (ms - fps.avg) * 0.1 : ms;
+  fps.slow = fps.avg > 33 ? fps.slow + ms : 0;
+  if (fps.slow >= 2000) degrade(fps.level + 1);
+}
+function degrade(n) {
+  const next = clamp(Math.round(n), fps.level, 3);
+  if (next === fps.level) return fps.level;
+  const sharp = fps.level < 1;
+  fps.level = next;
+  watchReset();
+  if (next === 3) {
+    glOff = true;
+    if (layer) layer.clear();
+    stage.removeAttribute("data-gl");
+  } else if (layer && sharp) {
+    // Se pinta en el mismo cuadro para que no quede un hueco sin aceite.
+    layer = makeLayer() || layer;
+    glFrame(0);
+  }
+  return fps.level;
+}
+document.addEventListener("visibilitychange", watchReset);
 function glFrame(dt) {
   if (!layer) return;
   if (glOff || mode !== "corte") { layer.clear(); return; }
@@ -1323,15 +1355,18 @@ function glFrame(dt) {
     uBallZ: [GLD.balls.z[0] + 2.4 * S.inLift, GLD.balls.z[1] - 2.4 * S.outLift, GLD.balls.z[2] + 2.2 * S.reliefLift],
     uLive: [FZ.RAM_BOTTOM + dy, M.OIL_Z0 - (dy * M.RB * M.RB) / M.RES_AREA, zp - FZ.PL_LEN, clamp(S.bar / 4, 0, 1)],
     uLight: document.body.dataset.theme === "light" ? 1 : 0,
+    uLite: fps.level >= 2 ? 1 : 0,
   }, 4 + glClock);
 }
 function tick(now) {
-  const dt = last ? Math.min((now - last) / 1000, 1 / 20) : 1 / 60;
+  const ms = last ? now - last : 0;
+  const dt = last ? Math.min(ms / 1000, 1 / 20) : 1 / 60;
   last = now;
   step(dt);
   draw();
   glInit();
   glFrame(dt);
+  watch(ms);
   const glLive = layer && !glOff && mode === "corte" && !still.matches;
   const busy = glLive || action || queue.length || touring || S.rel > 0 || Object.values(S.glow).some((v) => v > 0.01) || Math.abs(S.bar - (S.x > 0.05 ? pressure() : 0)) > 0.01 || (window.__ph3d && window.__ph3d.busy());
   frame = visible && busy ? requestAnimationFrame(tick) : 0;
@@ -1345,6 +1380,12 @@ const hold = () => {
 const pump = () => { hold(); if (queue.filter((q) => q === "bombear").length < 3) queue.push("bombear"); run(); };
 const release = () => { hold(); queue.length = 0; if (action && action.kind === "bombear") queue.push("soltar"); else action = { kind: "soltar", t: 0 }; run(); };
 new IntersectionObserver((entries) => { visible = entries[entries.length - 1].isIntersecting; if (visible) run(); }, { rootMargin: "120px 0px" }).observe(root);
+// Ganchos de prueba del vigilante: el navegador sin GPU no llega a degradar solo.
+window.__phFps = {
+  level: () => fps.level,
+  degrade: (n) => { const level = degrade(n); run(); return level; },
+  stats: () => ({ level: fps.level, avg: +fps.avg.toFixed(1), slow: Math.round(fps.slow), gl: !!layer && !glOff, ratio: glCanvas.width / Math.max(1, glCanvas.getBoundingClientRect().width), looping: !!frame }),
+};
 if (still.matches) { S.x = 24; S.bar = pressure(); }
 stage.addEventListener("click", (event) => { if (!event.target.closest(".ph-fuerza")) pump(); });
 // F₁: flecha arrastrable en la palanca y deslizador del panel; el panel muestra F₂ = F₁ × razón de áreas.
