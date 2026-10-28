@@ -25,10 +25,10 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
   en perfil celular). Vigilante de fps agregado 26-oct: 33 ms durante 2 s → (1) canvas 1.5 → 1,
   (2) `uLite` (ruido de 4 capas → 1 y se saltan los conductos apagados), (3) WebGL apagado y
   respaldo SVG; sin partículas en esta lámina; ganchos `window.__phFps`. Probado a 390 px y
-  CPU 4× en claro y oscuro. Celular real probado 27-oct: todo bien salvo el 3D, que deja de
-  responder al arrastre después de soltar (también en PC). Sin comprobar: parpadeo al bajar al
-  nivel 1 y pausa al salir de pantalla. Pendiente: auditoría 3D completa y 8 avisos de
-  continuidad en la base 3D.
+  CPU 4× en claro y oscuro. Celular real probado 27-oct: todo bien salvo el 3D, que dejaba de
+  responder al arrastre después de soltar (también en PC); arreglado en fix/premium-hero-3d
+  (probado en PC y celular). Celular real: fluido, sin defectos. Sin comprobar: parpadeo al bajar al nivel 1 y pausa al salir de pantalla.
+  salir de pantalla. Pendiente: auditoría 3D completa y 8 avisos de continuidad en la base 3D.
 - **principio-de-arquimedes**: v1 (2D códice) en `plantilla/interactivos/principio-de-arquimedes/`;
   v2 (2.5D fusión códice + moderno) en `.../principio-de-arquimedes/v2/`. Encuesta IG (11 votos):
   fusión 6, 2D 4, moderna 1. La v2 trae el contenido dentro del index.html (aún no lee el JSON).
@@ -39,7 +39,7 @@ Premium solo para ocasiones muy especiales, como máximo una cada 1-2 semanas.
 Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-premium.md (zoom y arrastre).
 
 ## Pendiente para Claude Code
-- [ ] premium-hero (prensa): el 3D deja de responder al arrastre después de soltar (PC y celular). Rama fix/premium-hero-3d.
+- [x] premium-hero (prensa): el 3D no respondía al arrastre tras soltar. Arreglado: el bucle se detenía y nada lo reactivaba; ahora pointerdown y el temporizador de 4 s llaman a run(). No lo causó el vigilante. Pendiente menor: cancelar el temporizador anterior en up().
 - [ ] Script de PDF carta reutilizable: lee `<tema>.md` + `img/<tema>.svg`; Gato lo corre por tema.
 - [ ] Plantilla de video reutilizable a partir de `plantilla/videos/prensa-hidraulica/`; Gato renderiza por tema.
 - [ ] Menor: renombrar `prensa-interactivo.json` → `prensa-hidraulica-interactivo.json` y actualizar sus referencias.

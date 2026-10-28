@@ -3622,7 +3622,7 @@ const THETA_DOWN=-0.28870506988513855,THETA_UP=0.32,PIVOT=[42,148],ARM=20,LINK=1
   const tilt = Math.asin((X_P - lx) / LINK);
   return { gato: v.gato ?? 0, piston: Math.min(RISE, Math.max(0, (v.y ?? 0) * CM)), embolo: pin - BASE_PIN, palanca: -theta * 180 / Math.PI, biela: (theta - tilt) * 180 / Math.PI };
 };
-export function start(root, { still, hold }) {
+export function start(root, { still, hold, run }) {
   const style = document.createElement("style");
   style.textContent = CSS;
   document.head.appendChild(style);
@@ -3631,9 +3631,9 @@ export function start(root, { still, hold }) {
   let angle = 0, spin = still ? 0 : 14, shown = false, drag = null, lastQ = -1, lastY = -1, lastA = -1;
   // Una herramienta que toma el control (__isoTurn) detiene el giro y el bombeo propios.
   const controller = TURN.mount(stage, DATA, { follow, onHold: () => { spin = 0; hold(); } });
-  stage.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, a: angle }; stage.setPointerCapture(e.pointerId); spin = 0; hold(); });
+  stage.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, a: angle }; stage.setPointerCapture(e.pointerId); spin = 0; hold(); run(); });
   stage.addEventListener("pointermove", (e) => { if (drag) angle = drag.a + (e.clientX - drag.x) * 0.6; });
-  const up = () => { if (drag) { drag = null; setTimeout(() => { if (!drag && !still) spin = 14; }, 4000); } };
+  const up = () => { if (drag) { drag = null; setTimeout(() => { if (!drag && !still) { spin = 14; run(); } }, 4000); } };
   stage.addEventListener("pointerup", up);
   stage.addEventListener("pointercancel", up);
   stage.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") angle -= 10; if (e.key === "ArrowRight") angle += 10; });

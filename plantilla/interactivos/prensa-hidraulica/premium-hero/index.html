@@ -1440,7 +1440,7 @@ async function setMode(next) {
   if (next === "3d") {
     if (!loading) {
       root.querySelector(".ph-cargando").hidden = false;
-      loading = import("./3d.js").then((m) => m.start(root, { still: still.matches, hold })).finally(() => { root.querySelector(".ph-cargando").hidden = true; });
+      loading = import("./3d.js").then((m) => m.start(root, { still: still.matches, hold, run })).finally(() => { root.querySelector(".ph-cargando").hidden = true; });
     }
     await loading;
     stage.hidden = true;
