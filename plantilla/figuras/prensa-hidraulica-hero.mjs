@@ -1219,7 +1219,7 @@ async function setMode(next) {
   if (next === "3d") {
     if (!loading) {
       root.querySelector(".ph-cargando").hidden = false;
-      loading = import("./3d.js").then((m) => m.start(root, { still: still.matches, hold })).finally(() => { root.querySelector(".ph-cargando").hidden = true; });
+      loading = import("./3d.js").then((m) => m.start(root, { still: still.matches, hold, run })).finally(() => { root.querySelector(".ph-cargando").hidden = true; });
     }
     await loading;
     stage.hidden = true;
@@ -1250,7 +1250,7 @@ const DATA = ${JSON.stringify(out3.data)};
 const STAGE = ${JSON.stringify(`<div class="iso-stage iso-turn" tabindex="0" role="img" aria-label="Gato hidráulico en 3D: arrastra para girarlo" hidden>${stage3}</div>`)};
 const CSS = ${JSON.stringify(out3.css)};
 const follow = ${follow3.toString().replace("function anonymous(v\n)", "function (v)")};
-export function start(root, { still, hold }) {
+export function start(root, { still, hold, run }) {
   const style = document.createElement("style");
   style.textContent = CSS;
   document.head.appendChild(style);
@@ -1259,9 +1259,9 @@ export function start(root, { still, hold }) {
   let angle = 0, spin = still ? 0 : 14, shown = false, drag = null, lastQ = -1, lastY = -1, lastA = -1;
   // Una herramienta que toma el control (__isoTurn) detiene el giro y el bombeo propios.
   const controller = TURN.mount(stage, DATA, { follow, onHold: () => { spin = 0; hold(); } });
-  stage.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, a: angle }; stage.setPointerCapture(e.pointerId); spin = 0; hold(); });
+  stage.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, a: angle }; stage.setPointerCapture(e.pointerId); spin = 0; hold(); run(); });
   stage.addEventListener("pointermove", (e) => { if (drag) angle = drag.a + (e.clientX - drag.x) * 0.6; });
-  const up = () => { if (drag) { drag = null; setTimeout(() => { if (!drag && !still) spin = 14; }, 4000); } };
+  const up = () => { if (drag) { drag = null; setTimeout(() => { if (!drag && !still) { spin = 14; run(); } }, 4000); } };
   stage.addEventListener("pointerup", up);
   stage.addEventListener("pointercancel", up);
   stage.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") angle -= 10; if (e.key === "ArrowRight") angle += 10; });
