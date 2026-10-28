@@ -15,3 +15,5 @@ Aprendizaje: hacer /clear también antes del commit y no alargar los chats de cl
 - 25-oct-2026 · Tarea 1: flujo nuevo + docs/temas.md + CLAUDE.md (claude.ai, 1 chat): 8 % sesión (42 → 50 %).
 | 25-oct-2026 | principio-de-arquimedes · figura SVG + interactivo 2D (v1) | claude.ai | 6 → 23 % | 17 % | 1 ronda la figura; incluye depuración de npx serve y celular |
 | 25-oct-2026 | principio-de-arquimedes · experimento 2.5D (moderna y fusión) | claude.ai | 23 → 32 % | 9 % | 2 rondas; costo único de crear el estilo 2.5D; chat ya muy largo |
+| 26-oct-2026 | prensa · lámina Hero completa (exp. 2 y 3) | Claude Code | — | ≈ 22 % sesión (aprox.) · ≈ 3-4 % semana | contador compartido con claude.ai; /anatomy = 28 % del uso |
+2026-10-26 · vigilante fps premium-hero · Claude Code (Opus 5.5) · 2 rondas de verificación, 1 captura · sesión: ⟨antes⟩ → 38 %, semana: ⟨antes⟩ → 52 % · $1.41, 4 min de API (19 min en total), 114 líneas añadidas / 9 quitadas
