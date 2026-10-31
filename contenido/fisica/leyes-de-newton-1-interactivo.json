@@ -1,0 +1,122 @@
+{
+  "titulo": "Primera ley de Newton",
+  "subtitulo": "Laboratorio de inercia",
+  "instruccion": "Empuja el disco y cambia la fricción del piso (dedo, mouse o teclado).",
+  "valoresIniciales": {
+    "v0": 5,
+    "mu": 0.1,
+    "g": 10
+  },
+  "rangos": {
+    "v0": {
+      "min": 1,
+      "max": 10,
+      "paso": 1
+    },
+    "mu": {
+      "min": 0,
+      "max": 0.2,
+      "paso": 0.05
+    }
+  },
+  "controles": {
+    "v0": "Rapidez inicial",
+    "mu": "Fricción del piso (μ)",
+    "valorV0": "{v} m/s",
+    "valorMu": "μ = {v}",
+    "empujar": "Empujar",
+    "reiniciar": "Volver al inicio",
+    "trampa": "¿Y si moverse necesitara fuerza?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "examen": "Valores del examen"
+  },
+  "figura": {
+    "aria": "Primera ley de Newton: un disco se desliza sobre un piso; con fricción se frena hasta detenerse, sin fricción sigue a la misma rapidez en línea recta.",
+    "pie": "Lámina I. Inercia. g = {g} m/s²; la fricción es la única fuerza horizontal. Las flechas de fuerza no van a escala.",
+    "v": "v = {v} m/s",
+    "f": "f = μ·m·g",
+    "d": "d = {d} m",
+    "sinFin": "sigue sin detenerse",
+    "empuje": "empuje del resorte",
+    "f0": "f = 0",
+    "camara": "cámara rápida ×{n}",
+    "fantasma": "si moverse necesitara fuerza: se detiene al soltarlo",
+    "realFrena": "de verdad: se frena en {d} m",
+    "realSigue": "de verdad: sigue a {v0} m/s"
+  },
+  "lecturas": {
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV."
+    ],
+    "frenado": "Frenado",
+    "frenadoValor": "a = μ × g = {mu} × {g} = {a} m/s²",
+    "alto": "Tiempo hasta detenerse",
+    "altoValor": "t = {v0} ÷ {a} = {tAlto} s",
+    "distancia": "Distancia recorrida",
+    "distanciaValor": "d = {v0}² ÷ (2 × {a}) = {d} m",
+    "sinFriccion": "Con μ = 0 la fuerza neta es cero: sigue a {v0} m/s sin detenerse.",
+    "trampa": "Si el movimiento necesitara una fuerza, el disco se detendría al soltarlo aunque μ = 0. No pasa.",
+    "mensaje": "Nada se frena solo: si se frena, algo lo frena."
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Sobre una mesa horizontal sin fricción, una bola sale de un tubo curvo. Vista desde arriba, ¿qué camino sigue al salir?",
+    "opciones": [
+      {
+        "letra": "A",
+        "texto": "Sigue curvándose como en el tubo",
+        "correcta": false,
+        "retro": "Fuera del tubo nada la empuja hacia el centro. Sin esa fuerza no hay curva: la bola no «recuerda» el tubo."
+      },
+      {
+        "letra": "B",
+        "texto": "Línea recta, en la dirección que llevaba al salir",
+        "correcta": true,
+        "retro": "La fuerza neta es cero, así que por inercia sigue recto, tangente al tubo."
+      },
+      {
+        "letra": "C",
+        "texto": "Línea recta hacia el centro de la curva",
+        "correcta": false,
+        "retro": "Hacia el centro apuntaba la fuerza del tubo, no la velocidad. Al salir, esa fuerza desaparece."
+      },
+      {
+        "letra": "D",
+        "texto": "Se detiene al salir",
+        "correcta": false,
+        "retro": "Sin fricción nada la frena: sigue con la misma rapidez."
+      }
+    ],
+    "marcaCorrecta": "Correcta",
+    "marcaIncorrecta": "Incorrecta"
+  },
+  "escena": {
+    "ventana": 14,
+    "dt": 0.2,
+    "duracionMax": 6
+  },
+  "prediccion": {
+    "titulo": "Predice antes de empujar",
+    "pregunta": "Con μ = 0, ¿qué hace el disco al soltarlo? Elige y la lámina lo empuja para comprobarlo.",
+    "opciones": [
+      {
+        "texto": "Se frena poco a poco",
+        "correcta": false,
+        "retro": "Tienta porque en la vida diaria todo se frena. Pero eso lo hace la fricción, y con μ = 0 no hay: nada le quita rapidez."
+      },
+      {
+        "texto": "Se detiene de golpe al soltarlo",
+        "correcta": false,
+        "retro": "Es la idea de Aristóteles: «sin empuje no hay movimiento». El resorte solo hacía falta para cambiar su velocidad de 0 a {v0} m/s; para seguir no hace falta."
+      },
+      {
+        "texto": "Sigue igual, a la misma rapidez",
+        "correcta": true,
+        "retro": "La fuerza neta es cero, así que la velocidad no cambia: sigue a {v0} m/s en línea recta."
+      }
+    ]
+  }
+}
