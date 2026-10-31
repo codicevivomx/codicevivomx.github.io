@@ -4,7 +4,7 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
 
 | Tema | Materia | Contenido | Figura | Interactivo | 3D | Video | PDF |
 |---|---|---|---|---|---|---|---|
-| prensa-hidraulica | física | ✓ | ✓ (Anatomy) | ✓ | premium-hero (WebGL) | ✓ (28 s) | |
+| prensa-hidraulica | física | ✓ | ✓ (2.5D+ Anatomy, plus/) | ✓ | premium-hero (WebGL) | ✓ (28 s) | |
 | principio-de-arquimedes | física | ✓ | ✓ (SVG) | ✓ (v1 2D · v2 2.5D) | — | | |
 
 ## Rutas por tema (convención)
