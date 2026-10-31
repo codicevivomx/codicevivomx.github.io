@@ -1,0 +1,62 @@
+{
+  "titulo": "Tiro parabólico",
+  "subtitulo": "Laboratorio de lanzamientos",
+  "instruccion": "Arrastra la flecha de lanzamiento para cambiar el ángulo (dedo o mouse).",
+  "valoresIniciales": { "v0": 25, "ang": 37, "g": 10, "t": 0 },
+  "rangos": {
+    "v0": { "min": 5, "max": 30, "paso": 5 },
+    "ang": { "min": 15, "max": 75, "paso": 1 },
+    "t": { "min": 0, "max": 6, "paso": 0.1 }
+  },
+  "aproximaciones": {
+    "nota": "En 37° y 53° se usan los valores del examen; en los demás ángulos, la calculadora.",
+    "37": { "sen": 0.6, "cos": 0.8 },
+    "53": { "sen": 0.8, "cos": 0.6 }
+  },
+  "controles": {
+    "v0": "Rapidez de lanzamiento",
+    "ang": "Ángulo",
+    "t": "Tiempo",
+    "valorV0": "{v} m/s",
+    "valorAng": "{v}°",
+    "valorT": "{v} s"
+  },
+  "figura": {
+    "aria": "Tiro parabólico: un balón sale del suelo en ángulo, sube en parábola y cae más adelante; su velocidad se separa en componente horizontal y vertical.",
+    "pie": "Lámina I. Tiro parabólico. g = {g} m/s², sin resistencia del aire. Arrastra la flecha de lanzamiento.",
+    "v0": "v<sub>0</sub> = {v0} m/s",
+    "vx": "v<sub>x</sub> = {vx} m/s",
+    "vy": "v<sub>y</sub> = {vyt} m/s",
+    "R": "R = {R} m",
+    "H": "H = {H} m"
+  },
+  "lecturas": {
+    "numerales": ["I.", "II.", "III.", "IV.", "V."],
+    "componentes": "Componentes",
+    "vxValor": "v<sub>x</sub> = {v0} × {cos} = {vx} m/s",
+    "vyValor": "v<sub>0y</sub> = {v0} × {sen} = {vy} m/s",
+    "tiempo": "Tiempo de vuelo",
+    "subidaValor": "Subida: {vy} ÷ {g} = {ts} s",
+    "vueloValor": "Vuelo: 2 × {ts} = {tv} s",
+    "alcance": "Alcance",
+    "alcanceValor": "R = {vx} × {tv} = {R} m",
+    "trampa": "Con el tiempo de subida (la trampa) saldría {vx} × {ts} = {Rtrampa} m",
+    "altura": "Altura máxima",
+    "alturaValor": "H = {vy}² ÷ (2 × {g}) = {H} m",
+    "cima": "En la cima",
+    "cimaValor": "v<sub>y</sub> = 0, pero v = v<sub>x</sub> = {vx} m/s",
+    "mensaje": "Lo horizontal no cambia; lo vertical decide el tiempo."
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Mismo balón (25 m/s a 37°, g = 10 m/s²). ¿Qué rapidez lleva en el punto más alto?",
+    "opciones": [
+      { "letra": "A", "texto": "0 m/s", "correcta": false, "retro": "Solo se anula la velocidad vertical. La horizontal sigue: el balón no se detiene arriba." },
+      { "letra": "B", "texto": "15 m/s", "correcta": false, "retro": "15 m/s es la vertical inicial, y en la cima esa ya vale 0." },
+      { "letra": "C", "texto": "20 m/s", "correcta": true, "retro": "En la cima v_y = 0 y queda solo v_x = 25 × 0.8 = 20 m/s." },
+      { "letra": "D", "texto": "25 m/s", "correcta": false, "retro": "La rapidez no se conserva: la gravedad frena la parte vertical al subir." }
+    ],
+    "marcaCorrecta": "Correcta",
+    "marcaIncorrecta": "Incorrecta"
+  }
+}
