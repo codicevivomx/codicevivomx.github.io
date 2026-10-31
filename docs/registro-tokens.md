@@ -19,3 +19,5 @@ Aprendizaje: hacer /clear también antes del commit y no alargar los chats de cl
 2026-10-26 · vigilante fps premium-hero · Claude Code (Opus 5.5) · 2 rondas de verificación, 1 captura · sesión: ⟨antes⟩ → 38 %, semana: ⟨antes⟩ → 52 % · $1.41, 4 min de API (19 min en total), 114 líneas añadidas / 9 quitadas
 2026-10-27 · fix 3D premium-hero (bucle no se reactivaba) · Claude Code (Opus 5.5) · 1 ronda, 1 captura en Chrome · sesión: 10 → 16 %, semana: 54 → 55 % · $1.08, 2 min de API (19 min en total)
 31-oct-2026 · prensa-hidraulica · lámina 2.5D+ (dibujo Anatomy + página fusión), claude.ai, Opus 5.5 · sesión 11 → 30 % (19 %) · semana 3 → 4 % (1 %) · 213 KB · 1 ronda. Gasto extra por leer la skill y recuperar el JSON de un chat viejo.
+tiro-parabolico · contenido (paso 1) · claude.ai · Opus 5.5 · sesión 61 → 67 % (6 %) · semana 7 → 7 % (<1 %) · 1 ronda
+| 31-oct-2026 | tiro-parabolico | lámina 2.5D+ (partiendo del generador de la prensa) | claude.ai Opus 5.5 | 82 → 86 % (4 %) | 9 → 9 % (<1 %) | 1 ronda, 132 KB |
