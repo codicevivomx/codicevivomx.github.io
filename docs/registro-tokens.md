@@ -18,3 +18,4 @@ Aprendizaje: hacer /clear también antes del commit y no alargar los chats de cl
 | 26-oct-2026 | prensa · lámina Hero completa (exp. 2 y 3) | Claude Code | — | ≈ 22 % sesión (aprox.) · ≈ 3-4 % semana | contador compartido con claude.ai; /anatomy = 28 % del uso |
 2026-10-26 · vigilante fps premium-hero · Claude Code (Opus 5.5) · 2 rondas de verificación, 1 captura · sesión: ⟨antes⟩ → 38 %, semana: ⟨antes⟩ → 52 % · $1.41, 4 min de API (19 min en total), 114 líneas añadidas / 9 quitadas
 2026-10-27 · fix 3D premium-hero (bucle no se reactivaba) · Claude Code (Opus 5.5) · 1 ronda, 1 captura en Chrome · sesión: 10 → 16 %, semana: 54 → 55 % · $1.08, 2 min de API (19 min en total)
+31-oct-2026 · prensa-hidraulica · lámina 2.5D+ (dibujo Anatomy + página fusión), claude.ai, Opus 5.5 · sesión 11 → 30 % (19 %) · semana 3 → 4 % (1 %) · 213 KB · 1 ronda. Gasto extra por leer la skill y recuperar el JSON de un chat viejo.
