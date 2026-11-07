@@ -21,3 +21,4 @@ Aprendizaje: hacer /clear también antes del commit y no alargar los chats de cl
 31-oct-2026 · prensa-hidraulica · lámina 2.5D+ (dibujo Anatomy + página fusión), claude.ai, Opus 5.5 · sesión 11 → 30 % (19 %) · semana 3 → 4 % (1 %) · 213 KB · 1 ronda. Gasto extra por leer la skill y recuperar el JSON de un chat viejo.
 tiro-parabolico · contenido (paso 1) · claude.ai · Opus 5.5 · sesión 61 → 67 % (6 %) · semana 7 → 7 % (<1 %) · 1 ronda
 | 31-oct-2026 | tiro-parabolico | lámina 2.5D+ (partiendo del generador de la prensa) | claude.ai Opus 5.5 | 82 → 86 % (4 %) | 9 → 9 % (<1 %) | 1 ronda, 132 KB |
+| 31-oct → 7-nov-2026 | leyes-de-newton-1 | lámina 2.5D+ (dibujo nuevo, partiendo del generador de tiro) + pantalla completa | claude.ai Opus 5.5 | inicio no anotado → ?? % | inicio no anotado → ?? % | 2 rondas, 151 KB + SVG fijo 68 KB. Incluye la guía de git, el merge de tiro y el tablero en el mismo chat. Aprendizaje: anotar el % antes del primer mensaje (paso 0). |

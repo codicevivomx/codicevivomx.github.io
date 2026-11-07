@@ -5,6 +5,7 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
 | prensa-hidraulica | física | ✓ | ✓ (2.5D+ Anatomy, plus/) | ✓ | premium-hero (WebGL) | ✓ (28 s) | |
 | principio-de-arquimedes | física | ✓ | ✓ (SVG) | ✓ (v1 2D · v2 2.5D) | — | | |
 | tiro-parabolico | física | ✓ | | ✓ (2.5D+, plus/) | — | | |
+| leyes-de-newton-1 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
 
 ## Rutas por tema (convención)
 - Contenido: `contenido/<materia>/<tema>.md`
@@ -37,6 +38,19 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
   37° y 53° usan los valores del examen (campo `aproximaciones`); los demás ángulos, la calculadora.
   El CSS de página va copiado de la prensa dentro del generador (pasará a piezas compartidas).
   Pendiente: salida `.svg` fija (6b).
+- **leyes-de-newton-1** (primera ley, inercia): 2.5D+ partiendo del generador de tiro, dibujo nuevo.
+  Generador `plantilla/figuras/leyes-de-newton-1-2_5d.mjs` → `plantilla/interactivos/leyes-de-newton-1/plus/`
+  (151 KB) y `contenido/fisica/img/leyes-de-newton-1.svg` (figura fija, del mismo generador). 2 rondas.
+  Lámina: disco con lanzador de resorte, pista con tramo de fricción μ, regla y marcas estroboscópicas
+  (cada 0.2 s de tiempo real); 9 rótulos. Interacciones: Empujar por fases (contacto → suelta →
+  desliza → se detiene o sigue), deslizadores v₀ y μ, trampa con fantasma («si moverse necesitara
+  fuerza»), predice con μ = 0, recorrido automático que no revela d.
+  Escala: ventana de 14 m; la cámara sigue al disco y la regla se desplaza; barra 0 → d abajo;
+  cámara rápida ×N (se indica) si el frenado dura más de 6 s. Campos nuevos en el JSON: `escena`,
+  `prediccion` y textos de `figura`/`controles` (los existentes sin cambios).
+  Primer tema con **pantalla completa** (modo lámina): ver tarea de piezas compartidas.
+  Costo: inicio no anotado; Opus 5.5.
+  Pendiente: probar pantalla completa en Android e iPhone reales.
 
 ## Experimento lámina premium (rama experimento/anatomy-premium, cerrado 26-oct-2026)
 Anatomy sí hace 3D interactivo (premium-hero de la prensa). Guía resultante: docs/estilo-premium.md.
@@ -49,4 +63,14 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
 - [ ] Plantilla de video reutilizable a partir de `plantilla/videos/prensa-hidraulica/`; Gato renderiza por tema.
 - [ ] Menor: renombrar `prensa-interactivo.json` → `prensa-hidraulica-interactivo.json` y actualizar sus referencias.
 - [ ] Sacar las piezas compartidas del generador de la prensa 2.5D+ (tokens fusión + grises cálidos,
-  CSS de página, lógica común) y que prensa y tiro-parabolico las importen. Arquímedes se rehace en 2.5D+ después.
+  CSS de página, lógica común) y que prensa, tiro-parabolico y leyes-de-newton-1 las importen.
+  Arquímedes se rehace en 2.5D+ después.
+  Incluir la **pantalla completa** («modo lámina») como pieza compartida. Origen:
+  `plantilla/figuras/leyes-de-newton-1-2_5d.mjs` (bloque «Pantalla completa», CSS `.modo-lamina`,
+  HTML #pantalla / #completa / #cerrar / #compacto). Hace: botón ⛶ → lámina a toda la pantalla
+  con controles compactos (los mueve y los regresa); requestFullscreen + orientation.lock("landscape")
+  en Android; capa fija + aviso «gira el teléfono» en iPhone; zoom 1×–4× con pellizco o Ctrl+rueda,
+  arrastre con zoom, doble toque/Esc vuelve a 1×; Esc o ✕ para salir. Cada lámina solo dice qué
+  controles (ids) van al modo compacto. Aplicarla a prensa y tiro. Idea para vertical: zoom ~2×
+  siguiendo la pieza que se mueve.
+- [ ] Menor: salida `.svg` fija en el generador de tiro (6b), como ya la tiene leyes-de-newton-1.
