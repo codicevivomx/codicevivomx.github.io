@@ -6,6 +6,7 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
 | principio-de-arquimedes | física | ✓ | ✓ (SVG) | ✓ (v1 2D · v2 2.5D) | — | | |
 | tiro-parabolico | física | ✓ | | ✓ (2.5D+, plus/) | — | | |
 | leyes-de-newton-1 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
+| leyes-de-newton-2 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
 
 ## Rutas por tema (convención)
 - Contenido: `contenido/<materia>/<tema>.md`
@@ -51,6 +52,21 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
   Primer tema con **pantalla completa** (modo lámina): ver tarea de piezas compartidas.
   Costo: inicio no anotado; Opus 5.5.
   Pendiente: probar pantalla completa en Android e iPhone reales.
+- **leyes-de-newton-2** (segunda ley, F = m·a): 2.5D+ partiendo del generador de leyes-de-newton-1, dibujo nuevo.
+  Generador `plantilla/figuras/leyes-de-newton-2-2_5d.mjs` → `plantilla/interactivos/leyes-de-newton-2/plus/`
+  (188 KB) y `contenido/fisica/img/leyes-de-newton-2.svg` (figura fija, del mismo generador). 2 rondas (plan + ajustes).
+  Lámina: caja con pesas de 1 kg sobre riel de aire (sin fricción), dos dinamómetros enganchados (F₁ derecha,
+  F₂ izquierda), traba, soplador, regla con signo, cronómetro y velocímetro; 10 rótulos.
+  Interacciones: Soltar por fases (listo con traba → suelta → acelera → pausa en t; la caja no frena),
+  deslizadores F₁, F₂, m y t (con la toma en pausa, t recorre el movimiento), trampa con fantasma que
+  acelera solo con la fuerza mayor, predice con las 4 opciones del paso 1, recorrido automático que mueve
+  los dinamómetros sin soltar ni revelar a.
+  Signos: F₂ > F₁ → flecha neta y caja a la izquierda; F₁ = F₂ → «F neta = 0 → a = 0 (1.ª ley)».
+  Escala: ventana de 12 m; la cámara sigue a la caja hacia los dos lados y la regla se desplaza; barra 0 → x.
+  Sin cámara rápida (t ≤ 3 s, tiempo real). Campos nuevos en el JSON: `escena`, `prediccion` y textos de
+  `figura`/`controles` (los existentes sin cambios).
+  Costo: inicio no anotado (≈ 10-15 % sesión, estimado); Opus 5.5.
+  Pendiente: probar pantalla completa en Android e iPhone reales.
 
 ## Experimento lámina premium (rama experimento/anatomy-premium, cerrado 26-oct-2026)
 Anatomy sí hace 3D interactivo (premium-hero de la prensa). Guía resultante: docs/estilo-premium.md.
@@ -63,7 +79,7 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
 - [ ] Plantilla de video reutilizable a partir de `plantilla/videos/prensa-hidraulica/`; Gato renderiza por tema.
 - [ ] Menor: renombrar `prensa-interactivo.json` → `prensa-hidraulica-interactivo.json` y actualizar sus referencias.
 - [ ] Sacar las piezas compartidas del generador de la prensa 2.5D+ (tokens fusión + grises cálidos,
-  CSS de página, lógica común) y que prensa, tiro-parabolico y leyes-de-newton-1 las importen.
+  CSS de página, lógica común) y que prensa, tiro-parabolico, leyes-de-newton-1 y leyes-de-newton-2 las importen.
   Arquímedes se rehace en 2.5D+ después.
   Incluir la **pantalla completa** («modo lámina») como pieza compartida. Origen:
   `plantilla/figuras/leyes-de-newton-1-2_5d.mjs` (bloque «Pantalla completa», CSS `.modo-lamina`,

@@ -1,0 +1,76 @@
+{
+  "titulo": "Segunda ley de Newton",
+  "subtitulo": "Laboratorio de fuerzas",
+  "instruccion": "Cambia las dos fuerzas y la masa; suelta la caja para ver cómo acelera (dedo, mouse o teclado).",
+  "valoresIniciales": { "F1": 30, "F2": 10, "m": 5, "t": 2 },
+  "rangos": {
+    "F1": { "min": 0, "max": 40, "paso": 5 },
+    "F2": { "min": 0, "max": 40, "paso": 5 },
+    "m": { "min": 1, "max": 10, "paso": 1 },
+    "t": { "min": 0, "max": 3, "paso": 0.5 }
+  },
+  "controles": {
+    "F1": "Fuerza hacia la derecha",
+    "F2": "Fuerza hacia la izquierda",
+    "m": "Masa de la caja",
+    "t": "Tiempo",
+    "valorF": "{v} N",
+    "valorM": "{v} kg",
+    "valorT": "{v} s",
+    "soltar": "Soltar",
+    "reiniciar": "Volver al inicio",
+    "trampa": "Ver la trampa",
+    "ocultarTrampa": "Ocultar la trampa",
+    "examen": "Ejemplo del examen"
+  },
+  "figura": {
+    "aria": "Segunda ley de Newton: una caja sobre un piso sin fricción recibe una fuerza hacia la derecha y otra hacia la izquierda; la flecha resultante indica hacia dónde acelera.",
+    "pie": "Lámina I. Fuerza neta y aceleración. Piso sin fricción; la caja parte del reposo. Las flechas de fuerza no van a escala.",
+    "F1": "F<sub>1</sub> = {F1} N",
+    "F2": "F<sub>2</sub> = {F2} N",
+    "Fn": "F<sub>neta</sub> = {Fn} N",
+    "m": "m = {m} kg",
+    "neta0": "F neta = 0 → a = 0 (1.ª ley)",
+    "fantasma": "una sola fuerza: {a} m/s²",
+    "real": "de verdad: {a} m/s²",
+    "fueraFantasma": "fantasma en x = {x} m"
+  },
+  "lecturas": {
+    "numerales": ["I.", "II.", "III.", "IV."],
+    "neta": "Fuerza neta",
+    "netaValor": "F<sub>neta</sub> = {F1} − {F2} = {Fn} N",
+    "sentidoDerecha": "hacia la derecha",
+    "sentidoIzquierda": "hacia la izquierda",
+    "sentidoNinguno": "fuerzas equilibradas: no acelera",
+    "aceleracion": "Aceleración",
+    "aceleracionValor": "a = {Fn} ÷ {m} = {a} m/s²",
+    "movimiento": "Después de {t} s",
+    "velocidadValor": "v = {a} × {t} = {v} m/s",
+    "posicionValor": "x = ½ × {a} × {t}² = {x} m",
+    "trampa": "Con una sola fuerza (la trampa) saldría {F1} ÷ {m} = {atrampa} m/s²",
+    "mensaje": "Primero suma con signo; luego divide entre la masa."
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "La misma caja de 5 kg avanza a velocidad constante sobre un piso con fricción mientras la jalan con 30 N (g = 10 m/s²). ¿Cuánto vale la fricción?",
+    "opciones": [
+      { "letra": "A", "texto": "0 N", "correcta": false, "retro": "Sin fricción la fuerza neta sería 30 N y la caja aceleraría a 6 m/s²; no iría a velocidad constante." },
+      { "letra": "B", "texto": "6 N", "correcta": false, "retro": "6 es la aceleración que tendría sin fricción (30 ÷ 5), no una fuerza." },
+      { "letra": "C", "texto": "30 N", "correcta": true, "retro": "Velocidad constante → a = 0 → F_neta = 0. La fricción cancela los 30 N." },
+      { "letra": "D", "texto": "50 N", "correcta": false, "retro": "50 N es el peso (5 × 10). El peso es vertical; aquí la pregunta es por la fuerza horizontal." }
+    ],
+    "marcaCorrecta": "Correcta",
+    "marcaIncorrecta": "Incorrecta"
+  },
+  "escena": { "ventana": 12 },
+  "prediccion": {
+    "titulo": "Predice antes de soltar",
+    "pregunta": "Con {F1} N a la derecha, {F2} N a la izquierda y {m} kg, ¿qué aceleración tendrá la caja?",
+    "opciones": [
+      { "tipo": "neta", "retro": "Primero la suma con signo: {F1} − {F2} = {Fn} N; luego {Fn} ÷ {m} = {a} m/s²." },
+      { "tipo": "mayor", "retro": "Es la trampa: usaste solo la fuerza mayor ({Fmayor} ÷ {m}). La otra fuerza también actúa." },
+      { "tipo": "suma", "retro": "Sumaste sin signo ({F1} + {F2} = {Fsuma} N). Las fuerzas van en sentidos opuestos: se restan." },
+      { "tipo": "menor", "retro": "Usaste solo la fuerza menor ({Fmenor} ÷ {m}). Cuentan las dos, con su signo." }
+    ]
+  }
+}
