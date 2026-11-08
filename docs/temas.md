@@ -7,6 +7,7 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
 | tiro-parabolico | física | ✓ | | ✓ (2.5D+, plus/) | — | | |
 | leyes-de-newton-1 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
 | leyes-de-newton-2 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
+| leyes-de-newton-3 | física | ✓ | ✓ | ✓ plus | — | pendiente | pendiente |
 
 ## Rutas por tema (convención)
 - Contenido: `contenido/<materia>/<tema>.md`
