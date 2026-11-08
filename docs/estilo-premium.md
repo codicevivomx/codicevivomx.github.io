@@ -250,4 +250,4 @@ Además:
 Una premium grande se planea como el trabajo de un día: como máximo una cada semana o dos. Se
 trabaja por puntos con plan de 5 líneas, máximo 2 rondas por punto y commit al terminar cada uno.
 Probar /anatomy con un modelo más barato (Sonnet): en el gato la skill fue el 28 % del uso.
-Pedir desde el inicio todo lo de esta guía evita las rondas de «faltan detalles».}
+Pedir desde el inicio todo lo de esta guía evita las rondas de «faltan detalles».

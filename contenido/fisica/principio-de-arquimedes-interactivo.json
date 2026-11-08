@@ -62,5 +62,236 @@
         ]
       }
     }
-  ]
+  ],
+  "instruccion": "Baja el cubo por fases o arrástralo. Compara el dinamómetro con la balanza.",
+  "valoresIniciales": {
+    "lado": 0.1,
+    "rhoLiquido": 1000,
+    "rhoCubo": 2700,
+    "g": 9.8,
+    "h": -0.04
+  },
+  "rangos": {
+    "h": {
+      "min": -0.05,
+      "max": 0.12,
+      "paso": 0.005
+    }
+  },
+  "escena": {
+    "rhoCobre": 8960,
+    "rhoHierro": 7870,
+    "fases": [
+      -0.04,
+      0,
+      0.05,
+      0.12
+    ],
+    "dinMax": 100,
+    "dinPaso": 5,
+    "probetaPaso": 100,
+    "probetaEtiquetas": [
+      500,
+      1000
+    ],
+    "radioVaso": 0.104,
+    "alturaAgua": 0.23
+  },
+  "controles": {
+    "h": "Profundidad del fondo del cubo",
+    "valorH": "{v} cm bajo el agua",
+    "valorHfuera": "{v} cm sobre el agua",
+    "valorH0": "tocando el agua",
+    "fases": [
+      "Sacar el cubo",
+      "Bajar hasta que toque el agua",
+      "Bajar a la mitad",
+      "Sumergir por completo"
+    ],
+    "material": "Cambiar a cobre",
+    "materialVolver": "Cambiar a aluminio",
+    "trampa": "¿Y si el empuje fuera el peso?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "examen": "Volver al examen"
+  },
+  "lecturas": {
+    "formulas": {
+      "V": "l*l*l",
+      "Vs": "l*l*hs",
+      "E": "rhoL*g*Vs",
+      "Eex": "rhoL*g*V",
+      "P": "rhoC*g*V",
+      "Pap": "P-E",
+      "mAgua": "rhoL*Vs",
+      "cm3": "Vs*1000000",
+      "cm3ex": "V*1000000",
+      "Earea": "rhoL*g*l*l",
+      "Vmal": "V/10",
+      "Emal": "rhoL*g*Vmal",
+      "Pfe": "rhoFe*g*V",
+      "PapFe": "Pfe-Eex",
+      "SumaFe": "Pfe+Eex",
+      "Eprob": "rhoL*g*Vp",
+      "mProb": "rhoL*Vp",
+      "cm3prob": "Vp*1000000"
+    },
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV.",
+      "V."
+    ],
+    "sinRevelar": "Elige tu predicción o baja el cubo para verlo.",
+    "formulaE": "E = {rhoL} × {g} × {Vs} = {E} N",
+    "volumen": "Volumen sumergido",
+    "volumenValor": "V = {l} × {l} × {hs} = {Vs} m³ ({cm3} cm³)",
+    "empuje": "Empuje (peso del agua desalojada)",
+    "empujeValor": "E = {rhoL} × {g} × {Vs} = {E} N<br>La probeta guarda {cm3prob} cm³ ({mProb} kg), que pesan {Eprob} N: lo desalojado en el punto más hondo («máx»).",
+    "peso": "Peso del cubo de {material}",
+    "pesoValor": "P = {rhoC} × {g} × {V} = {P} N",
+    "marca": "Lo que marca el dinamómetro",
+    "marcaValor": "P − E = {P} − {E} = {Pap} N",
+    "trampa": "La trampa",
+    "trampaValor": "Si el empuje fuera el peso: {P} N. Con {l}² (un área): {Earea} N. Con {Vmal} m³ (conversión mal hecha): {Emal} N.",
+    "mensaje": "El empuje solo depende del líquido y del volumen sumergido, no del material.",
+    "mensajeFuera": "Fuera del agua el dinamómetro marca el peso del cubo: {P} N. La probeta está vacía.",
+    "mensajeFueraConAgua": "Fuera del agua el dinamómetro marca el peso: {P} N. El agua que salió se queda en la probeta ({cm3prob} cm³) y el nivel del vaso bajó {baja} cm. «Volver al examen» rellena el vaso.",
+    "mensajeSube": "Subiste el cubo: el agua que salió se queda en la probeta ({cm3prob} cm³) y el nivel del vaso bajó {baja} cm. Ahora el empuje es {E} N; la balanza sigue en {Eprob} N, el empuje que tuvo en la raya «máx».",
+    "mensajeReinicio": "Vaso lleno hasta el pico y probeta vacía: de vuelta al ejemplo del examen.",
+    "mensajeFin": "Sumergido {hcm} cm: el dinamómetro marca {Pap} N, así que el empuje es {P} − {Pap} = {E} N. En la probeta hay {cm3prob} cm³ ({mProb} kg), que pesan {Eprob} N: lo mismo que marca la balanza.",
+    "mensajeMaterial": "Cubo de {material}: pesa {P} N. Con el mismo volumen sumergido, el empuje sigue en {E} N.",
+    "mensajeMaterialFuera": "Cubo de {material}: pesa {P} N. Bájalo y compara el empuje con el del otro cubo.",
+    "mensajeTrampa": "Si el empuje fuera el peso, valdría {P} N y el dinamómetro marcaría 0 N. De verdad vale {E} N: el peso del agua que cabe en el lugar del cubo."
+  },
+  "figura": {
+    "aria": "Soporte con un dinamómetro del que cuelga un cubo de 10 cm sobre un vaso de derrame con agua; el agua desalojada cae por el pico a una probeta sobre una balanza.",
+    "pie": "Lámina I. El cubo desaloja su propio volumen de agua.",
+    "E": "E = {E} N",
+    "Einc": "E = ?",
+    "P": "P = {P} N",
+    "din": "{Pap} N",
+    "balanza": "{Eprob} N",
+    "probeta": "{cm3prob} cm³",
+    "maximo": "máx",
+    "simbolos": {
+      "al": "Al",
+      "cu": "Cu"
+    },
+    "materiales": {
+      "al": "aluminio",
+      "cu": "cobre"
+    },
+    "placa": "ARQUÍMEDES · VASO DE DERRAME"
+  },
+  "rotulos": {
+    "10": [
+      "Empuje E",
+      "Lo empuja el agua hacia arriba: E = ρ<sub>agua</sub> · g · V<sub>sumergido</sub> = {E} N. Crece mientras el cubo entra y deja de crecer al quedar cubierto."
+    ],
+    "11": [
+      "Regla",
+      "Marca en cm la profundidad bajo el pico. La raya dorada sigue al fondo del cubo; la punteada «máx» queda en lo más hondo que llegó desde el último reinicio. Sumergido ahora: {hcm} cm."
+    ],
+    "12": [
+      "Trampa",
+      "La flecha punteada sería el empuje si dependiera del peso ({P} N). La de verdad mide {E} N: depende del agua desalojada."
+    ],
+    "01": [
+      "Soporte",
+      "Base pesada con patas, varilla y nuez con perilla. La nuez sube y baja el brazo; el cubo cuelga sin tocar el vaso."
+    ],
+    "02": [
+      "Resorte",
+      "Se estira en proporción a la fuerza que lo jala. Al entrar el cubo al agua se acorta: el agua sostiene parte del peso."
+    ],
+    "03": [
+      "Dinamómetro",
+      "Su aguja marca la tensión del resorte, de 0 a {dinMax} N. Fuera del agua: {P} N, el peso. Ahora: {Pap} N."
+    ],
+    "04": [
+      "Cubo de {material}",
+      "{lcm} cm de lado, {cm3ex} cm³. Densidad {rhoC} kg/m³, peso {P} N. Su volumen sumergido es lo único que importa para el empuje."
+    ],
+    "05": [
+      "Vaso de derrame",
+      "Empieza lleno justo hasta el pico: lo que el cubo mete bajo el nivel sale por el pico. Si lo sacas, esa agua no regresa y el nivel baja (ahora {baja} cm); al volverlo a bajar no sale agua hasta que el nivel llegue otra vez al pico."
+    ],
+    "06": [
+      "Pico",
+      "Por aquí sale el agua desalojada. Su volumen es el volumen sumergido del cubo."
+    ],
+    "07": [
+      "Probeta",
+      "Guarda el agua que salió por el pico, marcada cada {probetaPaso} cm³: ahora {cm3prob} cm³. Está a la misma escala que el cubo. Se vacía con «Volver al examen»."
+    ],
+    "08": [
+      "Balanza",
+      "Pesa el agua de la probeta: {Eprob} N. Es el empuje que tuvo el cubo en su punto más hondo (raya «máx» de la regla): esa es la idea de Arquímedes. Ahora el empuje es {E} N."
+    ],
+    "09": [
+      "Peso P",
+      "Lo jala la Tierra: P = ρ<sub>cubo</sub> · g · V = {P} N. No cambia al meterlo al agua."
+    ]
+  },
+  "prediccion": {
+    "titulo": "Predice antes de bajar",
+    "pregunta": "Un cubo de {material} (densidad {rhoC} kg/m³) de {lcm} cm de lado se sumerge por completo en agua. ¿Qué empuje recibe? (g = {g} m/s²)",
+    "opciones": [
+      {
+        "tipo": "bien",
+        "formula": "rhoL*g*V",
+        "correcta": true,
+        "retro": "E = {rhoL} × {g} × {V} = {Eex} N. Solo cuentan el líquido y el volumen sumergido."
+      },
+      {
+        "tipo": "peso",
+        "formula": "rhoC*g*V",
+        "retro": "Ese es el peso del cubo ({rhoC} × {g} × {V} = {P} N). El empuje no depende del material del objeto."
+      },
+      {
+        "tipo": "conversion",
+        "formula": "rhoL*g*V/10",
+        "retro": "{cm3ex} cm³ son {V} m³, no {Vmal} m³. Revisa la conversión."
+      },
+      {
+        "tipo": "area",
+        "formula": "rhoL*g*l*l",
+        "retro": "Usaste {l}², que es un área. El volumen es {l}³ = {V} m³."
+      }
+    ]
+  },
+  "trampa": {
+    "fantasma": "Si el empuje fuera el peso: {P} N",
+    "real": "De verdad: {E} N"
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Ahora cuelgas del dinamómetro un cubo de hierro del mismo tamaño (densidad {rhoFe} kg/m³) y lo sumerges por completo en agua. ¿Qué marca el dinamómetro?",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "Pfe",
+        "retro": "Eso marca fuera del agua. Dentro, el agua lo sostiene en parte: el dinamómetro marca el peso menos el empuje."
+      },
+      {
+        "letra": "B",
+        "formula": "PapFe",
+        "correcta": true,
+        "retro": "Peso aparente = peso − empuje = {Pfe} − {Eex} = {PapFe} N. El empuje es el mismo que con el aluminio: mismo volumen, misma agua desalojada."
+      },
+      {
+        "letra": "C",
+        "formula": "Eex",
+        "retro": "Ese es el empuje, no lo que marca. El dinamómetro marca el peso menos el empuje: {Pfe} − {Eex} = {PapFe} N."
+      },
+      {
+        "letra": "D",
+        "formula": "SumaFe",
+        "retro": "Sumaste el empuje, pero va hacia arriba y se resta: {Pfe} − {Eex} = {PapFe} N."
+      }
+    ]
+  }
 }
