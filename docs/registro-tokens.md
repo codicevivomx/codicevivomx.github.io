@@ -23,3 +23,4 @@ tiro-parabolico · contenido (paso 1) · claude.ai · Opus 5.5 · sesión 61 →
 | 31-oct-2026 | tiro-parabolico | lámina 2.5D+ (partiendo del generador de la prensa) | claude.ai Opus 5.5 | 82 → 86 % (4 %) | 9 → 9 % (<1 %) | 1 ronda, 132 KB |
 | 31-oct → 7-nov-2026 | leyes-de-newton-1 | lámina 2.5D+ (dibujo nuevo, partiendo del generador de tiro) + pantalla completa | claude.ai Opus 5.5 | inicio no anotado → ?? % | inicio no anotado → ?? % | 2 rondas, 151 KB + SVG fijo 68 KB. Incluye la guía de git, el merge de tiro y el tablero en el mismo chat. Aprendizaje: anotar el % antes del primer mensaje (paso 0). |
 | leyes-de-newton-2 | lámina 2.5D+ | ? → 35 % sesión (inicio sin medir) | ? → 6 % semana | Opus 5.5 | 2 rondas (plan + ajustes) | 188 KB |
+| leyes-de-newton-3 | lámina 2.5D+ | Opus 5.5 | sesión: ? → 90 % (no medido al inicio) | semana: ? → 10 % | 1 ronda, 246 KB |
