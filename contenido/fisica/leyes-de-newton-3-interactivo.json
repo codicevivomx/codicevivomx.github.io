@@ -1,0 +1,220 @@
+{
+  "titulo": "Tercera ley de Newton",
+  "subtitulo": "Laboratorio de acción y reacción",
+  "instruccion": "Cambia el empuje y las dos masas; empuja para ver cómo se separan los patinadores (dedo, mouse o teclado).",
+  "valoresIniciales": {
+    "F": 120,
+    "mA": 60,
+    "mB": 40,
+    "t": 2
+  },
+  "rangos": {
+    "F": {
+      "min": 0,
+      "max": 200,
+      "paso": 20
+    },
+    "mA": {
+      "min": 20,
+      "max": 100,
+      "paso": 10
+    },
+    "mB": {
+      "min": 20,
+      "max": 100,
+      "paso": 10
+    },
+    "t": {
+      "min": 0,
+      "max": 3,
+      "paso": 0.5
+    }
+  },
+  "controles": {
+    "F": "Empuje entre los patinadores",
+    "mA": "Masa del patinador A",
+    "mB": "Masa del patinador B",
+    "t": "Tiempo",
+    "valorF": "{v} N",
+    "valorM": "{v} kg",
+    "valorT": "{v} s",
+    "empujar": "Empujar",
+    "reiniciar": "Volver al inicio",
+    "trampa": "¿Y si se cancelaran?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "examen": "Ejemplo del examen"
+  },
+  "figura": {
+    "aria": "Tercera ley de Newton: dos patinadores sobre hielo sin fricción se empujan; la fuerza sobre cada uno vale lo mismo y apunta en sentido contrario, pero cada uno acelera según su masa.",
+    "pie": "Lámina I. Acción y reacción. Hielo sin fricción; los patinadores parten del reposo. Las flechas de fuerza no van a escala.",
+    "FAB": "F<sub>A→B</sub> = {F} N",
+    "FBA": "F<sub>B→A</sub> = {F} N",
+    "mA": "m<sub>A</sub> = {mA} kg",
+    "mB": "m<sub>B</sub> = {mB} kg",
+    "pieEmpuje": "El empuje dura {t} s.",
+    "incognita": "F<sub>B→A</sub> = ? N",
+    "aA": "a<sub>A</sub> = {aA} m/s²",
+    "aB": "a<sub>B</sub> = {aB} m/s²"
+  },
+  "lecturas": {
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV."
+    ],
+    "par": "Par de fuerzas",
+    "parValor": "F<sub>A→B</sub> = F<sub>B→A</sub> = {F} N",
+    "sentidoA": "sobre A: hacia la izquierda",
+    "sentidoB": "sobre B: hacia la derecha",
+    "sentidoNinguno": "sin empuje: nadie se mueve",
+    "aceleracion": "Aceleraciones",
+    "aceleracionA": "a<sub>A</sub> = {F} ÷ {mA} = {aA} m/s²",
+    "aceleracionB": "a<sub>B</sub> = {F} ÷ {mB} = {aB} m/s²",
+    "movimiento": "Después de {t} s",
+    "velocidadA": "v<sub>A</sub> = {aA} × {t} = {vA} m/s",
+    "posicionA": "x<sub>A</sub> = ½ × {aA} × {t}² = {xA} m",
+    "velocidadB": "v<sub>B</sub> = {aB} × {t} = {vB} m/s",
+    "posicionB": "x<sub>B</sub> = ½ × {aB} × {t}² = {xB} m",
+    "trampaCancelar": "Si se cancelaran (la trampa): fuerza neta 0 y nadie se movería; de verdad A va a {vA} m/s y B a {vB} m/s",
+    "trampaSumar": "Si se sumaran: {F} + {F} = {Fsuma} N; pero cada fuerza actúa sobre un cuerpo distinto",
+    "mensaje": "Pregunta «¿sobre quién?»: misma fuerza, cada uno se divide entre su propia masa.",
+    "formulas": {
+      "aA": "F / mA",
+      "aB": "F / mB",
+      "vA": "aA * t",
+      "vB": "aB * t",
+      "xA": "0.5 * aA * t * t",
+      "xB": "0.5 * aB * t * t",
+      "Fsuma": "2 * F"
+    }
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Un camión de 2 000 kg choca de frente con un auto de 1 000 kg. Durante el choque, el camión empuja al auto con 10 000 N. ¿Qué aceleración tiene el camión?",
+    "opciones": [
+      {
+        "letra": "A",
+        "texto": "0 m/s²",
+        "correcta": false,
+        "retro": "Acción y reacción no se cancelan: una actúa sobre el auto y la otra sobre el camión."
+      },
+      {
+        "letra": "B",
+        "texto": "≈ 3.3 m/s²",
+        "correcta": false,
+        "retro": "Sumaste las masas (10 000 ÷ 3 000). Cada cuerpo acelera con su propia masa."
+      },
+      {
+        "letra": "C",
+        "texto": "5 m/s²",
+        "correcta": true,
+        "retro": "El auto empuja al camión con los mismos 10 000 N: a = 10 000 ÷ 2 000 = 5 m/s²."
+      },
+      {
+        "letra": "D",
+        "texto": "10 m/s²",
+        "correcta": false,
+        "retro": "Esa es la aceleración del auto (10 000 ÷ 1 000), no la del camión."
+      }
+    ],
+    "marcaCorrecta": "Correcta",
+    "marcaIncorrecta": "Incorrecta"
+  },
+  "escena": {
+    "ventana": 12,
+    "pasosRegla": [
+      0.5,
+      1,
+      2,
+      5,
+      10,
+      20
+    ],
+    "kgDisco": 10
+  },
+  "prediccion": {
+    "titulo": "Predice antes de empujar",
+    "pregunta": "A ({mA} kg) empuja a B ({mB} kg) con {F} N hacia la derecha. ¿Con qué fuerza empuja B a A?",
+    "opciones": [
+      {
+        "tipo": "cancelan",
+        "formula": "0",
+        "correcta": false,
+        "retro": "Acción y reacción no se cancelan: cada una actúa sobre un cuerpo distinto. Si B no empujara a A, A no se movería, y sí se mueve."
+      },
+      {
+        "tipo": "proporcional",
+        "formula": "F * mB / mA",
+        "correcta": false,
+        "retro": "Creíste que el más chico empuja menos ({F} × {mB} ÷ {mA}). La fuerza es la misma; lo que cambia con la masa es la aceleración."
+      },
+      {
+        "tipo": "igual",
+        "formula": "F",
+        "correcta": true,
+        "retro": "Tercera ley: B empuja a A con los mismos {F} N, hacia la izquierda. Mira las dos agujas: marcan lo mismo."
+      },
+      {
+        "tipo": "suma",
+        "formula": "2 * F",
+        "correcta": false,
+        "retro": "Sumaste acción y reacción ({F} + {F}) como si actuaran sobre el mismo cuerpo."
+      }
+    ]
+  },
+  "trampa": {
+    "fantasma": "si se cancelaran: nadie se mueve",
+    "suma": "si se sumaran: {Fsuma} N… ¿sobre quién?"
+  },
+  "rotulos": {
+    "10": [
+      "Tablero",
+      "Cronómetro (una vuelta = {tmax} s) y un velocímetro por patinador. El empuje dura {t} s; al terminar, las agujas vuelven a 0 y la toma se congela."
+    ],
+    "11": [
+      "Pértiga telescópica",
+      "Se alarga mientras se separan, así el empuje dura todo el tiempo t. Es ligera: pasa la fuerza de una punta a la otra sin quedarse con nada."
+    ],
+    "12": [
+      "Fantasmas (la trampa)",
+      "Así quedarían si acción y reacción se cancelaran: fuerza neta 0 y nadie se mueve. De verdad, A va a {vA} m/s y B a {vB} m/s."
+    ],
+    "01": [
+      "Pista de hielo",
+      "Hielo pulido, sin fricción: la única fuerza horizontal sobre cada patinador es la que le hace el otro a través de la pértiga."
+    ],
+    "02": [
+      "Patinador A",
+      "{mA} kg; cada disco del portadiscos cuenta {kg} kg. Recibe F<sub>B→A</sub> = {FBA} N hacia la izquierda y la divide entre su propia masa: a<sub>A</sub> = {aA} m/s²."
+    ],
+    "03": [
+      "Patinador B",
+      "{mB} kg. Recibe F<sub>A→B</sub> = {F} N hacia la derecha: a<sub>B</sub> = {F} ÷ {mB} = {aB} m/s²."
+    ],
+    "04": [
+      "Dinamómetro de A",
+      "En la punta que sostiene A: mide la fuerza que la pértiga le hace a A, F<sub>B→A</sub> = {FBA} N."
+    ],
+    "05": [
+      "Dinamómetro de B",
+      "En la punta que sostiene B: mide F<sub>A→B</sub> = {F} N. Las dos agujas suben y bajan juntas: marcan siempre lo mismo."
+    ],
+    "06": [
+      "F sobre A",
+      "Actúa sobre A, hacia la izquierda: {FBA} N. Es la reacción: mismo valor, sentido contrario y en otro cuerpo."
+    ],
+    "07": [
+      "F sobre B",
+      "Actúa sobre B, hacia la derecha: {F} N. Es el empuje que eliges con el deslizador."
+    ],
+    "08": [
+      "Aceleraciones",
+      "Cada fuerza se divide entre la masa de su propio cuerpo: a<sub>A</sub> = {aA} m/s² y a<sub>B</sub> = {aB} m/s². El de menos masa acelera más."
+    ],
+    "09": [
+      "Regla",
+      "Metros desde la salida, hacia cada lado. Si se alejan, la cámara se aleja: ahora cada marca vale {paso} m."
+    ]
+  }
+}
