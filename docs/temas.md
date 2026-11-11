@@ -3,7 +3,7 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
 | Tema | Materia | Contenido | Figura | Interactivo | 3D | Video | PDF |
 |---|---|---|---|---|---|---|---|
 | prensa-hidraulica | física | ✓ | ✓ (2.5D+ Anatomy, plus/) | ✓ | premium-hero (WebGL) | ✓ (28 s) | |
-| principio-de-arquimedes | física | ✓ | ✓ (SVG) | ✓ (v1 2D · v2 2.5D) | — | | |
+| principio-de-arquimedes | física | ✓ | ✓ (SVG 2.5D+) | ✓ (2.5D+ · antes v1 2D y v2 2.5D) | — | | |
 | tiro-parabolico | física | ✓ | | ✓ (2.5D+, plus/) | — | | |
 | leyes-de-newton-1 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
 | leyes-de-newton-2 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |

@@ -24,7 +24,8 @@ Mismo volumen sumergido, mismo empuje, sin importar de qué esté hecho el objet
 Pasa el volumen a m³ (lado en metros, al cubo) antes de multiplicar.
 
 ## 6. Ponte a prueba
-Con el cubo de aluminio colgado de un dinamómetro y sumergido por completo en agua, ¿qué marca el dinamómetro?
-Respuesta: 16.7 N.
-Si fallas: el dinamómetro marca el peso menos el empuje (peso aparente).
-El agua no le quita masa al cubo, solo lo sostiene en parte: 26.5 − 9.8 = 16.7 N.
+Ahora cuelgas del dinamómetro un cubo de hierro del mismo tamaño (densidad 7 870 kg/m³) y lo sumerges por completo en agua. ¿Qué marca el dinamómetro?
+A) 77.1 N · B) 67.3 N · C) 9.8 N · D) 86.9 N
+Respuesta: B) 67.3 N.
+Si fallas: el dinamómetro marca el peso menos el empuje (peso aparente). El empuje es el mismo que con el aluminio, porque el cubo tiene el mismo volumen y desaloja la misma agua: 77.1 − 9.8 = 67.3 N.
+A es lo que marca fuera del agua; C es el empuje, no lo que marca; D suma el empuje, pero el empuje va hacia arriba y se resta.
