@@ -1,0 +1,312 @@
+{
+  "titulo": "Caída libre",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pieLamina": "Lámina I. Dos bolas de distinta masa caen juntas junto a una regla vertical. Suéltalas o arrástralas y compara lo que recorren en cada segundo con lo que llevan en total.",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "Se deja caer una piedra desde lo alto de un edificio y tarda 3 s en llegar al suelo. ¿Qué altura tiene el edificio? (g = 10 m/s<sup>2</sup>, sin resistencia del aire)",
+        "opciones": [
+          {
+            "texto": "A) 25 m",
+            "explicacion": "Eso cae solo durante el segundo 3 (5, 15, 25 m). La altura es todo lo que cayó: 5 + 15 + 25 = 45 m."
+          },
+          {
+            "texto": "B) 30 m",
+            "explicacion": "30 m/s es la velocidad al llegar (v = 10 × 3), no una distancia. La altura es h = 10 × 3² ÷ 2 = 45 m."
+          },
+          {
+            "texto": "C) 45 m",
+            "correcta": true,
+            "explicacion": "h = g·t²/2 = 10 × 3² ÷ 2 = 45 m. Comprueba: llega a 30 m/s y 30² = 900 = 2 × 10 × 45."
+          },
+          {
+            "texto": "D) 90 m",
+            "explicacion": "Olvidaste el ÷2: es como si hubiera caído a 30 m/s todo el tiempo, pero salió del reposo. h = 10 × 3² ÷ 2 = 45 m."
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "Sin aire, todo cae con la misma aceleración g, sin importar su masa: la velocidad crece 10 m/s cada segundo y lo que recorre en cada segundo crece como los impares: 5, 15, 25, 35… <span class=\"numeros\">(1 : 3 : 5 : 7)</span>."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> Altura: h = g·t²/2 = 10 × 3² ÷ 2 = <span class=\"numeros\">45 m</span> → respuesta C.",
+        "<span class=\"numeral\">II.</span> Velocidad al llegar: v = g·t = 10 × 3 = <span class=\"numeros\">30 m/s</span>.",
+        "<span class=\"numeral\">III.</span> Comprueba con v² = 2·g·h: 30² = 900 = 2 × 10 × 45."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Confundir lo que cae durante el segundo 3 con lo que cae en total da 25 m (opción A): por segundo cae 5, 15 y 25 m, y la altura es la suma, 5 + 15 + 25 = 45 m.",
+        "B (30 m) es la velocidad al llegar, 30 m/s, no una distancia. D (90 m) olvida el ÷2: es como si hubiera caído a 30 m/s todo el tiempo, pero salió del reposo.",
+        "Y la masa no aparece en ninguna fórmula: la piedra más pesada no cae más rápido."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "Totales: <span class=\"numeros\">5, 20, 45, 80, 125 m</span> (5·t²). Por segundo: <span class=\"numeros\">5, 15, 25, 35, 45 m</span> (impares × 5).",
+        "En el punto más alto de un tiro vertical, v = 0 pero a sigue siendo g = 10 m/s<sup>2</sup> hacia abajo."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "Desde una azotea a 80 m se sueltan al mismo tiempo una bola de 2 kg y otra de 4 kg. ¿Cuánto tarda la de 4 kg en llegar al suelo? (g = 10 m/s<sup>2</sup>)",
+        "opciones": [
+          {
+            "texto": "A) 2 s",
+            "explicacion": "La más pesada no cae más rápido: la masa no está en h = g·t²/2. Las dos tardan 4 s."
+          },
+          {
+            "texto": "B) 4 s",
+            "correcta": true,
+            "explicacion": "80 = 10 × t² ÷ 2 → t² = 16 → t = 4 s, lo mismo para las dos bolas."
+          },
+          {
+            "texto": "C) 8 s",
+            "explicacion": "Dividiste h ÷ g (80 ÷ 10). Falta el 2 y la raíz: t = √(2 × 80 ÷ 10) = 4 s."
+          },
+          {
+            "texto": "D) 16 s",
+            "explicacion": "2h ÷ g = 16 es t², no t. Saca la raíz: t = √16 = 4 s."
+          }
+        ]
+      }
+    }
+  ],
+  "instruccion": "Suelta las bolas o arrástralas hacia arriba o abajo. Compara el tramo de cada segundo con lo que llevan en total.",
+  "valoresIniciales": {
+    "g": 10,
+    "t": 3,
+    "n": 3,
+    "hp": 80,
+    "m1": 2,
+    "m2": 4
+  },
+  "rangos": {
+    "t": {
+      "min": 0,
+      "max": 5,
+      "paso": 0.1
+    },
+    "n": {
+      "valores": [
+        3,
+        4,
+        5
+      ]
+    }
+  },
+  "escena": {
+    "kv": 0.35,
+    "aLargo": 6.5,
+    "recorrido": 2,
+    "velocidad": 1
+  },
+  "controles": {
+    "t": "Tiempo de caída",
+    "valorT": "{t} s",
+    "n": "Segundo de la predicción",
+    "valorN": "Segundo {n}",
+    "soltar": "Soltar",
+    "pausar": "Pausar",
+    "seguir": "Seguir",
+    "otraVez": "Soltar otra vez",
+    "trampa": "¿Y si la pesada cayera más rápido?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "examen": "Volver al examen",
+    "arrastre": "Arrastra las bolas (anillo punteado) hacia arriba o abajo para cambiar el tiempo.",
+    "valorLamina": "t = {t} s, lleva {h} m, va a {v} m/s"
+  },
+  "lecturas": {
+    "formulas": {
+      "v": "g*t",
+      "h": "g*t*t/2",
+      "v2": "v*v",
+      "dosgh": "2*g*h",
+      "hSeg": "g*(2*t-1)/2",
+      "hSin2": "g*t*t",
+      "n1": "n-1",
+      "sn": "g*(2*n-1)/2",
+      "hn": "g*n*n/2",
+      "hn1": "g*n1*n1/2",
+      "vn": "g*n",
+      "hn2": "g*n*n",
+      "tp": "raiz(2*hp/g)",
+      "tp2": "2*hp/g",
+      "pA": "tp*m1/m2",
+      "pB": "tp",
+      "pC": "hp/g",
+      "pD": "2*hp/g",
+      "tMaxH": "g*tMax*tMax/2",
+      "tF": "t*m2/m1",
+      "hFant": "g*tF*tF/2"
+    },
+    "decimales": {
+      "t": 1,
+      "v": 0,
+      "h": 2,
+      "v2": 0,
+      "dosgh": 0,
+      "tF": 1,
+      "hFant": 2
+    },
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV.",
+      "V."
+    ],
+    "altura": "Distancia caída",
+    "alturaValor": "h = g·t²/2 = {g} × {t}² ÷ 2 = {h} m",
+    "velocidad": "Velocidad",
+    "velocidadValor": "v = g·t = {g} × {t} = {v} m/s",
+    "comprueba": "Comprueba",
+    "compruebaValor": "v² = {v}² = {v2} y 2·g·h = 2 × {g} × {h} = {dosgh}",
+    "segundo": "Durante el segundo {n}",
+    "segundoValor": "{hn} − {hn1} = {sn} m. En total, a los {n} s lleva {hn} m.",
+    "masa": "La masa",
+    "masaValor": "No aparece en ninguna fórmula: las bolas de {m1} kg y {m2} kg van siempre juntas.",
+    "mensaje": "Cada segundo la velocidad sube {g} m/s y el tramo crece 10 m: 5, 15, 25…",
+    "mensajeInicio": "Las dos bolas cuelgan quietas: v = 0, pero en cuanto las sueltes caen con a = g = {g} m/s².",
+    "mensajeSoltar": "Sueltas las dos a la vez. Mira las marcas de cada segundo: los tramos crecen 5, 15, 25… m.",
+    "mensajeSegundo": "t = {t} s: lleva {h} m y va a {v} m/s. Durante ese segundo recorrió {hSeg} m.",
+    "mensajeSuelo": "Llegan juntas al suelo: {h} m en {t} s, a {v} m/s. La de {m2} kg no ganó.",
+    "mensajeReinicio": "De vuelta al examen: a los {t} s lleva {h} m (respuesta C) y va a {v} m/s.",
+    "mensajePrediccion": "Durante el segundo {n} recorre {sn} m: de {hn1} m a {hn} m. En total lleva {hn} m.",
+    "mensajeTrampa": "Si la de {m2} kg cayera el doble de rápido, a los {t} s ya llevaría {hFant} m. De verdad va junto a la de {m1} kg: {h} m.",
+    "mensajeArrastre": "t = {t} s: lleva {h} m y va a {v} m/s."
+  },
+  "figura": {
+    "aria": "Una regla vertical de 125 m con un electroimán arriba del que se sueltan dos bolas, de 2 kg y de 4 kg. Caen juntas; marcas cada segundo muestran los tramos de 5, 15, 25… m y lo que llevan en total.",
+    "pie": "Lámina I. Sin aire, las dos bolas caen juntas y lo que recorren en cada segundo crece como los impares: 5, 15, 25… m.",
+    "placa": "CAÍDA LIBRE · g = {g} m/s²",
+    "v": "v = {v} m/s",
+    "v0": "v = 0",
+    "a": "a = g",
+    "total": "{x} m",
+    "tiempo": "{k} s",
+    "tramo": "{x} m",
+    "masa1": "{m1} kg",
+    "masa2": "{m2} kg",
+    "fantasma": "si cayera el doble|de rápido: {hFant} m",
+    "real": "de verdad: {h} m",
+    "juntas": "llegan|juntas: {t} s"
+  },
+  "rotulos": {
+    "01": [
+      "Electroimán",
+      "Lo alimenta un cable: mientras pasa corriente (luz roja) sostiene las dos bolas a la misma altura. Al soltar corta la corriente y las deja ir en el mismo instante y sin empujarlas: salen del reposo."
+    ],
+    "02": [
+      "Regla",
+      "Mide en metros lo que llevan cayendo, con el 0 arriba; el cursor dorado marca dónde van. El suelo está a {tMaxH} m: lo que cae en {tMax} s."
+    ],
+    "03": [
+      "Marcas de cada segundo",
+      "Una foto cada segundo (imagen estroboscópica). Lo que llevan en total: 5, 20, 45, 80, 125 m, es decir, 5·t²."
+    ],
+    "04": [
+      "Tramo del segundo {n}",
+      "Lo recorrido solo durante el segundo {n}: {hn} − {hn1} = {sn} m. Los tramos van como los impares: 5, 15, 25, 35, 45 m."
+    ],
+    "05": [
+      "Bola de {m1} kg",
+      "Cae con a = g = {g} m/s², igual que la otra. Ahora lleva {h} m."
+    ],
+    "06": [
+      "Bola de {m2} kg",
+      "Pesa el doble, pero cae igual: la masa no aparece en h = g·t²/2. Siempre va pareja con la de {m1} kg."
+    ],
+    "07": [
+      "Aceleración a",
+      "a = g = {g} m/s², hacia abajo, y siempre la misma: también en t = 0, cuando v = 0. Por eso su flecha no cambia."
+    ],
+    "08": [
+      "Velocidad v",
+      "v = g·t = {g} × {t} = {v} m/s. Empieza en 0 y sube {g} m/s cada segundo: la flecha crece parejo."
+    ],
+    "09": [
+      "Suelo",
+      "A {tMaxH} m de la salida. Las dos bolas llegan juntas a los {tMax} s."
+    ]
+  },
+  "prediccion": {
+    "titulo": "Predice antes de soltar",
+    "pregunta": "La pelota se suelta desde el reposo (g = {g} m/s²). ¿Cuánto recorre durante el segundo {n}, es decir, entre t = {n1} s y t = {n} s?",
+    "unidad": "m",
+    "opciones": [
+      {
+        "tipo": "bien",
+        "formula": "sn",
+        "correcta": true,
+        "retro": "En {n} s cae {hn} m y en {n1} s había caído {hn1} m: durante el segundo {n} recorre {hn} − {hn1} = {sn} m."
+      },
+      {
+        "tipo": "total",
+        "formula": "hn",
+        "retro": "{hn} m es todo lo que cae en {n} s, desde que se suelta. Durante el segundo {n} solo recorre {hn} − {hn1} = {sn} m."
+      },
+      {
+        "tipo": "velocidad",
+        "formula": "vn",
+        "retro": "{vn} m/s es la velocidad al cumplir {n} s, no una distancia. Durante el segundo {n} recorre {hn} − {hn1} = {sn} m."
+      },
+      {
+        "tipo": "sinMedio",
+        "formula": "hn2",
+        "retro": "Olvidaste el ÷2: {g} × {n}² = {hn2}. Además eso sería el total; durante el segundo {n} recorre {hn} − {hn1} = {sn} m."
+      }
+    ]
+  },
+  "trampa": {
+    "fantasma": "Si la de {m2} kg cayera el doble de rápido: {hFant} m",
+    "real": "De verdad: {h} m, junto a la de {m1} kg"
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Desde una azotea a {hp} m se sueltan al mismo tiempo una bola de {m1} kg y otra de {m2} kg. ¿Cuánto tarda la de {m2} kg en llegar al suelo? (g = {g} m/s²)",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "unidad": "s",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "pA",
+        "retro": "La más pesada no cae más rápido: la masa no está en h = g·t²/2. Las dos tardan {tp} s."
+      },
+      {
+        "letra": "B",
+        "formula": "pB",
+        "correcta": true,
+        "retro": "{hp} = {g} × t² ÷ 2 → t² = {tp2} → t = {tp} s, lo mismo para las dos bolas."
+      },
+      {
+        "letra": "C",
+        "formula": "pC",
+        "retro": "Dividiste h ÷ g ({hp} ÷ {g}). Falta el 2 y la raíz: t = √(2 × {hp} ÷ {g}) = {tp} s."
+      },
+      {
+        "letra": "D",
+        "formula": "pD",
+        "retro": "2h ÷ g = {tp2} es t², no t. Saca la raíz: t = √{tp2} = {tp} s."
+      }
+    ]
+  }
+}
