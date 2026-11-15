@@ -1,0 +1,29 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; }
+    #cie-caja { position: absolute; left: 0; right: 0; top: 640px; text-align: center; color: #fffcf6; font-family: "Inter", sans-serif; }
+    #cie-kick { font: 700 32px "JetBrains Mono", monospace; letter-spacing: .16em; color: #d9b26a; }
+    /* Logo: archivo aparte (assets/logo.svg). Para cambiarlo basta con reemplazar ese archivo;
+       se ajusta sin deformarse dentro de esta caja de 860 × 240. */
+    #cie-marca { margin: 24px auto 0; width: 860px; height: 240px; }
+    #cie-logo { display: block; width: 100%; height: 100%; object-fit: contain; }
+    #cie-temas { margin-top: 44px; font-weight: 900; font-size: 56px; color: var(--menta); }
+    #cie-lema { margin-top: 20px; font-weight: 700; font-size: 44px; color: #efe4cf; }
+  </style>
+  <div data-hf-id="hf-mly1" id="root" data-composition-id="cierre" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-mo1p" id="cie-caja" class="clip" data-start="0" data-duration="7.2" data-track-index="0">
+      <div data-hf-id="hf-9100" id="cie-kick">APLICA LO APRENDIDO · MECÁNICA</div>
+      <div data-hf-id="hf-9qcu" id="cie-marca"><img id="cie-logo" src="assets/logo.svg" alt="Códice Vivo"></div>
+      <div data-hf-id="hf-aouv" id="cie-temas">Energía + tiro parabólico</div>
+      <div data-hf-id="hf-vb74" id="cie-lema">Practícalo así, paso a paso.</div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#cie-kick", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.3);
+    tl.fromTo("#cie-marca", { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.8)" }, 0.5);
+    tl.fromTo("#cie-temas", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 1.2);
+    tl.fromTo("#cie-lema", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 1.7);
+    window.__timelines["cierre"] = tl;
+  </script>
+</template>

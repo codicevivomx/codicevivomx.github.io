@@ -1,0 +1,76 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; }
+    /* Versión TikTok: cada pausa = «pon tu respuesta en comentarios» + cuenta regresiva de 3 s.
+       Cada pausa: pregunta (con voz) + 0.3 s + 3 s de cuenta. Tiempos relativos (0 = segundo 20). */
+    .pau { position: absolute; left: 70px; right: 70px; top: 420px; }
+    .pau-caja {
+      position: relative; padding: 46px 50px 50px; border-radius: 34px;
+      border: 4px solid #fff; color: #fff; font-family: "Inter", sans-serif;
+      background-color: #133768;
+      background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
+      background-size: 54px 54px;
+    }
+    .pau-kick { font: 700 30px "JetBrains Mono", monospace; letter-spacing: .16em; color: var(--menta); }
+    .pau-q { margin-top: 14px; font-weight: 900; font-size: 56px; line-height: 1.15; letter-spacing: -.01em; }
+    .pau-op { margin-top: 22px; padding: 18px 28px; border: 3px solid rgba(255,255,255,.8); border-radius: 20px; background: rgba(255,255,255,.08); font: 700 50px "JetBrains Mono", monospace; }
+    .pau-op:first-of-type { margin-top: 34px; }
+    .pau-com { margin-top: 34px; font-weight: 900; font-size: 44px; color: #ffd166; font-family: "Inter", "Emoji", sans-serif; }
+    .pau-reloj { position: absolute; left: 50%; margin-left: -100px; bottom: -250px; width: 200px; height: 200px; border-radius: 50%; background: #0c244e; border: 4px solid #fff; }
+    .pau-reloj svg { position: absolute; inset: 0; }
+    .pau-n { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font: 900 110px "Inter", sans-serif; color: #fff; }
+  </style>
+  <div data-hf-id="hf-v534" id="root" data-composition-id="pausas" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-v0bz" id="pau-1" class="pau clip" data-start="0" data-duration="5.8" data-track-index="0">
+      <div data-hf-id="hf-vq26" class="pau-caja" data-layout-allow-overlap>
+        <div data-hf-id="hf-a732" class="pau-kick">TU TURNO</div>
+        <div data-hf-id="hf-4tkq" class="pau-q">¿Con qué velocidad llega al final de la rampa? (g = 10 m/s²)</div>
+        <div data-hf-id="hf-notw" class="pau-op">A) 14 m/s</div><div data-hf-id="hf-50h6" class="pau-op">B) 20 m/s</div><div data-hf-id="hf-zqat" class="pau-op">C) 200 m/s</div>
+        <div data-hf-id="hf-54kz" class="pau-com">Pon tu respuesta en comentarios 👇</div>
+        <div data-hf-id="hf-epzv" class="pau-reloj">
+          <svg data-hf-id="hf-i2dl" viewBox="0 0 200 200"><circle data-hf-id="hf-m944" class="pau-aro" cx="100" cy="100" r="88" fill="none" stroke="#6fd3a8" stroke-width="10" stroke-dasharray="553" transform="rotate(-90 100 100)"/></svg>
+          <div data-hf-id="hf-ei3p" class="pau-n n3">3</div><div data-hf-id="hf-wekd" class="pau-n n2">2</div><div data-hf-id="hf-t8bx" class="pau-n n1">1</div>
+        </div>
+      </div>
+    </div>
+    <div data-hf-id="hf-8biv" id="pau-2" class="pau clip" data-start="31.5" data-duration="6.1" data-track-index="0">
+      <div data-hf-id="hf-s7ua" class="pau-caja" data-layout-allow-overlap>
+        <div data-hf-id="hf-zkn6" class="pau-kick">TU TURNO</div>
+        <div data-hf-id="hf-ds7e" class="pau-q">¿Cuánto tarda en caer esos cinco metros?</div>
+        <div data-hf-id="hf-wmns" class="pau-op">A) 0.5 s</div><div data-hf-id="hf-705h" class="pau-op">B) 1 s</div><div data-hf-id="hf-zc4t" class="pau-op">C) 2 s</div>
+        <div data-hf-id="hf-rob7" class="pau-com">Pon tu respuesta en comentarios 👇</div>
+        <div data-hf-id="hf-gvob" class="pau-reloj">
+          <svg data-hf-id="hf-wxh9" viewBox="0 0 200 200"><circle data-hf-id="hf-9xzw" class="pau-aro" cx="100" cy="100" r="88" fill="none" stroke="#6fd3a8" stroke-width="10" stroke-dasharray="553" transform="rotate(-90 100 100)"/></svg>
+          <div data-hf-id="hf-8cjd" class="pau-n n3">3</div><div data-hf-id="hf-f6c1" class="pau-n n2">2</div><div data-hf-id="hf-2gpt" class="pau-n n1">1</div>
+        </div>
+      </div>
+    </div>
+    <div data-hf-id="hf-f8hm" id="pau-3" class="pau clip" data-start="42.3" data-duration="5.4" data-track-index="0">
+      <div data-hf-id="hf-sm5b" class="pau-caja" data-layout-allow-overlap>
+        <div data-hf-id="hf-zyy7" class="pau-kick">TU TURNO</div>
+        <div data-hf-id="hf-7m6h" class="pau-q">¿A qué distancia del borde aterriza?</div>
+        <div data-hf-id="hf-h7hh" class="pau-op">A) 15 m</div><div data-hf-id="hf-d9gg" class="pau-op">B) 20 m</div><div data-hf-id="hf-gnvg" class="pau-op">C) 25 m</div>
+        <div data-hf-id="hf-ra06" class="pau-com">Pon tu respuesta en comentarios 👇</div>
+        <div data-hf-id="hf-ghda" class="pau-reloj">
+          <svg data-hf-id="hf-y4ec" viewBox="0 0 200 200"><circle data-hf-id="hf-8r2t" class="pau-aro" cx="100" cy="100" r="88" fill="none" stroke="#6fd3a8" stroke-width="10" stroke-dasharray="553" transform="rotate(-90 100 100)"/></svg>
+          <div data-hf-id="hf-9jgg" class="pau-n n3">3</div><div data-hf-id="hf-gd94" class="pau-n n2">2</div><div data-hf-id="hf-3nmw" class="pau-n n1">1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // [pausa, inicio, cuándo empieza la cuenta (pregunta + 0.3 s)]
+    [["#pau-1", 0, 2.8], ["#pau-2", 31.5, 3.1], ["#pau-3", 42.3, 2.4]].forEach(([s, t, c]) => {
+      tl.fromTo(s + " .pau-caja", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)" }, t);
+      tl.fromTo(s + " .pau-aro", { strokeDashoffset: 0 }, { strokeDashoffset: 553, duration: 3, ease: "none", immediateRender: false }, t + c);
+      tl.set(s + " .pau-n", { opacity: 0 }, t);
+      tl.set(s + " .pau-aro", { strokeDashoffset: 0 }, t);
+      [".n3", ".n2", ".n1"].forEach((n, i) => {
+        tl.fromTo(s + " " + n, { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, t + c + i);
+        if (i < 2) tl.to(s + " " + n, { opacity: 0, duration: 0.1 }, t + c + i + 0.9);
+      });
+    });
+    window.__timelines["pausas"] = tl;
+  </script>
+</template>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es-MX" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/MotionPathPlugin.min.js"></script>
+    <style>
+      /* Aplica lo aprendido · mecánica · esquiador (versión TikTok, sin voz).
+         Tomas de 4 s provisionales; pausas = 3 s extra («pon tu respuesta en comentarios»).
+         Datos del storyboard: g=10, rampa 20 m, borde 5 m, v=20 m/s, t=1 s, alcance 20 m, zona 15 m. */
+      :root {
+        --coral: #f0745e;   /* palabra clave: problema */
+        --menta: #6fd3a8;   /* palabra clave: solución */
+        --tinta: #2e2117;
+        --papel: #fffcf6;
+        --azul: #163d73;
+      }
+      @font-face {
+        font-family: "Emoji";
+        src: local("Segoe UI Emoji"), local("Noto Color Emoji"), local("Apple Color Emoji");
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f6f1e6;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        font-family: "Inter", "Emoji", sans-serif;
+        color: var(--tinta);
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-vks1" id="root" data-composition-id="main" data-start="0" data-duration="99.7" data-width="1080" data-height="1920">
+      <div data-hf-id="hf-qwxj" id="escena" data-composition-id="escena" data-composition-src="compositions/escena.html"
+        data-start="0" data-duration="99.7" data-track-index="1" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div data-hf-id="hf-2wip" id="calculos" data-composition-id="calculos" data-composition-src="compositions/calculos.html"
+        data-start="16.4" data-duration="14.7" data-track-index="2" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 3"></div>
+      <div data-hf-id="hf-pp6r" id="palabras" data-composition-id="palabras" data-composition-src="compositions/palabras.html"
+        data-start="0" data-duration="99.7" data-track-index="3" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 4"></div>
+      <div data-hf-id="hf-m0xr" id="subtitulos" data-composition-id="subtitulos" data-composition-src="compositions/subtitulos.html"
+        data-start="0" data-duration="99.7" data-track-index="4" data-track-kind="captions"
+        data-width="1080" data-height="1920" style="z-index: 5"></div>
+      <div data-hf-id="hf-j78h" id="pausas" data-composition-id="pausas" data-composition-src="compositions/pausas.html"
+        data-start="20.8" data-duration="47.7" data-track-index="5" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 6"></div>
+      <div data-hf-id="hf-odzh" id="cierre" data-composition-id="cierre" data-composition-src="compositions/cierre.html"
+        data-start="92.5" data-duration="7.2" data-track-index="6" data-track-kind="graphics"
+        data-width="1080" data-height="1920" style="z-index: 7"></div>
+      <!-- Voz: cada toma arranca su audio 0.2 s después; las preguntas suenan al inicio de cada pausa -->
+      <audio id="voz-01" class="clip" src="voz/01.mp3" data-start="0.2" data-duration="3.40" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-02" class="clip" src="voz/02.mp3" data-start="4.2" data-duration="3.37" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-03" class="clip" src="voz/03.mp3" data-start="8.2" data-duration="3.81" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-04" class="clip" src="voz/04.mp3" data-start="12.6" data-duration="2.38" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-05" class="clip" src="voz/05.mp3" data-start="16.6" data-duration="3.79" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-06" class="clip" src="voz/06.mp3" data-start="26.8" data-duration="3.87" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-07" class="clip" src="voz/07.mp3" data-start="31.3" data-duration="2.98" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-08" class="clip" src="voz/08.mp3" data-start="35.3" data-duration="3.19" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-09" class="clip" src="voz/09.mp3" data-start="39.3" data-duration="1.83" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-10" class="clip" src="voz/10.mp3" data-start="43.3" data-duration="2.95" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-11" class="clip" src="voz/11.mp3" data-start="47.3" data-duration="4.65" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-12" class="clip" src="voz/12.mp3" data-start="58.6" data-duration="4.10" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-13" class="clip" src="voz/13.mp3" data-start="68.7" data-duration="2.43" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-14" class="clip" src="voz/14.mp3" data-start="72.7" data-duration="2.85" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-15" class="clip" src="voz/15.mp3" data-start="76.7" data-duration="2.48" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-16" class="clip" src="voz/16.mp3" data-start="80.7" data-duration="2.98" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-17" class="clip" src="voz/17.mp3" data-start="84.7" data-duration="3.27" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-18" class="clip" src="voz/18.mp3" data-start="88.7" data-duration="3.32" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-19" class="clip" src="voz/19.mp3" data-start="92.7" data-duration="5.04" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-p1" class="clip" src="voz/p1.mp3" data-start="20.8" data-duration="2.48" data-track-index="11" data-volume="1"></audio>
+      <audio id="voz-p2" class="clip" src="voz/p2.mp3" data-start="52.3" data-duration="2.77" data-track-index="11" data-volume="1"></audio>
+      <audio id="voz-p3" class="clip" src="voz/p3.mp3" data-start="63.1" data-duration="2.14" data-track-index="11" data-volume="1"></audio>
+      <!-- /Voz -->
+      <!-- SFX (generados con ffmpeg; niveles ya mezclados: ~20 dB bajo la voz; ambiente ~30 dB y con ducking).
+           Mismo sonido para la misma acción: bajada→deslizar, salto→whoosh, aterrizaje→golpe, recuadro→pop, azul→escaner, termica→zumbido, cuenta→tick, tachado→lapiz, cota→lapiz, trayectoria→regla, tabla→martillo, soporte→crujido, compactar→arrastre, aparece→golpe-suave, cierre→acorde -->
+      <audio id="sfx-viento" class="clip" src="sfx/viento.mp3" data-start="0" data-duration="99.7" data-track-index="12" data-volume="1"></audio>
+      <audio id="sfx-tabla-1" class="clip" src="sfx/martillo.mp3" data-start="0.19" data-duration="0.20" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-tabla-2" class="clip" src="sfx/martillo.mp3" data-start="0.31" data-duration="0.20" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-tabla-3" class="clip" src="sfx/martillo.mp3" data-start="0.42" data-duration="0.20" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-tabla-4" class="clip" src="sfx/martillo.mp3" data-start="0.47" data-duration="0.20" data-track-index="15" data-volume="1"></audio>
+      <audio id="sfx-tabla-5" class="clip" src="sfx/martillo.mp3" data-start="0.57" data-duration="0.20" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-tabla-6" class="clip" src="sfx/martillo.mp3" data-start="0.73" data-duration="0.20" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-tabla-7" class="clip" src="sfx/martillo.mp3" data-start="0.78" data-duration="0.20" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-tabla-8" class="clip" src="sfx/martillo.mp3" data-start="1.12" data-duration="0.20" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-soporte-1" class="clip" src="sfx/crujido.mp3" data-start="1.6" data-duration="0.75" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-aparece-1" class="clip" src="sfx/golpe-suave.mp3" data-start="1.7" data-duration="0.16" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-aparece-2" class="clip" src="sfx/golpe-suave.mp3" data-start="2.05" data-duration="0.16" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-cota-1" class="clip" src="sfx/lapiz.mp3" data-start="2.2" data-duration="0.40" data-track-index="15" data-volume="1"></audio>
+      <audio id="sfx-aparece-3" class="clip" src="sfx/golpe-suave.mp3" data-start="2.4" data-duration="0.16" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-aparece-4" class="clip" src="sfx/golpe-suave.mp3" data-start="2.75" data-duration="0.16" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-aparece-5" class="clip" src="sfx/golpe-suave.mp3" data-start="3.1" data-duration="0.16" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-bajada-1" class="clip" src="sfx/deslizar-1.mp3" data-start="4.9" data-duration="6.40" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-recuadro-1" class="clip" src="sfx/pop.mp3" data-start="9" data-duration="0.14" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-azul-1" class="clip" src="sfx/escaner.mp3" data-start="12.4" data-duration="0.60" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cota-2" class="clip" src="sfx/lapiz.mp3" data-start="12.9" data-duration="0.40" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-recuadro-2" class="clip" src="sfx/pop.mp3" data-start="13.26" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-1" class="clip" src="sfx/tick.mp3" data-start="23.6" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-2" class="clip" src="sfx/tick.mp3" data-start="24.6" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-3" class="clip" src="sfx/tick.mp3" data-start="25.6" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-recuadro-3" class="clip" src="sfx/pop.mp3" data-start="29.76" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-tachado-1" class="clip" src="sfx/lapiz.mp3" data-start="29.81" data-duration="0.40" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-tachado-2" class="clip" src="sfx/lapiz.mp3" data-start="30.16" data-duration="0.40" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-bajada-2" class="clip" src="sfx/deslizar-2.mp3" data-start="31.7" data-duration="3.00" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cota-3" class="clip" src="sfx/lapiz.mp3" data-start="36.1" data-duration="0.40" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-salto-1" class="clip" src="sfx/whoosh.mp3" data-start="39.3" data-duration="0.80" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-recuadro-4" class="clip" src="sfx/pop.mp3" data-start="40.13" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-azul-2" class="clip" src="sfx/escaner.mp3" data-start="43.1" data-duration="0.60" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-trayectoria-1" class="clip" src="sfx/regla.mp3" data-start="43.6" data-duration="1.10" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-recuadro-5" class="clip" src="sfx/pop.mp3" data-start="45.03" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-4" class="clip" src="sfx/tick.mp3" data-start="55.4" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-5" class="clip" src="sfx/tick.mp3" data-start="56.4" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-6" class="clip" src="sfx/tick.mp3" data-start="57.4" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cota-4" class="clip" src="sfx/lapiz.mp3" data-start="59.22" data-duration="0.40" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-7" class="clip" src="sfx/tick.mp3" data-start="65.5" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-8" class="clip" src="sfx/tick.mp3" data-start="66.5" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cuenta-9" class="clip" src="sfx/tick.mp3" data-start="67.5" data-duration="0.06" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-salto-2" class="clip" src="sfx/whoosh.mp3" data-start="69" data-duration="0.80" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-recuadro-6" class="clip" src="sfx/pop.mp3" data-start="69.7" data-duration="0.14" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-aterrizaje-1" class="clip" src="sfx/golpe.mp3" data-start="70.5" data-duration="0.45" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cota-5" class="clip" src="sfx/lapiz.mp3" data-start="71.1" data-duration="0.40" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-compactar-1" class="clip" src="sfx/arrastre.mp3" data-start="72.8" data-duration="1.30" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-recuadro-7" class="clip" src="sfx/pop.mp3" data-start="74.2" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-termica-1" class="clip" src="sfx/zumbido.mp3" data-start="76.5" data-duration="0.70" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-bajada-3" class="clip" src="sfx/deslizar-3-aspero.mp3" data-start="77" data-duration="3.00" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-recuadro-8" class="clip" src="sfx/pop.mp3" data-start="78.44" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-salto-3" class="clip" src="sfx/whoosh.mp3" data-start="81" data-duration="0.80" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-trayectoria-2" class="clip" src="sfx/regla.mp3" data-start="81" data-duration="1.10" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-recuadro-9" class="clip" src="sfx/pop.mp3" data-start="82.41" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-aterrizaje-2" class="clip" src="sfx/golpe.mp3" data-start="82.5" data-duration="0.45" data-track-index="14" data-volume="1"></audio>
+      <audio id="sfx-recuadro-10" class="clip" src="sfx/pop.mp3" data-start="86.52" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-recuadro-11" class="clip" src="sfx/pop.mp3" data-start="89.4" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-recuadro-12" class="clip" src="sfx/pop.mp3" data-start="89.9" data-duration="0.14" data-track-index="13" data-volume="1"></audio>
+      <audio id="sfx-cierre-1" class="clip" src="sfx/acorde.mp3" data-start="97.79" data-duration="1.90" data-track-index="13" data-volume="1"></audio>
+      <!-- /SFX -->
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

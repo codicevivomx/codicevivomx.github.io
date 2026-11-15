@@ -1,0 +1,788 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; }
+    /* Isométrico real: el plano del movimiento se dibuja en coordenadas de perfil (X, Y; 1 m = 40 px)
+       y el grupo #esc-iso lo proyecta con matrix(.866,.5,0,1). La profundidad z se suma como (X - z, Y + z).
+       Sombreado de 4 tonos por material (1 luz · 2 medio · 3 sombra · 4 oscuro).
+       Paleta isométrica = fusión de las láminas 2.5D+; el script la cambia a plano azul o térmica. */
+    #esc-escena {
+      position: absolute; inset: 0; overflow: hidden;
+      --cielo-a:#8FC1BE; --cielo-b:#F6F1E6; --monte-l:#C9D8D2; --monte-l-n:#FFFCF6; --monte-m:#9CBDB8; --monte-m-n:#F6F1E6;
+      --nieve-1:#FFFCF6; --nieve-2:#EFE7D8; --nieve-3:#DCCFB8; --nieve-4:#BBA98C;
+      --tierra-2:#8C7458; --tierra-3:#6E5A44; --tierra-4:#4E3F30;
+      --madera-1:#D4B06A; --madera-2:#B08A3E; --madera-3:#8A6A2C; --madera-4:#5E4719;
+      --roca-1:#D6CEC1; --roca-2:#ABA091; --roca-3:#837867; --roca-4:#5A5146;
+      --pino-1:#4E9090; --pino-2:#2F6F73; --pino-3:#245D60; --pino-4:#173F41; --tronco:#6B523A;
+      --linea:rgba(46,33,23,0.35); --tinta:#2E2117;
+      --chaqueta:#A5352A; --chaqueta-o:#74231A; --chaqueta-2:#2F6F73; --chaqueta-2o:#1F4E51;
+      --pantalon:#2E2117; --bota:#1E1610; --casco:#B08A3E; --piel:#E9C8A6; --goggle:#2E2117;
+      --esquis:#2F6F73; --brillo:#FFFFFF; --baston:#77634F; --rim:#FFF3D6;
+      --zona:rgba(47,125,91,0.30); --zona-b:#2F7D5B; --vel:rgba(119,99,79,0.7);
+      background: linear-gradient(180deg, var(--cielo-a) 0%, var(--cielo-b) 62%);
+    }
+    .capa { position: absolute; left: 0; width: 2400px; height: 1800px; }
+    #esc-lejos { top: 380px; }
+    #esc-medio { top: 560px; }
+    #esc-mundo { position: absolute; left: 0; top: 0; width: 2600px; height: 3200px; transform-origin: 0 0; }
+    #esc-mundo svg, .capa svg { display: block; overflow: visible; }
+    #esc-nieve-a, #esc-nieve-b { position: absolute; inset: 0; pointer-events: none; }
+    #esc-nieve-a {
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.95) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 10%, rgba(255,255,255,.9) 0 3px, transparent 4px),
+        radial-gradient(circle at 45% 75%, rgba(255,255,255,.9) 0 5px, transparent 6px),
+        radial-gradient(circle at 88% 60%, rgba(255,255,255,.85) 0 3px, transparent 4px),
+        radial-gradient(circle at 8% 88%, rgba(255,255,255,.9) 0 4px, transparent 5px);
+      background-size: 420px 420px; opacity: .85;
+    }
+    #esc-nieve-b {
+      background-image:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.7) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 45%, rgba(255,255,255,.7) 0 2px, transparent 3px),
+        radial-gradient(circle at 55% 85%, rgba(255,255,255,.65) 0 2px, transparent 3px),
+        radial-gradient(circle at 12% 60%, rgba(255,255,255,.7) 0 2px, transparent 3px);
+      background-size: 260px 260px; opacity: .7;
+    }
+    #esc-rejilla {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.22) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(255,255,255,.22) 2px, transparent 2px),
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size: 270px 270px, 270px 270px, 54px 54px, 54px 54px;
+    }
+    #esc-sensor { position: absolute; inset: 0; overflow: hidden; mix-blend-mode: screen; }
+    #esc-sensor svg { position: absolute; left: 0; top: 0; display: block; }
+    #esc-sensor-lineas { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(255,255,255,.06) 0 2px, transparent 2px 6px); }
+    #esc-leyenda { position: absolute; left: 962px; top: 560px; width: 80px; font: 700 30px "JetBrains Mono", monospace; color: #fff; text-align: center; }
+    #esc-leyenda .barra {
+      width: 26px; height: 420px; margin: 12px auto; border-radius: 13px;
+      background: linear-gradient(180deg, #fff6c8, #ffd23f 18%, #ff7a1f 40%, #e4262c 58%, #7a1e8e 76%, #2a3fd0 90%, #0d1458);
+      border: 2px solid rgba(255,255,255,.6);
+    }
+    #esc-flash { position: absolute; inset: 0; background: #fff; }
+    #esc-oscuro { position: absolute; inset: 0; background: #1b140e; }
+
+    /* Colores por variable */
+    .f-monte-l{fill:var(--monte-l)} .f-monte-l-n{fill:var(--monte-l-n)} .f-monte-m{fill:var(--monte-m)} .f-monte-m-n{fill:var(--monte-m-n)}
+    .f-n1{fill:var(--nieve-1)} .f-n2{fill:var(--nieve-2)} .f-n3{fill:var(--nieve-3)} .f-n4{fill:var(--nieve-4)}
+    .f-t2{fill:var(--tierra-2)} .f-t3{fill:var(--tierra-3)} .f-t4{fill:var(--tierra-4)}
+    .f-m1{fill:var(--madera-1)} .f-m2{fill:var(--madera-2)} .f-m3{fill:var(--madera-3)} .f-m4{fill:var(--madera-4)}
+    .f-r1{fill:var(--roca-1)} .f-r2{fill:var(--roca-2)} .f-r3{fill:var(--roca-3)} .f-r4{fill:var(--roca-4)}
+    .f-p1{fill:var(--pino-1)} .f-p2{fill:var(--pino-2)} .f-p3{fill:var(--pino-3)} .f-p4{fill:var(--pino-4)} .f-tronco{fill:var(--tronco)}
+    .f-piel{fill:var(--piel)} .f-casco{fill:var(--casco)} .f-bota{fill:var(--bota)} .f-goggle{fill:var(--goggle)}
+    .f-guante{fill:var(--pantalon)} .f-brillo{fill:var(--brillo)} .f-rim{fill:var(--rim)} .f-chaq{fill:var(--chaqueta)}
+    .f-zona{fill:var(--zona);stroke:var(--zona-b);stroke-width:4;stroke-dasharray:14 10}
+    .borde{stroke:var(--linea);stroke-width:2;stroke-linejoin:round}
+    .k{fill:none;stroke-linecap:round;stroke-linejoin:round}
+    .k-chaq{stroke:var(--chaqueta)} .k-chaq-o{stroke:var(--chaqueta-o)} .k-pant{stroke:var(--pantalon)} .k-esquis{stroke:var(--esquis)}
+    .k-baston{stroke:var(--baston)} .k-vel{stroke:var(--vel)} .k-rim{stroke:var(--rim)} .k-brillo{stroke:var(--brillo)}
+    .k-m1{stroke:var(--madera-1)} .k-m3{stroke:var(--madera-3)} .k-m4{stroke:var(--madera-4)} .k-n2{stroke:var(--nieve-2)} .k-n3{stroke:var(--nieve-3)}
+    .k-p1{stroke:var(--pino-1)} .k-p4{stroke:var(--pino-4)} .k-t4{stroke:var(--tierra-4)} .k-r4{stroke:var(--roca-4)}
+    .k-linea{stroke:var(--linea)} .k-tinta{stroke:var(--tinta)} .k-goggle{stroke:var(--goggle)}
+    .cota line{stroke:var(--tinta);stroke-width:4;fill:none}
+    .cota .guia{stroke-dasharray:10 10;stroke-width:3}
+    .t{fill:var(--tinta);font-family:"Inter",sans-serif;font-weight:900}
+    .t-mono{font-family:"JetBrains Mono",monospace;font-weight:700}
+    .par{fill:none;stroke:var(--tinta);stroke-width:6;stroke-dasharray:18 14;stroke-linecap:round}
+    .vx{stroke:#ffffff;stroke-width:7;fill:none}
+    .vy{stroke:#ffd166;stroke-width:7;fill:none}
+    .punto{fill:#ffffff}
+  </style>
+  <div id="root" data-composition-id="escena" data-width="1080" data-height="1920">
+    <div id="esc-escena">
+      <!-- Montañas lejanas (parallax lento) -->
+      <div id="esc-lejos" class="capa" data-layout-allow-overflow>
+        <svg width="2400" height="1800" viewBox="0 0 2400 1800">
+          <path class="f-monte-l" d="M0,420 L180,300 L330,360 L520,180 L700,330 L860,250 L1050,90 L1260,300 L1420,220 L1600,330 L1780,150 L1980,310 L2150,240 L2400,360 L2400,1800 L0,1800 Z"/>
+          <path class="f-monte-l-n" d="M520,180 L470,225 L500,220 L520,240 L545,215 L575,222 Z"/>
+          <path class="f-monte-l-n" d="M1050,90 L985,150 L1020,140 L1045,165 L1075,140 L1115,150 Z"/>
+          <path class="f-monte-l-n" d="M1780,150 L1725,200 L1755,193 L1778,212 L1805,190 L1840,198 Z"/>
+        </svg>
+      </div>
+      <!-- Montañas medias con pinos lejanos (parallax medio) -->
+      <div id="esc-medio" class="capa" data-layout-allow-overflow>
+        <svg width="2400" height="1800" viewBox="0 0 2400 1800">
+          <path class="f-monte-m" d="M0,520 L220,360 L400,460 L640,300 L860,470 L1080,380 L1300,480 L1540,320 L1760,460 L1980,360 L2400,520 L2400,1800 L0,1800 Z"/>
+          <path class="f-monte-m-n" d="M640,300 L590,337 L620,332 L642,352 L668,330 L700,345 Z"/>
+          <path class="f-monte-m-n" d="M1540,320 L1490,357 L1520,350 L1542,370 L1566,348 L1598,360 Z"/>
+          <path class="f-monte-m-n" d="M220,360 L180,390 L205,386 L222,402 L240,384 L265,392 Z"/>
+          <g id="esc-pinos-medio"></g>
+        </svg>
+      </div>
+
+      <!-- Mundo: la cámara mueve y escala este bloque -->
+      <div id="esc-mundo" data-layout-allow-overflow data-layout-allow-overlap>
+        <svg width="2600" height="3200" viewBox="0 0 2600 3200">
+          <defs>
+            <!-- Texturas (mosaicos que se repiten: se calculan una vez) -->
+            <filter id="esc-f-grano" x="0" y="0" width="100%" height="100%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" stitchTiles="stitch"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.36  0 0 0 0 0.28  1.5 0 0 0 -0.62"/>
+            </filter>
+            <filter id="esc-f-chispa" x="0" y="0" width="100%" height="100%">
+              <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="1" seed="21" stitchTiles="stitch"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  4.5 0 0 0 -3.05"/>
+            </filter>
+            <filter id="esc-f-vetas" x="0" y="0" width="100%" height="100%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.003 0.11" numOctaves="3" seed="3" stitchTiles="stitch"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 0.22  0 0 0 0 0.14  0 0 0 0 0.04  2.4 0 0 0 -1.0"/>
+            </filter>
+            <pattern id="esc-pat-grano" width="256" height="256" patternUnits="userSpaceOnUse"><rect width="256" height="256" filter="url(#esc-f-grano)"/></pattern>
+            <pattern id="esc-pat-chispa" width="300" height="300" patternUnits="userSpaceOnUse"><rect width="300" height="300" filter="url(#esc-f-chispa)"/></pattern>
+            <pattern id="esc-pat-vetas" width="640" height="220" patternUnits="userSpaceOnUse"><rect width="640" height="220" filter="url(#esc-f-vetas)"/></pattern>
+            <pattern id="esc-pat-trama" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="16" stroke="rgba(255,255,255,.32)" stroke-width="2"/></pattern>
+            <radialGradient id="esc-g-sombra"><stop offset="0" stop-color="#1b140e" stop-opacity=".42"/><stop offset=".6" stop-color="#1b140e" stop-opacity=".18"/><stop offset="1" stop-color="#1b140e" stop-opacity="0"/></radialGradient>
+            <linearGradient id="esc-g-ao" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b140e" stop-opacity="0"/><stop offset="1" stop-color="#1b140e" stop-opacity=".32"/></linearGradient>
+            <linearGradient id="esc-g-ao-z" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b140e" stop-opacity=".34"/><stop offset="1" stop-color="#1b140e" stop-opacity="0"/></linearGradient>
+            <linearGradient id="esc-g-ao-x" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1b140e" stop-opacity=".3"/><stop offset="1" stop-color="#1b140e" stop-opacity="0"/></linearGradient>
+            <linearGradient id="esc-grad-calor" gradientUnits="userSpaceOnUse" x1="200" y1="0" x2="1000" y2="0">
+              <stop offset="0" stop-color="#ffd23f"/><stop offset=".55" stop-color="#ff7a1f"/><stop offset="1" stop-color="#ff2a12"/>
+            </linearGradient>
+            <marker id="esc-fl-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ffffff"/></marker>
+            <marker id="esc-fl-a" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ffd166"/></marker>
+            <clipPath id="esc-clip-panel"><path d="M140,560 C270,570 410,760 540,1010 C660,1240 790,1360 940,1360 L940,1560 L140,1560 Z"/></clipPath>
+            <clipPath id="esc-clip-torre"><rect x="-20" y="560" width="160" height="1000"/></clipPath>
+            <clipPath id="esc-clip-par"><rect id="esc-clip-par-r" x="990" y="1150" width="860" height="420"/></clipPath>
+            <clipPath id="esc-clip-corta"><rect id="esc-clip-corta-r" x="990" y="1150" width="380" height="420"/></clipPath>
+          </defs>
+
+          <g id="esc-iso" transform="matrix(0.866,0.5,0,1,0,0)">
+            <!-- Rutas (centro de la pista, z = 0; carril de atrás z = -110). Rampa: 20 m de caída; borde a 5 m -->
+            <path id="esc-ruta" d="M200,500 C330,510 470,700 600,950 C720,1180 850,1300 1000,1300" fill="none" stroke="none"/>
+            <path id="esc-ruta2" d="M310,390 C440,400 580,590 710,840 C830,1070 960,1190 1110,1190" fill="none" stroke="none"/>
+
+            <!-- Terreno: bloque isométrico (X -500…2500, z -400…160, espesor 200) -->
+            <g id="esc-terreno">
+              <path class="f-n1" d="M-100,1100 L2900,1100 L2340,1660 L-660,1660 Z"/>
+              <path class="esc-tex" d="M-100,1100 L2900,1100 L2340,1660 L-660,1660 Z" fill="url(#esc-pat-grano)" opacity=".55"/>
+              <path class="esc-tex" d="M-100,1100 L2900,1100 L2340,1660 L-660,1660 Z" fill="url(#esc-pat-chispa)"/>
+              <!-- cara frontal (z = 160): nieve + tierra -->
+              <rect class="f-t2" x="-660" y="1660" width="3000" height="200"/>
+              <path class="k k-t4" stroke-width="3" stroke-dasharray="60 24 14 24" d="M-660,1740 L2340,1740 M-660,1800 L2340,1800"/>
+              <path class="f-n2" d="M-660,1660 L2340,1660 L2340,1688 Q2300,1700 2270,1690 Q2220,1712 2170,1692 Q2100,1706 2040,1690 Q1960,1714 1890,1692 Q1800,1708 1720,1690 Q1640,1712 1560,1692 Q1480,1706 1400,1690 Q1320,1714 1240,1692 Q1150,1708 1070,1690 Q990,1712 910,1692 Q830,1706 750,1690 Q670,1714 590,1692 Q500,1708 420,1690 Q340,1712 260,1692 Q180,1706 100,1690 Q20,1714 -60,1692 Q-150,1708 -230,1690 Q-320,1712 -400,1692 Q-500,1706 -580,1690 Q-620,1700 -660,1688 Z"/>
+              <rect x="-660" y="1690" width="3000" height="60" fill="url(#esc-g-ao-z)"/>
+              <!-- cara derecha (X = 2500) -->
+              <path class="f-t3" d="M2340,1660 L2900,1100 L2900,1300 L2340,1860 Z"/>
+              <path class="f-n3" d="M2340,1660 L2900,1100 L2900,1130 L2340,1690 Z"/>
+              <line class="k k-n2" stroke-width="3" x1="-660" y1="1660" x2="2340" y2="1660"/>
+              <line class="k k-linea" stroke-width="3" x1="2340" y1="1660" x2="2340" y2="1860"/>
+              <g class="esc-trama"><rect x="-660" y="1660" width="3000" height="200" fill="url(#esc-pat-trama)"/><path d="M2340,1660 L2900,1100 L2900,1300 L2340,1860 Z" fill="url(#esc-pat-trama)"/></g>
+            </g>
+
+            <!-- Suelo local (X, z) → (X - z, 1500 + z): sombras, zonas, bultos -->
+            <g id="esc-suelo" transform="matrix(1,0,-1,1,0,1500)">
+              <ellipse cx="160" cy="-20" rx="230" ry="150" fill="url(#esc-g-sombra)"/>
+              <rect x="140" y="60" width="880" height="90" fill="url(#esc-g-ao-z)"/>
+              <rect x="1000" y="-150" width="130" height="210" fill="url(#esc-g-ao-x)"/>
+              <g id="esc-sombras-pinos"></g>
+              <g id="esc-bultos"></g>
+              <rect id="esc-zona" class="f-zona" x="1400" y="-150" width="200" height="210"/>
+              <g id="esc-zona-ext"><rect class="f-n1" x="1600" y="-150" width="400" height="210"/><rect class="f-zona" x="1600" y="-150" width="400" height="210"/></g>
+              <rect id="esc-zona-glow" x="1400" y="-150" width="200" height="210" fill="rgba(255,255,255,.18)" stroke="#ffffff" stroke-width="7"/>
+              <ellipse id="esc-sombra" cx="0" cy="0" rx="80" ry="40" fill="url(#esc-g-sombra)"/>
+            </g>
+            <g id="esc-brillos"><g class="esc-tex"><g id="esc-brillo-a"></g><g id="esc-brillo-b"></g><g id="esc-brillo-c"></g></g></g>
+
+            <!-- Pinos y rocas de atrás -->
+            <g id="esc-atras"></g>
+
+            <!-- Plataforma de salida (X 40…200, z -150…60, arriba Y = 500) -->
+            <g id="esc-plataforma">
+              <rect class="f-m2" x="-20" y="560" width="160" height="1000"/>
+              <g clip-path="url(#esc-clip-torre)">
+                <rect class="esc-tex" x="-20" y="560" width="160" height="1000" fill="url(#esc-pat-vetas)" opacity=".8"/>
+                <path class="k k-m3" stroke-width="2.5" id="esc-tablas-torre" d=""/>
+                <path class="k k-m4" stroke-width="9" d="M-20,620 L140,860 M140,620 L-20,860 M-20,900 L140,1140 M140,900 L-20,1140 M-20,1180 L140,1420 M140,1180 L-20,1420"/>
+                <path class="k k-m1" stroke-width="3" d="M-18,616 L142,856 M142,896 L-18,1136 M-18,1176 L142,1416" opacity=".6"/>
+                <rect x="-20" y="1460" width="160" height="100" fill="url(#esc-g-ao)"/>
+                <rect class="f-m3" x="-20" y="560" width="16" height="1000"/><rect class="f-m3" x="124" y="560" width="16" height="1000"/>
+                <rect class="esc-trama" x="-20" y="560" width="160" height="1000" fill="url(#esc-pat-trama)"/>
+              </g>
+              <path class="f-m1 borde" d="M190,350 L350,350 L140,560 L-20,560 Z"/>
+              <path class="k k-m3" stroke-width="2" d="M210,350 L0,560 M235,350 L25,560 M260,350 L50,560 M285,350 L75,560 M310,350 L100,560 M335,350 L125,560"/>
+              <path class="k k-m4" stroke-width="5" d="M190,350 L190,300 M350,350 L350,300 M270,350 L270,300 M190,300 L350,300"/>
+              <line class="k k-tinta" stroke-width="6" x1="200" y1="340" x2="200" y2="190"/>
+              <path class="f-chaq" d="M203,192 L262,208 L203,226 Z"/>
+            </g>
+
+            <!-- Rampa -->
+            <g id="esc-rampa">
+              <path class="f-m2" d="M140,560 C270,570 410,760 540,1010 C660,1240 790,1360 940,1360 L940,1560 L140,1560 Z"/>
+              <g clip-path="url(#esc-clip-panel)">
+                <rect class="esc-tex" x="140" y="540" width="820" height="1040" fill="url(#esc-pat-vetas)" opacity=".8"/>
+                <path class="k k-m3" stroke-width="2.5" id="esc-tablas-rampa" d=""/>
+                <path class="k k-m4" stroke-width="7" d="M140,1560 L300,880 L460,1560 L620,1080 L780,1560 L900,1300"/>
+                <g id="esc-postes"></g>
+                <rect x="140" y="1470" width="820" height="90" fill="url(#esc-g-ao)"/>
+                <path class="esc-trama" d="M140,560 C270,570 410,760 540,1010 C660,1240 790,1360 940,1360 L940,1560 L140,1560 Z" fill="url(#esc-pat-trama)"/>
+              </g>
+              <!-- cara del borde (X = 1000) -->
+              <path class="f-m3" d="M940,1360 L1150,1150 L1150,1350 L940,1560 Z"/>
+              <path class="k k-m4" stroke-width="2.5" d="M940,1392 L1150,1182 M940,1424 L1150,1214 M940,1456 L1150,1246 M940,1488 L1150,1278 M940,1520 L1150,1310"/>
+              <path class="esc-trama" d="M940,1360 L1150,1150 L1150,1350 L940,1560 Z" fill="url(#esc-pat-trama)"/>
+              <path d="M940,1360 L940,1560" class="k k-linea" stroke-width="3"/>
+              <!-- superficie nevada -->
+              <path class="f-n1" d="M140,560 C270,570 410,760 540,1010 C660,1240 790,1360 940,1360 L1150,1150 C1000,1150 870,1030 750,800 C620,550 480,360 350,350 Z"/>
+              <path class="esc-tex" d="M140,560 C270,570 410,760 540,1010 C660,1240 790,1360 940,1360 L1150,1150 C1000,1150 870,1030 750,800 C620,550 480,360 350,350 Z" fill="url(#esc-pat-grano)" opacity=".45"/>
+              <path class="k k-n3" stroke-width="3" d="M186,514 C316,524 456,714 586,964 C706,1194 836,1314 986,1314"/>
+              <path class="k k-n3" stroke-width="3" d="M214,486 C344,496 484,686 614,936 C734,1166 864,1286 1014,1286"/>
+              <path class="k k-n2" stroke-width="12" d="M140,566 C270,576 410,766 540,1016 C660,1246 790,1366 940,1366"/>
+              <path class="k k-m4" stroke-width="3" d="M140,574 C270,584 410,774 540,1024 C660,1254 790,1374 940,1374"/>
+              <path class="k k-n3" stroke-width="3" d="M940,1360 L1150,1150"/>
+            </g>
+
+            <!-- Huella caliente (térmica) -->
+            <path id="esc-huella-glow" d="M200,500 C330,510 470,700 600,950 C720,1180 850,1300 1000,1300" fill="none" stroke="url(#esc-grad-calor)" stroke-width="34" stroke-linecap="round"/>
+            <path id="esc-huella" d="M200,500 C330,510 470,700 600,950 C720,1180 850,1300 1000,1300" fill="none" stroke="url(#esc-grad-calor)" stroke-width="12" stroke-linecap="round"/>
+
+            <!-- Cotas (en el plano: el texto sigue la perspectiva) -->
+            <g id="esc-cota20" class="cota">
+              <line class="guia" x1="240" y1="500" x2="1260" y2="500"/>
+              <line class="guia" x1="1040" y1="1300" x2="1260" y2="1300"/>
+              <line x1="1230" y1="500" x2="1230" y2="1300"/>
+              <line x1="1210" y1="500" x2="1250" y2="500"/><line x1="1210" y1="1300" x2="1250" y2="1300"/>
+              <text class="t" x="1255" y="925" font-size="72">20 m</text>
+            </g>
+            <g id="esc-cota5" class="cota">
+              <line x1="1060" y1="1300" x2="1060" y2="1500"/>
+              <line x1="1040" y1="1300" x2="1080" y2="1300"/><line x1="1040" y1="1500" x2="1080" y2="1500"/>
+              <text class="t" x="1085" y="1420" font-size="64">5 m</text>
+            </g>
+            <g id="esc-cota15" class="cota">
+              <line class="guia" x1="890" y1="1610" x2="1000" y2="1500"/>
+              <line class="guia" x1="1490" y1="1610" x2="1600" y2="1500"/>
+              <line x1="890" y1="1610" x2="1490" y2="1610"/>
+              <line x1="890" y1="1590" x2="890" y2="1630"/><line x1="1490" y1="1590" x2="1490" y2="1630"/>
+              <text class="t" x="1190" y="1590" font-size="64" text-anchor="middle">15 m</text>
+            </g>
+            <g id="esc-cota-alc" class="cota">
+              <line class="guia" x1="1650" y1="1650" x2="1800" y2="1500"/>
+              <line x1="850" y1="1650" x2="1650" y2="1650"/>
+              <line x1="850" y1="1630" x2="850" y2="1670"/><line x1="1650" y1="1630" x2="1650" y2="1670"/>
+              <text class="t" x="1250" y="1715" font-size="64" text-anchor="middle">20 m</text>
+            </g>
+            <g id="esc-v20" transform="translate(1080,1230) matrix(1.1547,-0.5774,0,1,0,0)"><text class="t-mono" x="0" y="0" font-size="60" fill="#fff">v = 20 m/s</text></g>
+
+            <!-- Trayectorias -->
+            <path id="esc-par-fantasma" class="par" d="M1000,1300 Q1400,1300 1800,1500"/>
+            <g clip-path="url(#esc-clip-par)"><path id="esc-par" class="par" d="M1000,1300 Q1400,1300 1800,1500"/></g>
+            <g clip-path="url(#esc-clip-corta)"><path id="esc-par-corta" class="par" d="M1000,1300 Q1160,1300 1320,1500"/></g>
+
+            <!-- Vectores en t = 0, 0.25, 0.5, 0.75, 1 s (vx igual; vy crece) y sus sombras -->
+            <g id="esc-vectores">
+              <g id="esc-sombras">
+                <path d="M1000,1300 L1000,1500 M1200,1312 L1200,1500 M1400,1350 L1400,1500 M1600,1412 L1600,1500" stroke="rgba(255,255,255,.45)" stroke-width="3" stroke-dasharray="8 8"/>
+                <path d="M1000,1300 L930,1300 M1200,1312 L930,1312 M1400,1350 L930,1350 M1600,1412 L930,1412 M1800,1500 L930,1500" stroke="rgba(255,209,102,.45)" stroke-width="3" stroke-dasharray="8 8"/>
+                <circle class="punto" cx="1000" cy="1500" r="11"/><circle class="punto" cx="1200" cy="1500" r="11"/><circle class="punto" cx="1400" cy="1500" r="11"/><circle class="punto" cx="1600" cy="1500" r="11"/><circle class="punto" cx="1800" cy="1500" r="11"/>
+                <circle cx="930" cy="1300" r="11" fill="#ffd166"/><circle cx="930" cy="1312" r="11" fill="#ffd166"/><circle cx="930" cy="1350" r="11" fill="#ffd166"/><circle cx="930" cy="1412" r="11" fill="#ffd166"/><circle cx="930" cy="1500" r="11" fill="#ffd166"/>
+              </g>
+              <g id="esc-v0"><line class="vx" x1="1000" y1="1300" x2="1150" y2="1300" marker-end="url(#esc-fl-b)"/><circle class="punto" cx="1000" cy="1300" r="9"/></g>
+              <g id="esc-v1"><line class="vx" x1="1200" y1="1312" x2="1350" y2="1312" marker-end="url(#esc-fl-b)"/><line class="vy" x1="1200" y1="1312" x2="1200" y2="1331" marker-end="url(#esc-fl-a)"/><circle class="punto" cx="1200" cy="1312" r="9"/></g>
+              <g id="esc-v2x"><line class="vx" x1="1400" y1="1350" x2="1550" y2="1350" marker-end="url(#esc-fl-b)"/></g>
+              <g id="esc-v2y"><line class="vy" x1="1400" y1="1350" x2="1400" y2="1388" marker-end="url(#esc-fl-a)"/><circle class="punto" cx="1400" cy="1350" r="9"/></g>
+              <g id="esc-v3"><line class="vx" x1="1600" y1="1412" x2="1750" y2="1412" marker-end="url(#esc-fl-b)"/><line class="vy" x1="1600" y1="1412" x2="1600" y2="1468" marker-end="url(#esc-fl-a)"/><circle class="punto" cx="1600" cy="1412" r="9"/></g>
+              <g id="esc-v4"><line class="vx" x1="1800" y1="1500" x2="1950" y2="1500" marker-end="url(#esc-fl-b)"/><line class="vy" x1="1800" y1="1500" x2="1800" y2="1575" marker-end="url(#esc-fl-a)"/><circle class="punto" cx="1800" cy="1500" r="9"/></g>
+              <g id="esc-lbl-vx" transform="translate(1400,1600) matrix(1.1547,-0.5774,0,1,0,0)"><text class="t-mono" x="0" y="0" font-size="54" fill="#fff" text-anchor="middle">x: mismo paso cada vez</text></g>
+              <g id="esc-lbl-vy" transform="translate(900,1215) matrix(1.1547,-0.5774,0,1,0,0)"><text class="t-mono" x="0" y="0" font-size="54" fill="#ffd166" text-anchor="middle">y: cada vez más</text></g>
+              <g id="esc-lbl-v2" transform="translate(1480,1300) matrix(1.1547,-0.5774,0,1,0,0)"><text class="t-mono" x="0" y="0" font-size="54" fill="#fff" text-anchor="middle">vₓ = 20 m/s</text></g>
+            </g>
+
+            <!-- Esquiador chico (carril de atrás) y esquiador principal -->
+            <g id="esc-chico" style="--chaqueta:var(--chaqueta-2);--chaqueta-o:var(--chaqueta-2o)">
+              <g transform="scale(.7)">
+                <ellipse cx="6" cy="0" rx="72" ry="9" fill="url(#esc-g-sombra)"/>
+                <g id="esc-chico-vel"><path class="k k-vel" stroke-width="5" d="M-180,-30 L-100,-30 M-200,-60 L-110,-60 M-170,-90 L-100,-90"/></g>
+                <g class="p-pie"></g><g class="p-aga"></g><g class="p-aire"></g><g class="p-ate"></g>
+              </g>
+            </g>
+            <g id="esc-esq">
+              <ellipse id="esc-esq-sombra" cx="6" cy="0" rx="72" ry="9" fill="url(#esc-g-sombra)"/>
+              <g id="esc-esq-vel"><path class="k k-vel" stroke-width="5" d="M-190,-28 L-100,-28 M-220,-58 L-110,-58 M-180,-88 L-100,-88 M-160,-112 L-100,-112"/></g>
+              <g class="p-pie"></g><g class="p-aga"></g><g class="p-aire"></g><g class="p-ate"></g>
+            </g>
+
+            <!-- Salpicaduras de nieve al aterrizar -->
+            <g id="esc-salpica1" class="salpica" transform="translate(1800,1500)">
+              <circle r="9" class="f-n1"/><circle r="7" class="f-n1"/><circle r="11" class="f-n1"/><circle r="6" class="f-n1"/><circle r="8" class="f-n1"/><circle r="10" class="f-n1"/><circle r="6" class="f-n1"/><circle r="8" class="f-n1"/><circle r="5" class="f-n1"/><circle r="7" class="f-n1"/>
+            </g>
+            <g id="esc-salpica2" class="salpica" transform="translate(1320,1500)">
+              <circle r="9" class="f-n1"/><circle r="7" class="f-n1"/><circle r="11" class="f-n1"/><circle r="6" class="f-n1"/><circle r="8" class="f-n1"/><circle r="10" class="f-n1"/><circle r="6" class="f-n1"/><circle r="8" class="f-n1"/><circle r="5" class="f-n1"/><circle r="7" class="f-n1"/>
+            </g>
+
+            <!-- Marcas y etiquetas (de frente a la cámara) -->
+            <g id="esc-marca-x" transform="translate(1800,1370) matrix(1.1547,-0.5774,0,1,0,0)"><path d="M-36,-36 L36,36 M36,-36 L-36,36" stroke="#f0745e" stroke-width="16" stroke-linecap="round"/></g>
+            <g id="esc-marca-ok" transform="translate(1800,1370) matrix(1.1547,-0.5774,0,1,0,0)"><path d="M-42,0 L-12,30 L42,-36" stroke="#2f7d5b" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+            <g id="esc-calor" transform="translate(560,820) matrix(1.1547,-0.5774,0,1,0,0)"><text class="t-mono" x="0" y="0" font-size="60" fill="#ffd23f" text-anchor="middle">energía → calor</text></g>
+            <g id="esc-etq-energia" transform="translate(330,640) matrix(1.1547,-0.5774,0,1,0,0)">
+              <rect x="-190" y="-62" width="380" height="110" rx="55" fill="#2e2117"/>
+              <text class="t" x="0" y="12" font-size="64" text-anchor="middle" style="fill:#6fd3a8">Energía</text>
+            </g>
+            <g id="esc-etq-tiro" transform="translate(1420,1170) matrix(1.1547,-0.5774,0,1,0,0)">
+              <rect x="-300" y="-62" width="600" height="110" rx="55" fill="#2e2117"/>
+              <text class="t" x="0" y="12" font-size="64" text-anchor="middle" style="fill:#6fd3a8">Tiro parabólico</text>
+            </g>
+
+            <!-- Pinos y rocas del frente -->
+            <g id="esc-frente"></g>
+          </g>
+        </svg>
+      </div>
+
+      <div id="esc-nieve-b"></div>
+      <div id="esc-rejilla"></div>
+      <div id="esc-sensor">
+        <svg width="1300" height="2200" viewBox="0 0 1300 2200">
+          <defs>
+            <filter id="esc-f-sensor" x="0" y="0" width="100%" height="100%">
+              <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="5" stitchTiles="stitch"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.6 0 0 0 -0.75"/>
+            </filter>
+            <pattern id="esc-pat-sensor" width="220" height="220" patternUnits="userSpaceOnUse"><rect width="220" height="220" filter="url(#esc-f-sensor)"/></pattern>
+          </defs>
+          <rect width="1300" height="2200" fill="url(#esc-pat-sensor)" opacity=".5"/>
+        </svg>
+        <div id="esc-sensor-lineas"></div>
+      </div>
+      <div id="esc-nieve-a"></div>
+      <div id="esc-leyenda">°C<div class="barra"></div>frío</div>
+      <div id="esc-flash"></div>
+      <div id="esc-oscuro"></div>
+    </div>
+  </div>
+  <script>
+    gsap.registerPlugin(MotionPathPlugin);
+    const NS = "http://www.w3.org/2000/svg";
+    const CS = "matrix(1.1547,-0.5774,0,1,0,0)"; // deshace la proyección: objetos de frente a la cámara
+    let semilla = 11;
+    const azar = () => { semilla = (semilla * 16807) % 2147483647; return (semilla - 1) / 2147483646; };
+    const g = (padre, html, transform, clase) => {
+      const e = document.createElementNS(NS, "g");
+      if (transform) e.setAttribute("transform", transform);
+      if (clase) e.setAttribute("class", clase);
+      e.innerHTML = html; document.querySelector(padre).appendChild(e); return e;
+    };
+    const pt = (X, z, Y = 1500) => [X - z, Y + z];
+
+    // ---------- Decoración estática (se genera una vez) ----------
+    // Pino con capas de ramas (luz/sombra) y nieve encima
+    const pino = () => {
+      let s = '<ellipse class="f-n2" cx="0" cy="2" rx="56" ry="11"/><rect class="f-tronco" x="-10" y="-34" width="20" height="36"/><rect class="f-t4" x="1" y="-34" width="9" height="36"/>';
+      [[-28,-120,90],[-88,-172,72],[-142,-220,54],[-192,-262,36]].forEach(([b, t, w]) => {
+        const h = b - t, y = (f) => (t + h * f).toFixed(1);
+        s += `<path class="f-p2" d="M0,${t} L${-w},${b} Q${-w*.62},${b-9} ${-w*.45},${b-2} Q${-w*.22},${b-11} 0,${b-4} Z"/>`;
+        s += `<path class="f-p3" d="M0,${t} L${w},${b} Q${w*.62},${b-9} ${w*.45},${b-2} Q${w*.22},${b-11} 0,${b-4} Z"/>`;
+        s += `<path class="k k-p4" stroke-width="3" d="M${-w},${b} Q${-w*.62},${b-9} ${-w*.45},${b-2} Q${-w*.22},${b-11} 0,${b-4} Q${w*.22},${b-11} ${w*.45},${b-2} Q${w*.62},${b-9} ${w},${b}"/>`;
+        s += `<path class="k k-p1" stroke-width="3" d="M${-w*.18},${y(.25)} L${-w*.7},${y(.85)} M${-w*.05},${y(.5)} L${-w*.35},${y(.92)}"/>`;
+        s += `<path class="f-n1" d="M0,${t} L${-w*.64},${y(.64)} Q${-w*.48},${y(.52)} ${-w*.34},${y(.6)} Q${-w*.18},${y(.44)} 0,${y(.52)} Z"/>`;
+        s += `<path class="f-n3" d="M0,${t} L${w*.42},${y(.42)} Q${w*.22},${y(.38)} 0,${y(.46)} Z"/>`;
+      });
+      return s;
+    };
+    // Roca con caras facetadas y nieve
+    const roca = () =>
+      '<ellipse cx="18" cy="2" rx="70" ry="14" fill="url(#esc-g-sombra)"/>' +
+      '<path class="f-r2" d="M-50,0 L-40,-38 L4,-30 L0,0 Z"/><path class="f-r3" d="M4,-30 L30,-50 L52,-18 L46,0 L0,0 Z"/>' +
+      '<path class="f-r1" d="M-40,-38 L-8,-62 L4,-30 Z"/><path class="f-r1" d="M-8,-62 L30,-50 L4,-30 Z" opacity=".85"/>' +
+      '<path class="k k-r4" stroke-width="2.5" d="M4,-30 L0,0 M4,-30 L-40,-38 M4,-30 L30,-50 M-50,0 L46,0"/>' +
+      '<path class="f-n1" d="M-36,-40 L-8,-61 L22,-51 L6,-41 L-14,-46 Z"/>';
+    // Cada pino o roca va en un grupo exterior (posición) con uno interior que crece al aparecer (5 grupos)
+    let nDeco = 0;
+    const poner = (padre, html, X, z, s) => {
+      const [x, y] = pt(X, z); const o = g(padre, "", `translate(${x},${y}) ${CS} scale(${s})`);
+      const i = document.createElementNS(NS, "g"); i.setAttribute("class", "esc-aparece esc-grupo-" + (nDeco++ % 5)); i.innerHTML = html; o.appendChild(i);
+    };
+    [[-250,-320,1.1],[-80,-330,.85],[420,-360,.8],[1150,-320,.95],[1300,-330,1.25],[1480,-320,.9],[1680,-340,1.2],[1880,-320,.95],
+     [2080,-330,1.3],[2280,-320,1.0],[2420,-250,.85],[1250,-230,.7],[1600,-240,.75],[2000,-230,.8]].forEach(([X, z, s]) => {
+      g("#esc-sombras-pinos", `<ellipse cx="${X + 50}" cy="${z + 36}" rx="${110 * s}" ry="${46 * s}" fill="url(#esc-g-sombra)"/>`);
+      poner("#esc-atras", pino(), X, z, s);
+    });
+    [[-300,-120,1.1],[2380,-90,.8],[1180,-300,.7],[-80,110,.6]].forEach(([X, z, s]) => poner("#esc-atras", roca(), X, z, s));
+    [[-420,120,1.35],[2300,110,1.5]].forEach(([X, z, s]) => {
+      g("#esc-sombras-pinos", `<ellipse cx="${X + 60}" cy="${z + 40}" rx="${110 * s}" ry="${46 * s}" fill="url(#esc-g-sombra)"/>`);
+      poner("#esc-frente", pino(), X, z, s);
+    });
+    [[-200,140,1.0],[2150,140,.9],[2440,60,1.2]].forEach(([X, z, s]) => poner("#esc-frente", roca(), X, z, s));
+    [[520,640,.38],[575,650,.3],[980,620,.34],[1040,632,.42],[1420,650,.36],[1860,630,.4],[1910,640,.3]].forEach(([x, y, s]) =>
+      g("#esc-pinos-medio", pino(), `translate(${x},${y}) scale(${s})`));
+    // Nieve sin preparar: bultos más allá de 15 m
+    let bultos = "";
+    for (let i = 0; i < 34; i++) {
+      const X = 1640 + azar() * 820, z = -330 + azar() * 460, rx = 18 + azar() * 16;
+      bultos += `<ellipse class="f-n3" cx="${X.toFixed(0)}" cy="${z.toFixed(0)}" rx="${rx.toFixed(0)}" ry="${(rx * .6).toFixed(0)}"/><ellipse class="f-n1" cx="${(X - 5).toFixed(0)}" cy="${(z - 4).toFixed(0)}" rx="${(rx * .6).toFixed(0)}" ry="${(rx * .35).toFixed(0)}"/>`;
+    }
+    document.querySelector("#esc-bultos").innerHTML = bultos;
+    // Brillos en la nieve (tres grupos que titilan)
+    ["#esc-brillo-a", "#esc-brillo-b", "#esc-brillo-c"].forEach((sel) => {
+      let s = "";
+      for (let i = 0; i < 22; i++) {
+        const [x, y] = pt(-450 + azar() * 2900, -390 + azar() * 540), r = 3 + azar() * 4;
+        s += `<g transform="translate(${x.toFixed(0)},${y.toFixed(0)}) ${CS}"><path fill="#fff" d="M0,${-r*2} L${r*.4},${-r*.4} L${r*2},0 L${r*.4},${r*.4} L0,${r*2} L${-r*.4},${r*.4} L${-r*2},0 L${-r*.4},${-r*.4} Z"/></g>`;
+      }
+      document.querySelector(sel).innerHTML = s;
+    });
+    // Tablas de madera (líneas a lo largo de X) y postes
+    let tablas = "";
+    for (let y = 592; y < 1560; y += 32) tablas += `M140,${y} L960,${y} `;
+    for (let i = 0; i < 40; i++) { const x = 160 + azar() * 780, y = 592 + Math.floor(azar() * 30) * 32; tablas += `M${x.toFixed(0)},${y} L${x.toFixed(0)},${y + 32} `; }
+    document.querySelector("#esc-tablas-rampa").setAttribute("d", tablas);
+    let tt = "";
+    for (let y = 592; y < 1560; y += 32) tt += `M-20,${y} L140,${y} `;
+    document.querySelector("#esc-tablas-torre").setAttribute("d", tt);
+    let postes = "";
+    [270, 450, 630, 810].forEach((x) => postes += `<rect class="f-m1" x="${x}" y="540" width="9" height="1040"/><rect class="f-m3" x="${x + 9}" y="540" width="12" height="1040"/>`);
+    document.querySelector("#esc-postes").innerHTML = postes;
+
+    // Esquiador: poses desde puntos (tobillo, rodilla, cadera, hombro, cabeza, brazos); con pliegues, goggles,
+    // guantes, bastones con roseta, botas, esquís con brillo y borde de luz (rim light)
+    const P2 = (a) => a.map((p) => p.join(",")).join(" ");
+    const linea = (c, w, pts) => `<polyline class="k ${c}" stroke-width="${w}" points="${P2(pts)}"/>`;
+    const corr = (pts) => pts.map(([x, y]) => [x - 2.4, y - 2.8]);
+    const figura = (j) => {
+      const { an, kn, hp, sh, hd, brazos, ski } = j;
+      let s = "";
+      s += `<path class="k k-esquis" stroke-width="7.5" d="${ski}"/>`;
+      s += `<path class="k k-brillo" stroke-width="1.8" opacity=".8" d="${ski}" transform="translate(0,-2.6)"/>`;
+      s += `<rect class="f-bota" x="-8" y="-9" width="22" height="5" rx="2"/>`;
+      const brazo = (b, atras) => {
+        const [h0, e, m, p] = b;
+        const r = [m[0] + (p[0] - m[0]) * .86, m[1] + (p[1] - m[1]) * .86];
+        return {
+          baston: `<line class="k k-baston" stroke-width="3.5" x1="${m[0]}" y1="${m[1]}" x2="${p[0]}" y2="${p[1]}"/><circle class="k k-baston" stroke-width="2.5" cx="${r[0].toFixed(1)}" cy="${r[1].toFixed(1)}" r="5.5"/>`,
+          rim: linea("k-rim", 15, corr([h0, e, m])),
+          brazo: linea(atras ? "k-chaq-o" : "k-chaq", 11, [h0, e, m]),
+          guante: `<circle class="f-guante" cx="${m[0]}" cy="${m[1]}" r="7"/><circle class="f-brillo" cx="${m[0] - 2}" cy="${m[1] - 2.5}" r="1.8" opacity=".6"/>`,
+        };
+      };
+      if (brazos.length > 1) { const a = brazo(brazos[0], true); s += a.baston + a.brazo + a.guante; }
+      s += linea("k-rim", 21, corr([an, kn, hp])) + `<line class="k k-rim" stroke-width="31" x1="${hp[0] - 2.4}" y1="${hp[1] - 2.8}" x2="${sh[0] - 2.4}" y2="${sh[1] - 2.8}"/>`;
+      s += linea("k-pant", 17, [an, kn, hp]);
+      s += `<rect class="f-bota" x="${an[0] - 9}" y="${an[1] - 7}" width="22" height="13" rx="4"/>`;
+      s += `<line class="k k-chaq" stroke-width="27" x1="${hp[0]}" y1="${hp[1]}" x2="${sh[0]}" y2="${sh[1]}"/>`;
+      const vx = sh[0] - hp[0], vy = sh[1] - hp[1], L = Math.hypot(vx, vy), nx = -vy / L, ny = vx / L;
+      [.32, .58].forEach((f) => {
+        const cx = hp[0] + vx * f, cy = hp[1] + vy * f;
+        s += `<path class="k k-chaq-o" stroke-width="2.6" d="M${(cx + nx * 10).toFixed(1)},${(cy + ny * 10).toFixed(1)} Q${(cx + vx * .06).toFixed(1)},${(cy + vy * .06).toFixed(1)} ${(cx - nx * 7 + vx * .1).toFixed(1)},${(cy - ny * 7 + vy * .1).toFixed(1)}"/>`;
+      });
+      s += `<line class="k k-chaq-o" stroke-width="5" x1="${(hp[0] + nx * 12).toFixed(1)}" y1="${(hp[1] + ny * 12).toFixed(1)}" x2="${(hp[0] - nx * 12).toFixed(1)}" y2="${(hp[1] - ny * 12).toFixed(1)}"/>`;
+      const f = brazo(brazos[brazos.length - 1], false);
+      s += f.rim + f.brazo + f.baston + f.guante;
+      const [hx, hy] = hd;
+      s += `<circle class="f-rim" cx="${hx - 2.4}" cy="${hy - 2.8}" r="15"/><circle class="f-piel" cx="${hx}" cy="${hy}" r="13"/>`;
+      s += `<path class="f-casco" d="M${hx - 14.5},${hy - 1} A14.5,14.5 0 0 1 ${hx + 14.5},${hy - 1} Z"/>`;
+      s += `<path class="k k-brillo" stroke-width="2.5" opacity=".55" d="M${hx - 9},${hy - 8} A10,10 0 0 1 ${hx + 2},${hy - 12}"/>`;
+      s += `<line class="k k-goggle" stroke-width="3" x1="${hx - 12}" y1="${hy - 1}" x2="${hx + 4}" y2="${hy - 1}"/>`;
+      s += `<rect class="f-goggle" x="${hx + 3}" y="${hy - 5}" width="13" height="8" rx="3"/><rect class="f-brillo" x="${hx + 6}" y="${hy - 4}" width="5" height="2.2" rx="1" opacity=".85"/>`;
+      return s;
+    };
+    const ESQUI = "M-58,-3 L60,-3 Q72,-3 77,-14";
+    const POSE_DEF = {
+      pie: { an: [0, -10], kn: [2, -38], hp: [0, -64], sh: [2, -98], hd: [4, -118], brazos: [[[4, -94], [14, -80], [20, -68], [36, -3]]], ski: ESQUI },
+      aga: { an: [0, -10], kn: [18, -33], hp: [-10, -47], sh: [18, -66], hd: [33, -80], brazos: [[[16, -64], [24, -49], [34, -52], [-44, -38]]], ski: ESQUI },
+      aire: { an: [0, -10], kn: [8, -36], hp: [-4, -62], sh: [12, -96], hd: [19, -116], brazos: [[[6, -92], [-14, -102], [-34, -108], [-58, -78]], [[10, -92], [30, -104], [50, -112], [70, -82]]], ski: "M-58,-4 L60,-1 Q72,0 78,-12" },
+      ate: { an: [0, -10], kn: [20, -30], hp: [-8, -43], sh: [12, -74], hd: [21, -90], brazos: [[[8, -70], [-10, -62], [-24, -66], [-42, -3]], [[12, -70], [28, -62], [42, -66], [60, -3]]], ski: ESQUI },
+    };
+    ["#esc-esq", "#esc-chico"].forEach((sel) => Object.keys(POSE_DEF).forEach((n) => {
+      document.querySelector(sel + " .p-" + n).innerHTML = figura(POSE_DEF[n]);
+    }));
+
+    // ---------- Línea de tiempo (pausas de 5 s: S() recorre los tiempos del guion) ----------
+    const TL = gsap.timeline({ paused: true });
+    // El guion se escribió con tomas de 4 s y pausas de 3 s. Ahora cada toma dura su audio + 0.6 s (mín. 4 s)
+    // y cada pausa su pregunta + 0.3 s + 3 s. S() lleva cada tiempo a su toma; estira() alarga las duraciones igual.
+    const DUR = [4, 4, 4.4, 4, 4.4, 4.5, 4, 4, 4, 4, 5.2, 4.7, 4, 4, 4, 4, 4, 4, 7.2], PAUSAS = [5.8, 6.1, 5.4];
+    const SEG = []; { let o = 0, n = 0, k = 0; DUR.forEach((d, i) => { SEG.push([o, 4, n, d]); o += 4; n += d; if ([5, 11, 12].includes(i + 1)) { SEG.push([o, 3, n, PAUSAS[k]]); o += 3; n += PAUSAS[k++]; } }); }
+    const seg = (t) => SEG.find(([o, ol]) => t >= o - 1e-6 && t < o + ol - 1e-6) || SEG[SEG.length - 1];
+    const S = (t) => { const [o, ol, n, nl] = seg(t); return n + (t - o) * nl / ol; };
+    const K = (t) => { const [, ol, , nl] = seg(t); return nl / ol; };
+    const estira = (v, t) => (v && typeof v.duration === "number" ? Object.assign({}, v, { duration: v.duration * K(t) }) : v);
+    const tl = {
+      set: (a, b, t) => TL.set(a, b, S(t)),
+      to: (a, b, t) => TL.to(a, estira(b, t), S(t)),
+      fromTo: (a, b, c, t) => TL.fromTo(a, b, estira(c, t), S(t)),
+    };
+    const E = "#esc-escena";
+
+    // ---------- Estilos (mismas variables y misma escena; cambia paleta y textura) ----------
+    const ISO = {
+      "--cielo-a":"#8FC1BE","--cielo-b":"#F6F1E6","--monte-l":"#C9D8D2","--monte-l-n":"#FFFCF6","--monte-m":"#9CBDB8","--monte-m-n":"#F6F1E6",
+      "--nieve-1":"#FFFCF6","--nieve-2":"#EFE7D8","--nieve-3":"#DCCFB8","--nieve-4":"#BBA98C","--tierra-2":"#8C7458","--tierra-3":"#6E5A44","--tierra-4":"#4E3F30",
+      "--madera-1":"#D4B06A","--madera-2":"#B08A3E","--madera-3":"#8A6A2C","--madera-4":"#5E4719",
+      "--roca-1":"#D6CEC1","--roca-2":"#ABA091","--roca-3":"#837867","--roca-4":"#5A5146",
+      "--pino-1":"#4E9090","--pino-2":"#2F6F73","--pino-3":"#245D60","--pino-4":"#173F41","--tronco":"#6B523A",
+      "--linea":"rgba(46,33,23,0.35)","--tinta":"#2E2117",
+      "--chaqueta":"#A5352A","--chaqueta-o":"#74231A","--chaqueta-2":"#2F6F73","--chaqueta-2o":"#1F4E51",
+      "--pantalon":"#2E2117","--bota":"#1E1610","--casco":"#B08A3E","--piel":"#E9C8A6","--goggle":"#2E2117",
+      "--esquis":"#2F6F73","--brillo":"#FFFFFF","--baston":"#77634F","--rim":"#FFF3D6",
+      "--zona":"rgba(47,125,91,0.30)","--zona-b":"#2F7D5B","--vel":"rgba(119,99,79,0.7)"
+    };
+    const AZUL = {
+      "--cielo-a":"#133768","--cielo-b":"#1E5394","--monte-l":"#22528B","--monte-l-n":"#2B62A0","--monte-m":"#2A5E9B","--monte-m-n":"#3570B0",
+      "--nieve-1":"#3B7BBE","--nieve-2":"#3069A8","--nieve-3":"#285B95","--nieve-4":"#1F4A7E","--tierra-2":"#2A5E9B","--tierra-3":"#234F86","--tierra-4":"#1A3F6E",
+      "--madera-1":"#4A88C8","--madera-2":"#3672B2","--madera-3":"#2B619E","--madera-4":"#8FB8E6",
+      "--roca-1":"#4A88C8","--roca-2":"#3672B2","--roca-3":"#2B619E","--roca-4":"#8FB8E6",
+      "--pino-1":"#5A94D2","--pino-2":"#3A74B4","--pino-3":"#2F65A2","--pino-4":"#8FB8E6","--tronco":"#2F65A2",
+      "--linea":"rgba(255,255,255,0.9)","--tinta":"#FFFFFF",
+      "--chaqueta":"#FFFFFF","--chaqueta-o":"#9DBBE0","--chaqueta-2":"#CFE0F5","--chaqueta-2o":"#8EAED6",
+      "--pantalon":"#BFD4EE","--bota":"#9DBBE0","--casco":"#FFFFFF","--piel":"#E6EFFA","--goggle":"#163D73",
+      "--esquis":"#FFFFFF","--brillo":"#FFFFFF","--baston":"#FFFFFF","--rim":"#FFFFFF",
+      "--zona":"rgba(255,255,255,0.16)","--zona-b":"#FFFFFF","--vel":"rgba(255,255,255,0.8)"
+    };
+    const TERM = {
+      "--cielo-a":"#04061F","--cielo-b":"#0D1458","--monte-l":"#111967","--monte-l-n":"#17227A","--monte-m":"#182281","--monte-m-n":"#1F2D92",
+      "--nieve-1":"#2440B0","--nieve-2":"#1E359A","--nieve-3":"#192C85","--nieve-4":"#13216B","--tierra-2":"#1B2A8C","--tierra-3":"#172377","--tierra-4":"#111A5E",
+      "--madera-1":"#4434AE","--madera-2":"#3A2C9E","--madera-3":"#30258A","--madera-4":"#241C70",
+      "--roca-1":"#2A3BA8","--roca-2":"#223196","--roca-3":"#1C2882","--roca-4":"#151F69",
+      "--pino-1":"#3238A8","--pino-2":"#2A2F9A","--pino-3":"#23288A","--pino-4":"#1A1E70","--tronco":"#23288A",
+      "--linea":"rgba(255,255,255,0.2)","--tinta":"#FFFFFF",
+      "--chaqueta":"#F59E1B","--chaqueta-o":"#D9731A","--chaqueta-2":"#F59E1B","--chaqueta-2o":"#D9731A",
+      "--pantalon":"#E4572E","--bota":"#C2401F","--casco":"#FFD23F","--piel":"#FFF07A","--goggle":"#7A1E0E",
+      "--esquis":"#3D5BD9","--brillo":"#9FB0FF","--baston":"#5B6BE0","--rim":"#FFF6B0",
+      "--zona":"rgba(255,255,255,0.10)","--zona-b":"#8FA3FF","--vel":"rgba(255,255,255,0.7)"
+    };
+    const PAL = { ISO, AZUL, TERM, TERM_C: Object.assign({}, TERM, { "--esquis": "#FF3B1F" }) };
+    // Texturas por estilo: rejilla, grano/vetas/brillos, trama de blueprint, ruido de sensor, leyenda térmica
+    const CAPAS = ["#esc-rejilla", ".esc-tex", ".esc-trama", "#esc-sensor", "#esc-leyenda"];
+    const OP = { ISO: [0, 1, 0, 0, 0], AZUL: [1, 0, 1, 0, 0], TERM: [0, .3, 0, 1, 1], TERM_C: [0, .3, 0, 1, 1] };
+    const estilo = (t, a, b) => {
+      tl.fromTo(E, Object.assign({}, PAL[a]), Object.assign({}, PAL[b], { duration: 0.4, ease: "power1.inOut", immediateRender: false }), t);
+      CAPAS.forEach((c, i) => tl.fromTo(c, { opacity: OP[a][i] }, { opacity: OP[b][i], duration: 0.4, ease: "power1.inOut", immediateRender: false }, t));
+    };
+
+    // ---------- Utilidades ----------
+    const ver = (s, t, d = 0.4, a = 1) => tl.fromTo(s, { opacity: 0 }, { opacity: a, duration: d, ease: "power1.out", immediateRender: false }, t);
+    const ocultar = (s, t, d = 0.3, a = 1) => tl.fromTo(s, { opacity: a }, { opacity: 0, duration: d, ease: "power1.in", immediateRender: false }, t);
+    const POSES = ["pie", "aga", "aire", "ate"];
+    const pose = (sel, t, nombre) => POSES.forEach((n) => tl.set(sel + " .p-" + n, { opacity: n === nombre ? 1 : 0 }, t));
+    const bajar = (sel, ruta, t, d, a, b, ease) =>
+      tl.to(sel, { motionPath: { path: ruta, autoRotate: true, start: a, end: b }, duration: d, ease, immediateRender: false }, t);
+    // Tiro horizontal exacto: x lineal, y ∝ t² (power1.in); la sombra va en el suelo (coordenadas X, z)
+    const volar = (t, d, x0, x1, y0, y1) => {
+      tl.fromTo("#esc-esq", { x: x0 }, { x: x1, duration: d, ease: "none", immediateRender: false }, t);
+      tl.fromTo("#esc-esq", { y: y0 }, { y: y1, duration: d, ease: "power1.in", immediateRender: false }, t);
+      tl.fromTo("#esc-sombra", { x: x0, scale: 0.45, opacity: 0.3 }, { x: x1, scale: 1, opacity: 1, duration: d, ease: "power1.in", immediateRender: false }, t);
+    };
+    const destello = (t) => tl.fromTo("#esc-flash", { opacity: 0.7 }, { opacity: 0, duration: 0.5, ease: "power2.out", immediateRender: false }, t);
+    const SALP = [[-70,-60],[-40,-95],[-10,-70],[30,-105],[60,-60],[95,-80],[120,-40],[-100,-30],[10,-120],[-60,-110]];
+    const salpicar = (sel, t) => {
+      gsap.utils.toArray(sel + " circle").forEach((c, i) => {
+        tl.fromTo(c, { x: 0, y: 0, opacity: 1, scale: 1 }, { x: SALP[i][0], y: SALP[i][1], opacity: 0, scale: 0.4, duration: 0.8, ease: "power2.out", immediateRender: false }, t);
+      });
+    };
+
+    // ---------- Cámara (en coordenadas del plano; se proyecta; parallax en montañas) ----------
+    const A = 540, B = 1080;
+    let C = { cx: 600, cy: 1000, z: 0.55 };
+    const P = (c) => {
+      const sx = 0.866 * c.cx, sy = 0.5 * c.cx + c.cy;
+      return {
+        m: { x: A - sx * c.z, y: B - sy * c.z, scale: c.z },
+        l: { x: -660 - (sx - 870) * 0.1, y: -(sy - 1600) * 0.05 },
+        d: { x: -660 - (sx - 870) * 0.25, y: -(sy - 1600) * 0.12 },
+      };
+    };
+    const cam = (t, cx, cy, z, dur = 1, ease = "power2.inOut") => {
+      const a = P(C), N = { cx, cy, z }, b = P(N);
+      tl.fromTo("#esc-mundo", a.m, Object.assign({}, b.m, { duration: dur, ease, immediateRender: false }), t);
+      tl.fromTo("#esc-lejos", a.l, Object.assign({}, b.l, { duration: dur, ease, immediateRender: false }), t);
+      tl.fromTo("#esc-medio", a.d, Object.assign({}, b.d, { duration: dur, ease, immediateRender: false }), t);
+      C = N;
+    };
+    const corte = (t, cx, cy, z) => {
+      C = { cx, cy, z }; const p = P(C);
+      tl.set("#esc-mundo", p.m, t); tl.set("#esc-lejos", p.l, t); tl.set("#esc-medio", p.d, t);
+    };
+
+    // ---------- Estado inicial (inmediato + en la línea de tiempo) ----------
+    const ini = (sel, v) => { gsap.set(sel, v); TL.set(sel, v, 0); };
+    // Eje de giro en los pies (0,0): GSAP mide el origen desde la esquina de la caja del grupo
+    const pies = (sel) => { const b = document.querySelector(sel).getBBox(); return (-b.x) + "px " + (-b.y) + "px"; };
+    ini(E, ISO);
+    corte(0, 600, 1000, 0.6);
+    { const p = P(C); gsap.set("#esc-mundo", p.m); gsap.set("#esc-lejos", p.l); gsap.set("#esc-medio", p.d); }
+    ini("#esc-esq", { transformOrigin: pies("#esc-esq"), x: 200, y: 500, rotation: 0, opacity: 0 });
+    ini("#esc-chico", { transformOrigin: pies("#esc-chico"), x: 310, y: 390, rotation: 0, opacity: 0 });
+    pose("#esc-esq", 0, "pie"); pose("#esc-chico", 0, "pie");
+    ini(["#esc-cota20", "#esc-cota5", "#esc-cota15", "#esc-cota-alc", "#esc-v20", "#esc-par", "#esc-par-corta", "#esc-par-fantasma",
+      "#esc-v0", "#esc-v1", "#esc-v2x", "#esc-v2y", "#esc-v3", "#esc-v4", "#esc-sombras", "#esc-lbl-vx", "#esc-lbl-vy", "#esc-lbl-v2",
+      "#esc-sombra", "#esc-esq-vel", "#esc-chico-vel", "#esc-marca-x", "#esc-marca-ok", "#esc-calor", "#esc-etq-energia", "#esc-etq-tiro",
+      "#esc-huella", "#esc-huella-glow", "#esc-zona-glow", "#esc-rejilla", ".esc-trama", "#esc-sensor", "#esc-leyenda",
+      "#esc-flash", "#esc-oscuro", ".salpica circle"], { opacity: 0 });
+    ini(".esc-tex", { opacity: 1 });
+    ini("#esc-rampa", { svgOrigin: "540 1560", scaleY: 0 });
+    ini("#esc-plataforma", { svgOrigin: "60 1560", scaleY: 0 });
+    ini("#esc-zona-ext", { svgOrigin: "1600 0", scaleX: 0 });
+    ini("#esc-clip-par-r", { svgOrigin: "990 1300", scaleX: 0 });
+    ini("#esc-clip-corta-r", { svgOrigin: "990 1300", scaleX: 0 });
+    const huella = document.querySelector("#esc-huella");
+    const LH = huella && huella.getTotalLength ? huella.getTotalLength() : 1200;
+    ini("#esc-huella", { strokeDasharray: LH, strokeDashoffset: LH });
+    // Nieve que cae y brillos que titilan (todo el video)
+    TL.fromTo("#esc-nieve-a", { backgroundPosition: "0px 0px" }, { backgroundPosition: "-360px 5460px", duration: 100, ease: "none", immediateRender: false }, 0);
+    TL.fromTo("#esc-nieve-b", { backgroundPosition: "0px 0px" }, { backgroundPosition: "-170px 2790px", duration: 100, ease: "none", immediateRender: false }, 0);
+    [["#esc-brillo-a", 0], ["#esc-brillo-b", 0.5], ["#esc-brillo-c", 1]].forEach(([s, d]) =>
+      TL.fromTo(s, { opacity: 0.15 }, { opacity: 1, duration: 0.75, ease: "sine.inOut", yoyo: true, repeat: 133, immediateRender: false }, d));
+    // Ruido de sensor (térmica): saltos aleatorios con semilla, cada 0.1 s
+    { const xs = [], ys = []; for (let i = 0; i < 160; i++) { xs.push(-Math.round(azar() * 200)); ys.push(-Math.round(azar() * 220)); }
+      TL.to("#esc-sensor svg", { keyframes: { x: xs, y: ys, easeEach: "steps(1)" }, duration: 16, ease: "none" }, S(65)); }
+
+    // T1 (0) rampa y plataforma crecen; aparece el esquiador arriba
+    tl.fromTo("#esc-plataforma", { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: "power3.out", immediateRender: false }, 0.1);
+    tl.fromTo("#esc-rampa", { scaleY: 0 }, { scaleY: 1, duration: 1.3, ease: "power3.out", immediateRender: false }, 0.3);
+    cam(0, 560, 960, 0.66, 4, "sine.inOut");
+    ver("#esc-esq", 1.5);
+    ver("#esc-cota20", 2.2);
+    // Pinos y rocas aparecen en 5 grupos; cada grupo con su golpe suave (mismos tiempos en la mezcla de SFX)
+    const APARECE = [1.7, 2.05, 2.4, 2.75, 3.1];
+    ini(".esc-aparece", { svgOrigin: "0 0", scale: 0 });
+    ini("#esc-sombras-pinos", { opacity: 0 }); ver("#esc-sombras-pinos", 1.7, 1.8);
+    APARECE.forEach((t, k) => tl.fromTo(".esc-grupo-" + k, { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(2)", immediateRender: false }, t));
+
+    // T2 (4) lo sueltas: resbala despacio
+    ocultar("#esc-cota20", 4);
+    cam(4, 330, 700, 1.0, 1.0);
+    pose("#esc-esq", 4.9, "aga");
+    bajar("#esc-esq", "#esc-ruta", 4.9, 3.1, 0, 0.07, "power1.in");
+    cam(5, 400, 760, 1.0, 3, "none");
+
+    // T3 (8) se acelera; congela abajo
+    bajar("#esc-esq", "#esc-ruta", 8, 3, 0.07, 1, "power2.in");
+    cam(8, 1000, 1260, 0.95, 3, "power2.in");
+    ver("#esc-esq-vel", 8.6, 0.5);
+    ocultar("#esc-esq-vel", 11);
+    destello(11);
+    cam(11, 1000, 1260, 1.05, 0.5, "power2.out");
+
+    // T4 (12) plano azul: conservación de la energía
+    estilo(12, "ISO", "AZUL");
+    cam(12, 640, 960, 0.78, 0.8);
+    ver("#esc-cota20", 12.5);
+
+    // T5 (16) barras de energía (overlay); la escena sube
+    cam(16, 600, 1540, 0.55, 0.8);
+    // P1 (20-25) pausa
+    // T6 (25) v = 20 m/s
+    ver("#esc-v20", 24.5);
+
+    // T7 (29) isométrico: chico y grande bajan juntos, cada uno en su carril
+    estilo(27, "AZUL", "ISO");
+    ocultar("#esc-cota20", 27); ocultar("#esc-v20", 27);
+    tl.set("#esc-esq", { x: 200, y: 500, rotation: 0 }, 27);
+    pose("#esc-esq", 27, "pie");
+    corte(27, 400, 720, 0.8);
+    ver("#esc-chico", 27.1, 0.3);
+    pose("#esc-esq", 27.6, "aga"); pose("#esc-chico", 27.6, "aga");
+    bajar("#esc-esq", "#esc-ruta", 27.6, 3, 0, 1, "power2.in");
+    bajar("#esc-chico", "#esc-ruta2", 27.6, 3, 0, 1, "power2.in");
+    cam(27.6, 1040, 1220, 0.8, 3, "power2.in");
+    ver(["#esc-esq-vel", "#esc-chico-vel"], 28.6, 0.4);
+    ocultar(["#esc-esq-vel", "#esc-chico-vel"], 30.6);
+
+    // T8 (33) la cámara baja: borde a 5 m
+    ocultar("#esc-chico", 31);
+    cam(31, 1150, 1400, 0.85, 1.6);
+    ver("#esc-cota5", 32);
+
+    // T9 (37) sale volando (cámara lenta) y congela en el aire
+    ocultar("#esc-cota5", 35);
+    tl.set("#esc-esq", { rotation: 0 }, 35.3);
+    pose("#esc-esq", 35.3, "aire");
+    tl.set("#esc-esq-sombra", { opacity: 0 }, 35.3);
+    volar(35.3, 1.4, 1000, 1400, 1300, 1350);
+    cam(35.2, 1400, 1380, 1.0, 1.5, "power1.inOut");
+    destello(36.7);
+
+    // T10 (41) plano azul: parábola y vx
+    estilo(39, "ISO", "AZUL");
+    cam(39, 1320, 1420, 0.8, 0.8);
+    ver("#esc-par", 39.4, 0.2);
+    tl.fromTo("#esc-clip-par-r", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power1.inOut", immediateRender: false }, 39.5);
+    ver("#esc-v2x", 40.8); ver("#esc-lbl-v2", 41.1);
+
+    // T11 (45) vx igual, vy crece; sombras en x y en y
+    ocultar("#esc-lbl-v2", 43);
+    ver("#esc-v2y", 43.1); ver("#esc-v0", 43.3); ver("#esc-v1", 43.6); ver("#esc-v3", 43.9); ver("#esc-v4", 44.2);
+    ver("#esc-sombras", 44.8, 0.5);
+    ver("#esc-lbl-vx", 45.3); ver("#esc-lbl-vy", 45.7);
+    // P2 (49-54) pausa
+
+    // T12 (54) zona de aterrizaje: 15 m
+    ocultar(["#esc-v0", "#esc-v1", "#esc-v2x", "#esc-v2y", "#esc-v3", "#esc-v4", "#esc-sombras", "#esc-lbl-vx", "#esc-lbl-vy"], 50);
+    cam(50, 1300, 1450, 0.85, 0.8);
+    ver("#esc-zona-glow", 50.4);
+    ver("#esc-cota15", 50.7);
+    // P3 (58-63) pausa
+
+    // T13 (63) isométrico: aterriza a 20 m, fuera de la zona
+    estilo(57, "AZUL", "ISO");
+    ocultar(["#esc-par", "#esc-zona-glow", "#esc-sombra"], 57, 0.2);
+    tl.set("#esc-esq", { x: 1000, y: 1300, rotation: 0 }, 57);
+    pose("#esc-esq", 57, "aga");
+    corte(57, 1100, 1360, 0.9);
+    pose("#esc-esq", 57.6, "aire");
+    volar(57.6, 1.4, 1000, 1800, 1300, 1500);
+    cam(57.6, 1650, 1450, 0.9, 1.4, "none");
+    pose("#esc-esq", 59, "ate");
+    tl.set("#esc-esq-sombra", { opacity: 1 }, 59);
+    tl.set("#esc-sombra", { opacity: 0 }, 59);
+    salpicar("#esc-salpica1", 59);
+    ver("#esc-marca-x", 59.3, 0.3);
+    ver("#esc-cota-alc", 59.6);
+
+    // T14 (67) se alarga la zona de aterrizaje
+    cam(61, 1450, 1450, 0.75, 1);
+    ocultar("#esc-marca-x", 61.2);
+    tl.fromTo("#esc-zona-ext", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power2.out", immediateRender: false }, 61.3);
+    ver("#esc-marca-ok", 62.6, 0.3);
+    pose("#esc-esq", 62.6, "pie");
+
+    // T15 (71) cámara térmica: la fricción calienta esquís y huella
+    estilo(65, "ISO", "TERM");
+    ocultar(["#esc-marca-ok", "#esc-cota15", "#esc-cota-alc"], 65, 0.2);
+    tl.set("#esc-esq", { x: 200, y: 500, rotation: 0 }, 65);
+    pose("#esc-esq", 65, "aga");
+    corte(65, 400, 740, 1.0);
+    bajar("#esc-esq", "#esc-ruta", 65.5, 3, 0, 1, "power2.in");
+    cam(65.5, 1000, 1260, 1.0, 3, "power2.in");
+    tl.set("#esc-huella", { opacity: 1 }, 65.5);
+    tl.fromTo("#esc-huella", { strokeDashoffset: LH }, { strokeDashoffset: 0, duration: 3, ease: "power2.in", immediateRender: false }, 65.5);
+    tl.fromTo(E, { "--esquis": "#3D5BD9" }, { "--esquis": "#FF3B1F", duration: 3, ease: "power2.in", immediateRender: false }, 65.5);
+    ver("#esc-esq-vel", 66.3, 0.4); ocultar("#esc-esq-vel", 68.5);
+
+    // T16 (75) llega más lento: se queda corto
+    cam(69, 1180, 1420, 0.85, 0.8);
+    ver("#esc-par-fantasma", 69.2, 0.4, 0.4);
+    ver("#esc-par-corta", 69.4, 0.2);
+    tl.fromTo("#esc-clip-corta-r", { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: "power1.inOut", immediateRender: false }, 69.5);
+    pose("#esc-esq", 69.6, "aire");
+    tl.set("#esc-esq-sombra", { opacity: 0 }, 69.6);
+    volar(69.6, 1.4, 1000, 1320, 1300, 1500);
+    pose("#esc-esq", 71, "ate");
+    tl.set("#esc-esq-sombra", { opacity: 1 }, 71);
+    tl.set("#esc-sombra", { opacity: 0 }, 71);
+    salpicar("#esc-salpica2", 71);
+
+    // T17 (79) la energía que falta es calor
+    ocultar("#esc-par-corta", 73); ocultar("#esc-par-fantasma", 73, 0.3, 0.4);
+    cam(73, 640, 1000, 0.85, 1);
+    ver("#esc-huella-glow", 73.3, 0.5, 0.4);
+    tl.fromTo("#esc-huella-glow", { opacity: 0.4 }, { opacity: 1, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3, immediateRender: false }, 73.8);
+    ver("#esc-calor", 74);
+
+    // T18 (83) vista completa: energía + tiro parabólico
+    estilo(77, "TERM_C", "ISO");
+    ocultar(["#esc-huella", "#esc-huella-glow", "#esc-calor"], 77, 0.3);
+    tl.set("#esc-esq", { x: 1800, y: 1500, rotation: 0 }, 77);
+    pose("#esc-esq", 77, "pie");
+    cam(77, 1050, 1080, 0.5, 1.2);
+    ver("#esc-par", 77.5);
+    ver("#esc-etq-energia", 77.9); ver("#esc-etq-tiro", 78.4);
+
+    // T19 (87) cierre: se oscurece la escena
+    ver("#esc-oscuro", 81, 0.6, 0.6);
+    ocultar(["#esc-etq-energia", "#esc-etq-tiro"], 81, 0.4);
+
+    window.__timelines["escena"] = TL;
+  </script>
+</template>

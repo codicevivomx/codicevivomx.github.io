@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 220" width="1060" height="220">
+  <!-- LOGO PROVISIONAL de Códice Vivo. Para usar el logo real, reemplaza este archivo
+       (mismo nombre: assets/logo.svg). Cualquier proporción funciona: el cierre lo ajusta
+       dentro de su caja sin deformarlo. Pon el texto del logo como trazos (contornos),
+       porque dentro de una imagen SVG no se cargan las fuentes del video. -->
+  <g transform="translate(20,30)">
+    <path d="M10,20 Q80,0 150,20 L150,160 Q80,140 10,160 Z" fill="#2f6f73"/>
+    <path d="M150,20 Q220,0 290,20 L290,160 Q220,140 150,160 Z" fill="#245d60"/>
+    <path d="M150,20 L150,160" stroke="#fffcf6" stroke-width="6"/>
+    <path d="M40,55 Q80,45 120,55 M40,85 Q80,75 120,85 M40,115 Q80,105 120,115" stroke="#d9b26a" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <circle cx="220" cy="80" r="34" fill="none" stroke="#6fd3a8" stroke-width="8"/>
+    <path d="M220,46 L220,114 M186,80 L254,80" stroke="#6fd3a8" stroke-width="5"/>
+  </g>
+  <text x="335" y="145" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-weight="900" font-size="112" letter-spacing="-3" fill="#fffcf6">Códice Vivo</text>
+</svg>

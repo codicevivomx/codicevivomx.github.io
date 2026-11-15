@@ -1,0 +1,46 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; }
+    /* Palabra clave: problema en coral, solución en verde menta */
+    .pal { position: absolute; left: 0; right: 0; top: 190px; text-align: center; }
+    .pal-caja {
+      display: inline-block; padding: 18px 40px 24px; border-radius: 30px;
+      background: rgba(30,22,15,.92); border: 4px solid currentColor;
+      max-width: 940px;
+    }
+    .pal-kick { display: block; font: 700 28px "JetBrains Mono", monospace; letter-spacing: .16em; margin-bottom: 4px; }
+    .pal-txt { display: block; font: 900 70px "Inter", sans-serif; line-height: 1.05; letter-spacing: -.01em; }
+    .problema { color: var(--coral); }
+    .solucion { color: var(--menta); }
+  </style>
+  <div data-hf-id="hf-utir" id="root" data-composition-id="palabras" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-dh4c" id="pal-3" class="pal clip problema" data-start="8" data-duration="4.4" data-track-index="0"><div data-hf-id="hf-pnuf" class="pal-caja"><span data-hf-id="hf-cd91" class="pal-kick">PROBLEMA</span><span data-hf-id="hf-mvh6" class="pal-txt">se acelera</span></div></div>
+    <div data-hf-id="hf-5ohi" id="pal-4" class="pal clip solucion" data-start="12.4" data-duration="4" data-track-index="0"><div data-hf-id="hf-ju2f" class="pal-caja"><span data-hf-id="hf-v5hz" class="pal-kick">SOLUCIÓN</span><span data-hf-id="hf-5364" class="pal-txt">conservación de la energía</span></div></div>
+    <div data-hf-id="hf-vbkw" id="pal-6" class="pal clip solucion" data-start="26.6" data-duration="4.5" data-track-index="0"><div data-hf-id="hf-jfre" class="pal-caja"><span data-hf-id="hf-uh07" class="pal-kick">SOLUCIÓN</span><span data-hf-id="hf-uska" class="pal-txt">se cancela</span></div></div>
+    <div data-hf-id="hf-kpdk" id="pal-9" class="pal clip problema" data-start="39.1" data-duration="4" data-track-index="0"><div data-hf-id="hf-j1gd" class="pal-caja"><span data-hf-id="hf-px6x" class="pal-kick">PROBLEMA</span><span data-hf-id="hf-2u6j" class="pal-txt">sale volando</span></div></div>
+    <div data-hf-id="hf-3qky" id="pal-10" class="pal clip solucion" data-start="43.1" data-duration="4" data-track-index="0"><div data-hf-id="hf-ltlk" class="pal-caja"><span data-hf-id="hf-u2p6" class="pal-kick">SOLUCIÓN</span><span data-hf-id="hf-2uot" class="pal-txt">tiro parabólico</span></div></div>
+    <div data-hf-id="hf-bxt7" id="pal-13" class="pal clip problema" data-start="68.5" data-duration="4" data-track-index="0"><div data-hf-id="hf-lfaj" class="pal-caja"><span data-hf-id="hf-r440" class="pal-kick">PROBLEMA</span><span data-hf-id="hf-36p6" class="pal-txt">se pasa</span></div></div>
+    <div data-hf-id="hf-vf8z" id="pal-14" class="pal clip solucion" data-start="72.5" data-duration="4" data-track-index="0"><div data-hf-id="hf-l0zi" class="pal-caja"><span data-hf-id="hf-toe5" class="pal-kick">SOLUCIÓN</span><span data-hf-id="hf-d6tj" class="pal-txt">zona de aterrizaje</span></div></div>
+    <div data-hf-id="hf-svug" id="pal-15" class="pal clip problema" data-start="76.5" data-duration="4" data-track-index="0"><div data-hf-id="hf-kmoh" class="pal-caja"><span data-hf-id="hf-qpsz" class="pal-kick">PROBLEMA</span><span data-hf-id="hf-itn2" class="pal-txt">fricción</span></div></div>
+    <div data-hf-id="hf-yjzz" id="pal-16" class="pal clip problema" data-start="80.5" data-duration="4" data-track-index="0"><div data-hf-id="hf-rgss" class="pal-caja"><span data-hf-id="hf-oq9u" class="pal-kick">PROBLEMA</span><span data-hf-id="hf-3nz4" class="pal-txt">se queda corto</span></div></div>
+    <div data-hf-id="hf-fw8j" id="pal-17" class="pal clip solucion" data-start="84.5" data-duration="4" data-track-index="0"><div data-hf-id="hf-r2hr" class="pal-caja"><span data-hf-id="hf-wgjc" class="pal-kick">SOLUCIÓN</span><span data-hf-id="hf-8gxh" class="pal-txt">trabajo de la fricción</span></div></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // [palabra, inicio de toma, momento en que la voz la dice, duración de toma]
+    [["#pal-3", 8, 9, 4.4],
+     ["#pal-4", 12.4, 13.26, 4],
+     ["#pal-6", 26.6, 29.76, 4.5],
+     ["#pal-9", 39.1, 40.13, 4],
+     ["#pal-10", 43.1, 45.03, 4],
+     ["#pal-13", 68.5, 69.7, 4],
+     ["#pal-14", 72.5, 74.2, 4],
+     ["#pal-15", 76.5, 78.44, 4],
+     ["#pal-16", 80.5, 82.41, 4],
+     ["#pal-17", 84.5, 86.52, 4]].forEach(([s, t, w, d]) => {
+      tl.fromTo(s + " .pal-caja", { opacity: 0, scale: 0.8, y: -20 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(2.2)" }, w);
+      tl.to(s + " .pal-caja", { opacity: 0, duration: 0.25 }, t + d - 0.3);
+    });
+    window.__timelines["palabras"] = tl;
+  </script>
+</template>
