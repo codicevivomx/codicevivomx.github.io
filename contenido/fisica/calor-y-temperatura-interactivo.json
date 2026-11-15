@@ -1,0 +1,369 @@
+{
+  "titulo": "Calor y temperatura",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pieLamina": "Lámina I. Hielo que se derrite y se calienta sobre una parrilla. Enciéndela y mira la meseta de la curva.",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "¿Cuánto calor se necesita para convertir 200 g de hielo a 0 °C en agua a 20 °C? (c del agua = 1 cal/g·°C; calor latente de fusión = 80 cal/g)",
+        "opciones": [
+          {
+            "texto": "A) 4 kcal",
+            "explicacion": "Usaste solo Q = mcΔT (200 × 1 × 20 = 4 000 cal) y olvidaste derretir el hielo. La fusión a 0 °C se lleva 16 000 cal aunque el termómetro no se mueva."
+          },
+          {
+            "texto": "B) 16 kcal",
+            "explicacion": "Derretiste el hielo (200 × 80 = 16 000 cal), pero falta calentar el agua de 0 a 20 °C: 200 × 1 × 20 = 4 000 cal más."
+          },
+          {
+            "texto": "C) 20 kcal",
+            "correcta": true,
+            "explicacion": "Fusión 200 × 80 = 16 000 cal, más calentar 200 × 1 × 20 = 4 000 cal: 20 000 cal = 20 kcal."
+          },
+          {
+            "texto": "D) 74.6 kcal",
+            "explicacion": "Derretiste bien, pero usaste 293 K como ΔT (200 × 1 × 293 = 58 600 cal). Un cambio de 20 °C es un cambio de 20 K."
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "Calentar sube la temperatura, <span class=\"numeros\">Q = m · c · ΔT</span>; en un cambio de fase el calor no la sube, se gasta en derretir, <span class=\"numeros\">Q = m · L</span>, y también cuenta."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> Fusión a 0 °C: Q<sub>1</sub> = 200 × 80 = <span class=\"numeros\">16 000 cal</span>; el termómetro no se mueve.",
+        "<span class=\"numeral\">II.</span> Calentar de 0 a 20 °C: Q<sub>2</sub> = 200 × 1 × 20 = <span class=\"numeros\">4 000 cal</span>.",
+        "<span class=\"numeral\">III.</span> Total: 16 000 + 4 000 = <span class=\"numeros\">20 000 cal = 20 kcal</span> → respuesta C."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Usar solo Q = mcΔT y olvidar el cambio de fase da la opción A: 200 × 1 × 20 = 4 kcal. El hielo primero se derrite a 0 °C; ese calor no sube la temperatura, pero se paga.",
+        "Derretir sin calentar el agua da 16 kcal (opción B).",
+        "Usar 293 K como ΔT da 16 000 + 58 600 = 74.6 kcal (opción D): un cambio de 20 °C es un cambio de 20 K."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "Dibuja la curva de calentamiento y suma un tramo por pedazo: rampa → Q = mcΔT; meseta → Q = mL. Si cruzas 0 °C o 100 °C, hay meseta.",
+        "Escalas: K = °C + 273 y °F = 1.8 · °C + 32. Para un cambio: 1 °C = 1 K = 1.8 °F (20 °C = 293 K = 68 °F; ΔT de 20 °C = 20 K = 36 °F)."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "El agua de una olla pasa de 20 °C a 30 °C. ¿Cuánto cambió su temperatura en kelvin?",
+        "opciones": [
+          {
+            "texto": "A) 10 K",
+            "correcta": true,
+            "explicacion": "ΔT = 30 − 20 = 10 °C = 10 K. El kelvin y el grado Celsius tienen el mismo tamaño; solo cambia el cero (303 − 293 = 10 K)."
+          },
+          {
+            "texto": "B) 283 K",
+            "explicacion": "Sumaste 273 al cambio. El 273 se suma a temperaturas, no a diferencias: ΔT = 10 K."
+          },
+          {
+            "texto": "C) 303 K",
+            "explicacion": "Esa es la temperatura final en kelvin (30 + 273), no el cambio: 303 − 293 = 10 K."
+          },
+          {
+            "texto": "D) 18 K",
+            "explicacion": "Multiplicaste por 1.8, que es para Fahrenheit (ΔT = 18 °F). En kelvin, ΔT = 10 K."
+          }
+        ]
+      }
+    }
+  ],
+  "instruccion": "Enciende la parrilla y mira el termómetro: se queda en 0 °C mientras el hielo se derrite. Cambia la masa o el termostato y compara la curva real con la trampa.",
+  "valoresIniciales": {
+    "m": 200,
+    "c": 1,
+    "Lf": 80,
+    "T0": 0,
+    "Tf": 20,
+    "P": 200,
+    "calJ": 4.186,
+    "cero": 273,
+    "Ta": 20,
+    "Tb": 30
+  },
+  "rangos": {
+    "m": {
+      "min": 50,
+      "max": 400,
+      "paso": 50
+    },
+    "Tf": {
+      "min": 10,
+      "max": 80,
+      "paso": 10
+    }
+  },
+  "escena": {
+    "gramosPorCubo": 50,
+    "densidadHielo": 0.917,
+    "vasoMl": 1000,
+    "altoVaso": 9,
+    "termometro": {
+      "min": -10,
+      "max": 100,
+      "paso": 10,
+      "etiquetas": 20
+    },
+    "ejeQ": [
+      [
+        25,
+        5
+      ],
+      [
+        50,
+        10
+      ],
+      [
+        100,
+        20
+      ]
+    ],
+    "ejeT": {
+      "min": -10,
+      "maximos": [
+        [
+          30,
+          10
+        ],
+        [
+          60,
+          20
+        ],
+        [
+          100,
+          20
+        ]
+      ],
+      "margen": 5
+    },
+    "aceleracion": 10
+  },
+  "controles": {
+    "m": "Masa del hielo",
+    "Tf": "Termostato (temperatura final)",
+    "valorM": "{v} g",
+    "valorT": "{v} °C",
+    "encender": "Encender la parrilla",
+    "apagar": "Apagar la parrilla",
+    "seguir": "Seguir calentando",
+    "listo": "Hielo nuevo",
+    "trampa": "¿Y si no hubiera fusión?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "profundizar": "Profundizar: escalas y joules",
+    "examen": "Volver al examen",
+    "arrastre": "Gira la perilla de la parrilla para encenderla o apagarla.",
+    "valorPerilla": "Parrilla {estado}"
+  },
+  "lecturas": {
+    "formulas": {
+      "Qfus": "m*Lf",
+      "dT": "Tf-T0",
+      "Qcal": "m*c*dT",
+      "Q": "Qfus+Qcal",
+      "kQ": "Q/1000",
+      "kQfus": "Qfus/1000",
+      "kQcal": "Qcal/1000",
+      "pctFus": "Qfus/Q*100",
+      "TfK": "Tf+cero",
+      "TfF": "Tf*1.8+32",
+      "dTF": "dT*1.8",
+      "QK": "m*c*TfK",
+      "QD": "Qfus+QK",
+      "kQK": "QK/1000",
+      "kQD": "QD/1000",
+      "QJ": "Q*calJ",
+      "kQJ": "QJ/1000",
+      "PW": "P*calJ",
+      "tFus": "Qfus/P",
+      "tCal": "Qcal/P",
+      "t": "Q/P",
+      "pA": "Tb-Ta",
+      "pB": "Tb-Ta+cero",
+      "pC": "Tb+cero",
+      "pD": "(Tb-Ta)*1.8",
+      "TaK": "Ta+cero",
+      "TbK": "Tb+cero"
+    },
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV."
+    ],
+    "sinRevelar": "Elige tu predicción o enciende la parrilla para verlo.",
+    "formulaQ": "Q = {Qfus} + {Qcal} = {Q} cal",
+    "formulaQParcial": "Q = {qf} + {qc} = {q} cal",
+    "fusion": "Fusión (meseta en 0 °C)",
+    "fusionValor": "Q<sub>1</sub> = m · L = {m} × {Lf} = {Qfus} cal",
+    "calentar": "Calentar el agua (rampa)",
+    "calentarValor": "Q<sub>2</sub> = m · c · ΔT = {m} × {c} × {dT} = {Qcal} cal",
+    "total": "Calor total",
+    "totalValor": "Q = {Qfus} + {Qcal} = {Q} cal = {kQ} kcal. La fusión se lleva el {pctFus} %.",
+    "escalas": "Escalas",
+    "escalasValor": "{Tf} °C = {TfK} K = {TfF} °F · ΔT de {dT} °C = {dT} K = {dTF} °F",
+    "trampa": "La trampa",
+    "trampaValor": "Sin fusión: {m} × {c} × {dT} = {Qcal} cal = {kQcal} kcal. Con 293 K como ΔT: {Qfus} + {QK} = {kQD} kcal. De verdad: {kQ} kcal.",
+    "mensaje": "En un cambio de fase el calor no sube la temperatura, pero cuenta: Q = mL en la meseta y Q = mcΔT en la rampa.",
+    "mensajeAntes": "{m} g de hielo a 0 °C. Enciende la parrilla para llevarlo a agua a {Tf} °C.",
+    "mensajeFusion": "Derritiendo: van {qf} cal y el termómetro sigue en 0 °C. Queda {hielo} g de hielo.",
+    "mensajeRampa": "Ya no queda hielo. Ahora el calor sí sube la temperatura: {T} °C.",
+    "mensajeApagado": "Parrilla apagada en {q} cal. El agua derretida no se vuelve a congelar: para eso habría que quitarle calor.",
+    "mensajeFin": "Agua a {Tf} °C con {Q} cal = {kQ} kcal: {Qfus} en la meseta y {Qcal} en la rampa. El termostato apagó la parrilla.",
+    "mensajeCambio": "Hielo nuevo: {m} g a 0 °C, termostato en {Tf} °C. Enciende la parrilla.",
+    "mensajeReinicio": "{m} g de hielo a 0 °C y termostato en {Tf} °C: de vuelta al ejemplo del examen.",
+    "mensajeTrampa": "Sin fusión, la recta punteada llegaría a {Tf} °C con {kQcal} kcal. La curva real se queda en 0 °C hasta {kQfus} kcal y termina en {kQ} kcal."
+  },
+  "profundizar": {
+    "titulo": "Escalas y joules",
+    "parrafos": [
+      "Las tres escalas: <span class=\"numeros\">K = °C + 273</span> y <span class=\"numeros\">°F = 1.8 · °C + 32</span>. Agua a {Tf} °C: {TfK} K y {TfF} °F.",
+      "Para un cambio no se suma nada: un escalón de 1 °C mide lo mismo que 1 K y que 1.8 °F. ΔT = {dT} °C = {dT} K = {dTF} °F. Si usas {TfK} K como ΔT, el calor sube a {QD} cal (opción D).",
+      "En joules: 1 cal = {calJ} J, así que {Q} cal = {QJ} J ≈ {kQJ} kJ.",
+      "La parrilla entrega {P} cal/s (≈ {PW} W): la meseta dura {tFus} s y la rampa {tCal} s, {t} s en total. La animación va {aceleracion} veces más rápido."
+    ]
+  },
+  "figura": {
+    "aria": "Vaso de vidrio con hielo sobre una parrilla eléctrica y un termómetro con escalas Celsius, kelvin y Fahrenheit. Junto, la curva de calentamiento: temperatura contra calor, con una meseta en 0 °C mientras el hielo se derrite.",
+    "pie": "Lámina I. El hielo se derrite a 0 °C y luego el agua se calienta. Sin pérdidas de calor al aire ni al vaso; c del agua = 1 cal/g·°C y L de fusión = 80 cal/g. La curva va a escala; la parrilla está acelerada.",
+    "tempC": "{T} °C",
+    "tempK": "{T} K",
+    "tempF": "{T} °F",
+    "tempInc": "? °C",
+    "calor": "Q = {q} cal",
+    "calorInc": "Q = ? cal",
+    "hielo": "hielo {g} g",
+    "agua": "agua {g} g",
+    "ejeQ": "Q · kcal",
+    "ejeT": "T · °C",
+    "meseta": "fusión · m·L",
+    "rampa": "m·c·ΔT",
+    "potencia": "{P} cal/s",
+    "termostato": "{T} °C",
+    "placa": "CALOR Y TEMPERATURA · FUSIÓN"
+  },
+  "rotulos": {
+    "01": [
+      "Parrilla eléctrica",
+      "Entrega calor a ritmo constante, {P} cal/s. Por eso el eje de calor de la curva también es un reloj: cada caloría le cuesta el mismo tiempo."
+    ],
+    "02": [
+      "Perilla y termostato",
+      "La perilla enciende o apaga; el termostato corta la parrilla cuando el agua llega a {Tf} °C, la temperatura final del problema."
+    ],
+    "03": [
+      "Vaso de vidrio",
+      "Es transparente para ver el interior: hielo y agua juntos, los dos a 0 °C, mientras dura la fusión."
+    ],
+    "04": [
+      "Hielo",
+      "{m} g a 0 °C. Cada gramo pide {Lf} cal para pasar a líquido sin cambiar de temperatura: {m} × {Lf} = {Qfus} cal en total."
+    ],
+    "05": [
+      "Agua líquida",
+      "Crece mientras el hielo se derrite. Cuando ya no hay hielo, cada caloría la calienta: {c} cal sube 1 g en 1 °C."
+    ],
+    "06": [
+      "Termómetro",
+      "Se queda en 0 °C toda la meseta, aunque la parrilla siga dando calor. Ese calor está rompiendo el hielo, no subiendo la temperatura."
+    ],
+    "07": [
+      "Tres escalas",
+      "K = °C + 273 y °F = 1.8 · °C + 32: {Tf} °C = {TfK} K = {TfF} °F. Para un cambio, 1 °C = 1 K = 1.8 °F."
+    ],
+    "08": [
+      "Curva de calentamiento",
+      "Temperatura contra calor. La meseta mide m · L = {Qfus} cal; la rampa mide m · c · ΔT = {Qcal} cal. Juntas: {Q} cal."
+    ],
+    "09": [
+      "Contador de calor",
+      "Suma las calorías que ya entregó la parrilla. Al apagarla se detiene; el agua no regresa a hielo."
+    ],
+    "10": [
+      "Trampa",
+      "La recta punteada sería la curva sin fusión: llega a {Tf} °C con solo {kQcal} kcal. La real necesita {kQ} kcal."
+    ]
+  },
+  "prediccion": {
+    "titulo": "Predice antes de encender",
+    "pregunta": "¿Cuánto calor se necesita para convertir {m} g de hielo a 0 °C en agua a {Tf} °C?",
+    "opciones": [
+      {
+        "tipo": "sinFusion",
+        "formula": "kQcal",
+        "retro": "Usaste solo Q = mcΔT ({m} × {c} × {dT}) y olvidaste derretir el hielo: faltan {Qfus} cal de la meseta."
+      },
+      {
+        "tipo": "soloFusion",
+        "formula": "kQfus",
+        "retro": "Derretiste el hielo ({m} × {Lf}), pero falta calentar el agua de 0 a {Tf} °C: {Qcal} cal más."
+      },
+      {
+        "tipo": "bien",
+        "formula": "kQ",
+        "correcta": true,
+        "retro": "Meseta {Qfus} cal + rampa {Qcal} cal = {Q} cal = {kQ} kcal."
+      },
+      {
+        "tipo": "kelvin",
+        "formula": "kQD",
+        "retro": "Usaste {TfK} K como ΔT. Un cambio de {dT} °C es un cambio de {dT} K: el 273 solo se suma a temperaturas."
+      }
+    ],
+    "unidad": "kcal"
+  },
+  "trampa": {
+    "fantasma": "Sin fusión: {kQcal} kcal",
+    "real": "De verdad: {kQ} kcal"
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "El agua de una olla pasa de {Ta} °C a {Tb} °C. ¿Cuánto cambió su temperatura en kelvin?",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "pA",
+        "correcta": true,
+        "retro": "ΔT = {Tb} − {Ta} = {pA} °C = {pA} K. En kelvin: {TbK} − {TaK} = {pA} K."
+      },
+      {
+        "letra": "B",
+        "formula": "pB",
+        "retro": "Sumaste 273 al cambio. El 273 se suma a temperaturas, no a diferencias: ΔT = {pA} K."
+      },
+      {
+        "letra": "C",
+        "formula": "pC",
+        "retro": "Esa es la temperatura final en kelvin ({Tb} + 273), no el cambio: {TbK} − {TaK} = {pA} K."
+      },
+      {
+        "letra": "D",
+        "formula": "pD",
+        "retro": "Multiplicaste por 1.8, que es para Fahrenheit (ΔT = {pD} °F). En kelvin, ΔT = {pA} K."
+      }
+    ],
+    "unidad": "K"
+  }
+}
