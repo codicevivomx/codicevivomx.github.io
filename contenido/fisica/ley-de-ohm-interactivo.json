@@ -1,0 +1,320 @@
+{
+  "titulo": "Ley de Ohm",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pieLamina": "Lámina I. Una pila, un interruptor, un resistor y un amperímetro en un tablero de prueba. Cierra el circuito y mira la aguja. Los puntos de carga muestran la corriente convencional, del + al −.",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "Un resistor de 2 kΩ se conecta a una pila de 9 V. ¿Qué corriente circula por él?",
+        "opciones": [
+          {
+            "texto": "A) 4.5 A",
+            "explicacion": "Olvidaste el kilo: 9 ÷ 2 = 4.5 da amperes solo si R está en ohms. Con R = 2 000 Ω: I = 9 ÷ 2 000 = 0.0045 A = 4.5 mA, mil veces menos."
+          },
+          {
+            "texto": "B) 45 mA",
+            "explicacion": "Tomaste 2 kΩ como 200 Ω (9 ÷ 200 = 0.045 A). Kilo es mil: 2 kΩ = 2 000 Ω e I = 9 ÷ 2 000 = 4.5 mA."
+          },
+          {
+            "texto": "C) 4.5 mA",
+            "correcta": true,
+            "explicacion": "R = 2 kΩ = 2 000 Ω e I = V ÷ R = 9 ÷ 2 000 = 0.0045 A = 4.5 mA. Comprueba: 0.0045 × 2 000 = 9 V."
+          },
+          {
+            "texto": "D) 0.22 A",
+            "explicacion": "Invertiste la fórmula con los números tal como vienen: 2 ÷ 9 es R ÷ V. La corriente es I = V ÷ R = 9 ÷ 2 000 = 4.5 mA."
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "La corriente es el empuje entre el estorbo, <span class=\"numeros\">I = V ÷ R</span>: más voltaje, más corriente; más resistencia, menos corriente; y antes de dividir, todo en V, Ω y A."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> Primero convierte: R = 2 kΩ = <span class=\"numeros\">2 000 Ω</span>.",
+        "<span class=\"numeral\">II.</span> I = V ÷ R = 9 ÷ 2 000 = 0.0045 A = <span class=\"numeros\">4.5 mA</span> → respuesta C.",
+        "<span class=\"numeral\">III.</span> Comprueba: V = I · R = 0.0045 × 2 000 = <span class=\"numeros\">9 V</span>."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Olvidar el kilo da la opción A: 9 ÷ 2 = 4.5 A, mil veces más de lo real. Se dividen volts entre ohms, no entre kiloohms.",
+        "Tomar 2 kΩ como 200 Ω da 9 ÷ 200 = 0.045 A = 45 mA (opción B).",
+        "Invertir la fórmula con los números tal como vienen, R ÷ V = 2 ÷ 9, da 0.22 (opción D)."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "Triángulo: V arriba, I y R abajo; tapa la que buscas: <span class=\"numeros\">I = V ÷ R</span>, R = V ÷ I, V = I · R.",
+        "Atajo de prefijos: V ÷ kΩ = mA y mA × kΩ = V (9 ÷ 2 = 4.5 mA, sin pasar a ohms). Sentido común: unos cuantos volts con kiloohms dan miliamperes, no amperes."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "Un resistor conduce 0.5 A conectado a 12 V. ¿Qué voltaje necesita para conducir 2 A?",
+        "opciones": [
+          {
+            "texto": "A) 3 V",
+            "explicacion": "Hiciste una regla de tres inversa (12 × 0.5 ÷ 2). Con R fija, V e I suben juntas: R = 12 ÷ 0.5 = 24 Ω y V = 2 × 24 = 48 V."
+          },
+          {
+            "texto": "B) 6 V",
+            "explicacion": "Creíste que más corriente necesita menos voltaje (12 ÷ 2). Es al revés: R = 12 ÷ 0.5 = 24 Ω y V = I · R = 2 × 24 = 48 V."
+          },
+          {
+            "texto": "C) 24 V",
+            "explicacion": "Ese número es R en ohms (12 ÷ 0.5 = 24 Ω). Te faltó multiplicarlo por los 2 A: V = 2 × 24 = 48 V."
+          },
+          {
+            "texto": "D) 48 V",
+            "correcta": true,
+            "explicacion": "R = 12 ÷ 0.5 = 24 Ω y no cambia, así que V = I · R = 2 × 24 = 48 V (la corriente se multiplicó por 4 y el voltaje también: 12 × 4)."
+          }
+        ]
+      }
+    }
+  ],
+  "instruccion": "Cierra el interruptor y mira la aguja del amperímetro. Cambia el voltaje de la pila y el resistor, y compara con la trampa del kilo.",
+  "valoresIniciales": {
+    "V": 9,
+    "R": 2,
+    "escala": 15,
+    "V1": 12,
+    "I1": 0.5,
+    "I2": 2
+  },
+  "rangos": {
+    "V": {
+      "min": 1.5,
+      "max": 12,
+      "paso": 1.5
+    },
+    "R": {
+      "min": 1,
+      "max": 5,
+      "paso": 0.5
+    }
+  },
+  "escena": {
+    "rapidez": 2,
+    "anguloAbierto": 55
+  },
+  "controles": {
+    "V": "Voltaje de la pila",
+    "valorV": "{v} V",
+    "R": "Resistor",
+    "valorR": "{v} kΩ",
+    "encender": "Cerrar el interruptor",
+    "apagar": "Abrir el interruptor",
+    "trampa": "¿Y si olvido el kilo?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "profundizar": "Profundizar: la corriente no se gasta",
+    "examen": "Volver al examen",
+    "arrastre": "Mueve la palanca del interruptor para cerrar o abrir el circuito.",
+    "valorPerilla": "Interruptor {estado}",
+    "cerrado": "cerrado",
+    "abierto": "abierto"
+  },
+  "lecturas": {
+    "formulas": {
+      "Rohm": "R*1000",
+      "I": "V/R",
+      "IA": "V/(R*1000)",
+      "Vc": "IA*Rohm",
+      "Pm": "V*I",
+      "R100": "R*100",
+      "qA": "V/R",
+      "qB": "V/(R*100)*1000",
+      "qD": "R/V",
+      "Rp": "V1/I1",
+      "k": "I2/I1",
+      "pA": "V1*I1/I2",
+      "pB": "V1/I2",
+      "pC": "Rp",
+      "pD": "Rp*I2"
+    },
+    "decimales": {
+      "IA": 4
+    },
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV."
+    ],
+    "sinRevelar": "Elige tu predicción o cierra el interruptor para verlo.",
+    "voltaje": "Voltaje (lo pone la pila)",
+    "voltajeValor": "V = {V} V",
+    "resistencia": "Resistencia (pásala a ohms)",
+    "resistenciaValor": "R = {R} kΩ = {Rohm} Ω",
+    "corriente": "Corriente",
+    "corrienteValor": "I = V ÷ R = {V} ÷ {Rohm} = {IA} A = {I} mA",
+    "atajo": "Atajo de prefijos",
+    "atajoValor": "{V} V ÷ {R} kΩ = {I} mA. Comprueba: {IA} A × {Rohm} Ω = {Vc} V.",
+    "trampa": "La trampa",
+    "trampaValor": "Sin el kilo: {V} ÷ {R} = {qA} A. Con {R} kΩ como {R100} Ω: {qB} mA. Fórmula invertida: {R} ÷ {V} = {qD}. De verdad: {I} mA.",
+    "mensaje": "La corriente es el empuje entre el estorbo: I = V ÷ R, con todo en V, Ω y A.",
+    "mensajeAntes": "Pila de {V} V y resistor de {R} kΩ, con el interruptor abierto. Ciérralo para ver la corriente.",
+    "mensajeCerrado": "Circuito cerrado: I = {V} ÷ {Rohm} = {I} mA. Los puntos avanzan del + al − (corriente convencional).",
+    "mensajeAbierto": "Interruptor abierto: la corriente se detiene en todo el circuito al mismo tiempo; no se queda a medio camino.",
+    "mensajeCambioV": "Pila de {V} V con {R} kΩ: I = {I} mA. Más voltaje, más corriente.",
+    "mensajeBajaV": "Pila de {V} V con {R} kΩ: I = {I} mA. Menos voltaje, menos corriente.",
+    "mensajeCambioR": "Resistor de {R} kΩ con {V} V: I = {I} mA. Más resistencia, menos corriente.",
+    "mensajeBajaR": "Resistor de {R} kΩ con {V} V: I = {I} mA. Menos resistencia, más corriente.",
+    "mensajeReinicio": "Pila de {V} V y resistor de {R} kΩ: de vuelta al ejemplo del examen.",
+    "mensajeTrampa": "Si olvidas el kilo, la aguja punteada iría a {qA} A: mil veces más y fuera de la escala de {escala} mA. La real marca {I} mA."
+  },
+  "profundizar": {
+    "titulo": "La corriente no se gasta",
+    "parrafos": [
+      "La corriente es la misma en todo el circuito: un amperímetro antes del resistor y otro después marcarían los mismos {I} mA. Lo que el resistor «gasta» es energía, no cargas.",
+      "Esa energía sale como calor: <span class=\"numeros\">P = V · I</span> = {V} V × {I} mA = {Pm} mW.",
+      "Despejes del mismo triángulo: R = V ÷ I = {V} ÷ {IA} = {Rohm} Ω y V = I · R = {IA} × {Rohm} = {Vc} V.",
+      "Los puntos muestran la corriente convencional, del + al −; los electrones reales van del − al + y mucho más despacio. La rapidez de los puntos solo compara corrientes."
+    ]
+  },
+  "figura": {
+    "aria": "Un tablero de prueba con una pila, un interruptor, un resistor de bandas de color y un amperímetro de aguja conectados en un circuito. Puntos de carga recorren el cable del + al − y la aguja marca la corriente en miliamperes.",
+    "pie": "Lámina I. Con el circuito cerrado, la corriente es I = V ÷ R, con R en ohms. Los puntos de carga muestran la corriente convencional, del + al −; su rapidez solo compara corrientes.",
+    "voltaje": "{V} V",
+    "resistencia": "{R} kΩ",
+    "corriente": "{I} mA",
+    "corrienteInc": "? mA",
+    "fantasma": "{qA} A",
+    "escala": "mA",
+    "mas": "+",
+    "menos": "−",
+    "placa": "LEY DE OHM · I = V ÷ R",
+    "colores": [
+      "negro",
+      "café",
+      "rojo",
+      "naranja",
+      "amarillo",
+      "verde",
+      "azul",
+      "violeta",
+      "gris",
+      "blanco"
+    ]
+  },
+  "rotulos": {
+    "01": [
+      "Pila",
+      "Es el empuje: {V} V. La corriente convencional sale por su borne + y regresa por el −."
+    ],
+    "02": [
+      "Interruptor",
+      "Cierra o abre el circuito. Al abrirlo, la corriente se detiene en todo el circuito al mismo tiempo."
+    ],
+    "03": [
+      "Resistor",
+      "Es el estorbo: {R} kΩ = {Rohm} Ω. Antes de dividir, pásalo a ohms."
+    ],
+    "04": [
+      "Bandas de color",
+      "Se leen {bandas}: {d1} y {d2}, por cien = {Rohm} Ω."
+    ],
+    "05": [
+      "Amperímetro",
+      "Mide la corriente: I = {V} ÷ {Rohm} = {IA} A = {I} mA."
+    ],
+    "06": [
+      "Escala",
+      "Va de 0 a {escala} mA. Unos cuantos volts con kiloohms dan miliamperes."
+    ],
+    "07": [
+      "Puntos de carga",
+      "Muestran la corriente convencional, del + al −. Van más rápido cuanto mayor es la corriente; no es la rapidez real de las cargas."
+    ],
+    "08": [
+      "Cable de regreso",
+      "Lleva los mismos {I} mA que el de ida: la corriente no se gasta en el resistor."
+    ],
+    "09": [
+      "Trampa",
+      "La aguja punteada sería la corriente si olvidaras el kilo: {V} ÷ {R} = {qA} A, mil veces más. Ni cabe en la escala."
+    ]
+  },
+  "prediccion": {
+    "titulo": "Predice antes de cerrar",
+    "pregunta": "Un resistor de {R} kΩ se conecta a una pila de {V} V. ¿Qué corriente circula por él?",
+    "opciones": [
+      {
+        "tipo": "sinKilo",
+        "formula": "qA",
+        "unidad": "A",
+        "retro": "Olvidaste el kilo: {V} ÷ {R} da amperes solo si R está en ohms. Con {Rohm} Ω: I = {IA} A = {I} mA, mil veces menos."
+      },
+      {
+        "tipo": "kiloCien",
+        "formula": "qB",
+        "unidad": "mA",
+        "retro": "Tomaste {R} kΩ como {R100} Ω. Kilo es mil: {Rohm} Ω e I = {V} ÷ {Rohm} = {I} mA."
+      },
+      {
+        "tipo": "bien",
+        "formula": "I",
+        "unidad": "mA",
+        "correcta": true,
+        "retro": "R = {Rohm} Ω e I = {V} ÷ {Rohm} = {IA} A = {I} mA. Comprueba: {IA} × {Rohm} = {Vc} V."
+      },
+      {
+        "tipo": "invertida",
+        "formula": "qD",
+        "unidad": "A",
+        "retro": "Invertiste la fórmula: {R} ÷ {V} es R ÷ V. La corriente es I = V ÷ R = {I} mA."
+      }
+    ],
+    "unidad": "mA"
+  },
+  "trampa": {
+    "fantasma": "Sin el kilo: {qA} A",
+    "real": "De verdad: {I} mA"
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Un resistor conduce {I1} A conectado a {V1} V. ¿Qué voltaje necesita para conducir {I2} A?",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "pA",
+        "retro": "Hiciste una regla de tres inversa ({V1} × {I1} ÷ {I2}). Con R fija, V e I suben juntas: R = {Rp} Ω y V = {I2} × {Rp} = {pD} V."
+      },
+      {
+        "letra": "B",
+        "formula": "pB",
+        "retro": "Creíste que más corriente necesita menos voltaje ({V1} ÷ {I2}). Es al revés: R = {V1} ÷ {I1} = {Rp} Ω y V = {I2} × {Rp} = {pD} V."
+      },
+      {
+        "letra": "C",
+        "formula": "pC",
+        "retro": "Ese número es R en ohms ({V1} ÷ {I1} = {Rp} Ω). Te faltó multiplicarlo por los {I2} A: V = {pD} V."
+      },
+      {
+        "letra": "D",
+        "formula": "pD",
+        "correcta": true,
+        "retro": "R = {V1} ÷ {I1} = {Rp} Ω y no cambia: V = {I2} × {Rp} = {pD} V (la corriente se multiplicó por {k} y el voltaje también)."
+      }
+    ],
+    "unidad": "V"
+  }
+}

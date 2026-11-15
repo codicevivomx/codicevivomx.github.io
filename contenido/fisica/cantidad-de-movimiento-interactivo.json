@@ -1,0 +1,358 @@
+{
+  "titulo": "Cantidad de movimiento",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pieLamina": "Lámina I. Dos carritos chocan en un riel de aire. Lanza el carrito y cambia el velcro por resortes.",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "En un riel de aire sin fricción, un carrito de 2 kg va a 3 m/s y choca con otro de 1 kg que está quieto. Quedan pegados por un velcro. ¿Con qué velocidad se mueven juntos?",
+        "opciones": [
+          {
+            "texto": "A) 1.5 m/s",
+            "explicacion": "Promediaste las velocidades, (3 + 0) ÷ 2, sin pesar las masas. El carrito de 2 kg lleva el doble de cantidad de movimiento que llevaría uno de 1 kg."
+          },
+          {
+            "texto": "B) 2 m/s",
+            "correcta": true,
+            "explicacion": "p = 2 × 3 = 6 kg·m/s antes y después: 6 ÷ (2 + 1) = 2 m/s."
+          },
+          {
+            "texto": "C) √6 m/s",
+            "explicacion": "Supusiste que la energía cinética se conserva (½ × 3 × v<sup>2</sup> = 9 J). Al quedar pegados se pierden 3 J; lo que se conserva es p."
+          },
+          {
+            "texto": "D) 3 m/s",
+            "explicacion": "El carrito no sigue igual: al jalar al de 1 kg reparte su cantidad de movimiento entre 3 kg y frena."
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "En un choque, la cantidad de movimiento total es la misma antes y después: <span class=\"numeros\">m<sub>1</sub>v<sub>1</sub> + m<sub>2</sub>v<sub>2</sub> = m<sub>1</sub>v<sub>1</sub>' + m<sub>2</sub>v<sub>2</sub>'</span>. La energía cinética solo se conserva si el choque es elástico."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> Antes: p = 2 × 3 + 1 × 0 = <span class=\"numeros\">6 kg·m/s</span>.",
+        "<span class=\"numeral\">II.</span> Después, pegados (3 kg): v = 6 ÷ 3 = <span class=\"numeros\">2 m/s</span> → respuesta B.",
+        "<span class=\"numeral\">III.</span> Energía: ½ × 2 × 3<sup>2</sup> = 9 J antes; ½ × 3 × 2<sup>2</sup> = 6 J después. Se pierden <span class=\"numeros\">3 J</span> en el velcro."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Creer que la energía cinética siempre se conserva da la opción C: ½ × 3 × v<sup>2</sup> = 9 da v = √6 m/s. Al quedar pegados (choque inelástico) se pierde energía; lo que siempre se conserva es p.",
+        "Promediar las velocidades sin pesar las masas da 1.5 m/s (opción A).",
+        "Creer que el carrito sigue igual da 3 m/s (opción D): al jalar al otro, frena."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "En todo choque, iguala p antes y p después. Si quedan pegados, usa una sola velocidad final y no uses la energía.",
+        "Si rebotan sin perder energía (elástico), también se conserva la energía cinética: con resortes, los mismos carritos salen a 1 m/s y 4 m/s (p = 6 kg·m/s, K = 9 J)."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "Una pelota de 0.2 kg llega a una pared a 10 m/s y rebota a 10 m/s. ¿Qué impulso recibe de la pared?",
+        "opciones": [
+          {
+            "texto": "A) 0 N·s",
+            "explicacion": "La rapidez es la misma, pero la velocidad cambió de sentido: Δv = 10 − (−10) = 20 m/s, no 0."
+          },
+          {
+            "texto": "B) 2 N·s",
+            "explicacion": "Solo contaste la llegada (0.2 × 10). Falta la parte del rebote: J = 0.2 × 20 = 4 N·s."
+          },
+          {
+            "texto": "C) 4 N·s",
+            "correcta": true,
+            "explicacion": "J = m · Δv = 0.2 × (10 − (−10)) = 0.2 × 20 = 4 N·s."
+          },
+          {
+            "texto": "D) 20 N·s",
+            "explicacion": "Ese es el cambio de velocidad (10 + 10 = 20 m/s). Falta multiplicar por la masa: 0.2 × 20 = 4 N·s."
+          }
+        ]
+      }
+    }
+  ],
+  "instruccion": "Lanza el carrito o arrástralo hacia el otro. Cambia el velcro por resortes y compara las flechas de p con el medidor de energía.",
+  "valoresIniciales": {
+    "m1": 2,
+    "m2": 1,
+    "v1": 3,
+    "v2": 0,
+    "dt": 0.1,
+    "mb": 0.2,
+    "vb": 10
+  },
+  "rangos": {
+    "m1": {
+      "min": 0.5,
+      "max": 4,
+      "paso": 0.5
+    },
+    "m2": {
+      "min": 0.5,
+      "max": 4,
+      "paso": 0.5
+    },
+    "v1": {
+      "min": 0.5,
+      "max": 4,
+      "paso": 0.5
+    }
+  },
+  "escena": {
+    "largoRiel": 1.2,
+    "x1": 0.2,
+    "x2": 0.65,
+    "largoCarrito": 0.2,
+    "saliente": {
+      "velcro": [
+        0.004,
+        0.004
+      ],
+      "resortes": [
+        0.03,
+        0.004
+      ]
+    },
+    "compresion": 0.02,
+    "lentitud": 8,
+    "marcasRiel": 0.1,
+    "etiquetasRiel": [
+      0,
+      0.5,
+      1
+    ],
+    "masaPesa": 0.5,
+    "pMax": 16,
+    "pPaso": 2,
+    "kMax": 32,
+    "kPaso": 4,
+    "uniones": [
+      "velcro",
+      "resortes"
+    ]
+  },
+  "controles": {
+    "m1": "Masa del carrito 1",
+    "m2": "Masa del carrito 2",
+    "v1": "Velocidad del carrito 1",
+    "valorM": "{v} kg",
+    "valorV": "{v} m/s",
+    "lanzar": "Lanzar el carrito",
+    "relanzar": "Lanzar otra vez",
+    "union": "Cambiar a resortes",
+    "unionVolver": "Cambiar a velcro",
+    "trampa": "¿Y si se conservara la energía?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "profundizar": "Profundizar: el impulso",
+    "examen": "Volver al examen",
+    "arrastre": "Jala el carrito 1 hacia atrás para elegir la velocidad; al soltarlo sale disparado.",
+    "valorJalon": "Jalón: {v} m/s"
+  },
+  "lecturas": {
+    "formulas": {
+      "p0": "m1*v1+m2*v2",
+      "M": "m1+m2",
+      "vf": "p0/M",
+      "p1f": "m1*vf",
+      "p2f": "m2*vf",
+      "K0": "m1*v1*v1/2+m2*v2*v2/2",
+      "Kf": "M*vf*vf/2",
+      "Kperd": "K0-Kf",
+      "pctPerd": "Kperd/K0*100",
+      "vK2": "2*K0/M",
+      "vProm": "(v1+v2)/2",
+      "v1e": "((m1-m2)*v1+2*m2*v2)/M",
+      "v2e": "((m2-m1)*v2+2*m1*v1)/M",
+      "p1e": "m1*v1e",
+      "p2e": "m2*v2e",
+      "pe": "p1e+p2e",
+      "K1e": "m1*v1e*v1e/2",
+      "K2e": "m2*v2e*v2e/2",
+      "Ke": "K1e+K2e",
+      "J2": "m2*(vf-v2)",
+      "F2": "J2/dt",
+      "J2e": "m2*(v2e-v2)",
+      "F2e": "J2e/dt",
+      "Jb": "mb*(vb+vb)",
+      "Jb0": "mb*(vb-vb)",
+      "Jb1": "mb*vb",
+      "Jbm": "vb+vb"
+    },
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV."
+    ],
+    "sinRevelar": "Elige tu predicción o lanza el carrito para verlo.",
+    "formulaV": "v = {p0} ÷ {M} = {vf} m/s",
+    "formulaVe": "v<sub>1</sub>' = {v1e} m/s · v<sub>2</sub>' = {v2e} m/s",
+    "antes": "Cantidad de movimiento antes",
+    "antesValor": "p = {m1} × {v1} + {m2} × {v2} = {p0} kg·m/s",
+    "despues": "Después del choque ({union})",
+    "despuesVelcro": "Pegados ({M} kg): v = {p0} ÷ {M} = {vf} m/s<br>p = {M} × {vf} = {p0} kg·m/s: la misma de antes.",
+    "despuesResortes": "v<sub>1</sub>' = {v1e} m/s, v<sub>2</sub>' = {v2e} m/s<br>p = {m1} × {v1e} + {m2} × {v2e} = {pe} kg·m/s: la misma de antes.",
+    "energia": "Energía cinética",
+    "energiaVelcro": "Antes ½ × {m1} × {v1}² = {K0} J; después ½ × {M} × {vf}² = {Kf} J. Se pierden {Kperd} J ({pctPerd} %) en el velcro.",
+    "energiaResortes": "Antes {K0} J; después {K1e} + {K2e} = {Ke} J. Choque elástico: no se pierde energía.",
+    "trampa": "La trampa",
+    "trampaValor": "Si se conservara la energía: ½ × {M} × v² = {K0} J → v = √{vK2} ≈ {vK} m/s. Promediando: ({v1} + {v2}) ÷ 2 = {vProm} m/s. De verdad: {vf} m/s.",
+    "mensaje": "En todo choque se conserva p. La energía cinética solo se conserva si el choque es elástico.",
+    "mensajeAntes": "El carrito 1 lleva p = {p0} kg·m/s; el carrito 2 está quieto. Lánzalo para ver el choque.",
+    "mensajeFinVelcro": "Quedaron pegados a {vf} m/s. La flecha de p mide lo mismo que antes ({p0} kg·m/s), pero el medidor bajó de {K0} J a {Kf} J: {Kperd} J se fueron en el velcro.",
+    "mensajeFinResortes": "Con resortes rebotan: el carrito 1 sale a {v1e} m/s y el 2 a {v2e} m/s. Las flechas suman {pe} kg·m/s y el medidor sigue en {Ke} J.",
+    "mensajeUnion": "Unión cambiada a {union}. Los carritos regresan a su lugar; lánzalo otra vez.",
+    "mensajeReinicio": "Carritos de {m1} kg y {m2} kg con velcro, el primero a {v1} m/s: de vuelta al ejemplo del examen.",
+    "mensajeTrampa": "Si se conservara la energía, saldrían juntos a √{vK2} ≈ {vK} m/s y el medidor seguiría en {K0} J. De verdad van a {vf} m/s y quedan {Kf} J: con velcro se pierde energía, pero p no cambia."
+  },
+  "profundizar": {
+    "titulo": "El impulso",
+    "parrafos": [
+      "El impulso es el cambio de la cantidad de movimiento: <span class=\"numeros\">J = F · Δt = Δp</span>.",
+      "Con velcro, el carrito 2 pasa de {v2} a {vf} m/s: J = {m2} × ({vf} − {v2}) = {J2} N·s. Si el contacto dura {dt} s, la fuerza promedio es F = {J2} ÷ {dt} = {F2} N.",
+      "Con resortes sale a {v2e} m/s: J = {m2} × ({v2e} − {v2}) = {J2e} N·s y F = {J2e} ÷ {dt} = {F2e} N. Rebotar pide más impulso que quedarse pegado.",
+      "El carrito 1 recibe el mismo impulso en sentido contrario (tercera ley): lo que gana uno lo pierde el otro, y por eso p total no cambia."
+    ]
+  },
+  "figura": {
+    "aria": "Riel de aire con dos carritos; el primero se lanza contra el segundo, que está quieto. Flechas de cantidad de movimiento sobre cada carrito y un medidor de energía cinética antes y después del choque.",
+    "pie": "Lámina I. La cantidad de movimiento se conserva en el choque. Riel de aire sin fricción; el carrito 2 parte del reposo. Las flechas de p no van a escala; el medidor de energía, sí.",
+    "p1": "p<sub>1</sub> = {p1} kg·m/s",
+    "p2": "p<sub>2</sub> = {p2} kg·m/s",
+    "pTot": "p = {p0} kg·m/s",
+    "vInc": "v = ? m/s",
+    "carrito": "{m} kg · {v} m/s",
+    "carritoInc": "{m} kg · ? m/s",
+    "tableroP": "p · kg·m/s",
+    "tableroK": "K · J",
+    "antes": "antes",
+    "ahora": "ahora",
+    "barra": "{x}",
+    "uniones": {
+      "velcro": "velcro",
+      "resortes": "resortes"
+    },
+    "placa": "RIEL DE AIRE · CHOQUES"
+  },
+  "rotulos": {
+    "01": [
+      "Riel de aire",
+      "Perfil hueco con agujeros por donde sale aire: los carritos flotan sobre un colchón de aire y casi no hay fricción. Por eso nada externo cambia p durante el choque."
+    ],
+    "02": [
+      "Soplador y lanzador",
+      "El soplador empuja aire al riel; sin él, la fricción le quitaría cantidad de movimiento al sistema. El lanzador de resorte, a la izquierda, dispara el carrito 1 a {v1} m/s."
+    ],
+    "03": [
+      "Regla",
+      "Marcada cada {marcasRiel} m a lo largo del riel. Sirve para ver que, después del choque, los carritos avanzan lo mismo cada segundo: velocidad constante."
+    ],
+    "04": [
+      "Carrito 1",
+      "{m1} kg a {v1} m/s: lleva p<sub>1</sub> = {m1} × {v1} = {p0} kg·m/s, toda la cantidad de movimiento del sistema antes del choque."
+    ],
+    "05": [
+      "Carrito 2",
+      "{m2} kg, quieto: p<sub>2</sub> = 0. Después del choque se lleva parte de la cantidad de movimiento del carrito 1."
+    ],
+    "06": [
+      "Unión: {union}",
+      "Con velcro los carritos quedan pegados y la energía que falta se vuelve calor y deformación (choque inelástico). Con resortes, el resorte se comprime y regresa la energía (choque elástico)."
+    ],
+    "07": [
+      "Flechas de p",
+      "Una por carrito; su largo es m · v. La suma antes y después mide lo mismo, {p0} kg·m/s: eso es la conservación."
+    ],
+    "08": [
+      "Tablero",
+      "Barras a escala de la cantidad de movimiento y de la energía cinética: «antes» del choque y «ahora». La de p no cambia ({p0} kg·m/s); la de K baja de {K0} J a {Kf} J con velcro y se queda en {Ke} J con resortes."
+    ],
+    "09": [
+      "Trampa",
+      "La silueta punteada sería el par de carritos si se conservara la energía: √{vK2} ≈ {vK} m/s. Los de verdad van a {vf} m/s."
+    ],
+    "10": [
+      "Impulso J",
+      "Durante el contacto, cada carrito empuja al otro con la misma fuerza en sentido contrario: el impulso sobre el carrito 2 es {J2} N·s y el del carrito 1 es igual pero negativo."
+    ]
+  },
+  "prediccion": {
+    "titulo": "Predice antes de lanzar",
+    "pregunta": "Un carrito de {m1} kg va a {v1} m/s y choca con otro de {m2} kg que está quieto. Quedan pegados por un velcro. ¿Con qué velocidad se mueven juntos?",
+    "opciones": [
+      {
+        "tipo": "promedio",
+        "formula": "(v1+v2)/2",
+        "retro": "Promediaste las velocidades, ({v1} + {v2}) ÷ 2, sin pesar las masas. Cuenta la cantidad de movimiento, no la velocidad sola."
+      },
+      {
+        "tipo": "bien",
+        "formula": "p0/M",
+        "correcta": true,
+        "retro": "p = {p0} kg·m/s antes y después: {p0} ÷ {M} = {vf} m/s."
+      },
+      {
+        "tipo": "energia",
+        "formula": "2*K0/M",
+        "raiz": true,
+        "retro": "Supusiste que la energía se conserva (½ × {M} × v² = {K0} J). Con velcro se pierden {Kperd} J; lo que se conserva es p."
+      },
+      {
+        "tipo": "igual",
+        "formula": "v1",
+        "retro": "El carrito no sigue igual: al jalar al otro reparte {p0} kg·m/s entre {M} kg y frena."
+      }
+    ]
+  },
+  "trampa": {
+    "fantasma": "Si se conservara la energía: √{vK2} ≈ {vK} m/s",
+    "real": "De verdad: {vf} m/s"
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Una pelota de {mb} kg llega a una pared a {vb} m/s y rebota a {vb} m/s. ¿Qué impulso recibe de la pared?",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "Jb0",
+        "retro": "La rapidez es la misma, pero la velocidad cambió de sentido: Δv = {vb} − (−{vb}) = {Jbm} m/s, no 0."
+      },
+      {
+        "letra": "B",
+        "formula": "Jb1",
+        "retro": "Solo contaste la llegada ({mb} × {vb}). Falta la parte del rebote: J = {mb} × {Jbm} = {Jb} N·s."
+      },
+      {
+        "letra": "C",
+        "formula": "Jb",
+        "correcta": true,
+        "retro": "J = m · Δv = {mb} × ({vb} − (−{vb})) = {mb} × {Jbm} = {Jb} N·s."
+      },
+      {
+        "letra": "D",
+        "formula": "Jbm",
+        "retro": "Ese es el cambio de velocidad ({vb} + {vb} = {Jbm} m/s). Falta multiplicar por la masa: {mb} × {Jbm} = {Jb} N·s."
+      }
+    ]
+  }
+}

@@ -1,0 +1,301 @@
+{
+  "titulo": "Ondas",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pieLamina": "Lámina I. Un altavoz junto a una pecera con agua. Enciéndelo y mira cómo se separan los frentes al entrar al agua.",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "Un altavoz emite un sonido de 500 Hz. En el aire viaja a 340 m/s y luego entra al agua, donde viaja a 1 500 m/s. ¿Cuál es su longitud de onda en el agua?",
+        "opciones": [
+          {
+            "texto": "A) 0.68 m",
+            "explicacion": "Esa es la λ del aire (340 ÷ 500 = 0.68 m). Al cambiar de medio no se conserva la longitud de onda, se conserva la frecuencia: en el agua, 1 500 ÷ 500 = 3 m."
+          },
+          {
+            "texto": "B) 3 m",
+            "correcta": true,
+            "explicacion": "La frecuencia no cambia al cambiar de medio: λ = v ÷ f = 1 500 ÷ 500 = 3 m (en el aire era 0.68 m)."
+          },
+          {
+            "texto": "C) 0.33 m",
+            "explicacion": "Invertiste la fórmula: 500 ÷ 1 500 es f ÷ v. La longitud de onda es λ = v ÷ f = 1 500 ÷ 500 = 3 m."
+          },
+          {
+            "texto": "D) 0.15 m",
+            "explicacion": "Aplicaste la proporción al revés (0.68 × 340 ÷ 1 500), como si en el agua la onda se apretara. La velocidad sube 4.4 veces y la λ también: 0.68 × 4.41 = 3 m."
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "La frecuencia la pone la fuente y no cambia al cambiar de medio; lo que cambia es la velocidad, y la longitud de onda se acomoda: <span class=\"numeros\">λ = v ÷ f</span>."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> La frecuencia es la misma en los dos medios: <span class=\"numeros\">f = 500 Hz</span>.",
+        "<span class=\"numeral\">II.</span> En el aire: λ = 340 ÷ 500 = <span class=\"numeros\">0.68 m</span>.",
+        "<span class=\"numeral\">III.</span> En el agua: λ = 1 500 ÷ 500 = <span class=\"numeros\">3 m</span> → respuesta B. Crece lo mismo que la velocidad: 1 500 ÷ 340 ≈ 4.4 veces."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Creer que la longitud de onda se conserva al cambiar de medio da la opción A: 0.68 m, que es la λ del aire. Lo que se conserva es la frecuencia; la λ cambia con la velocidad.",
+        "Invertir la fórmula, f ÷ v = 500 ÷ 1 500, da 0.33 m (opción C).",
+        "Aplicar la proporción al revés, 0.68 × 340 ÷ 1 500, da 0.15 m (opción D): si la velocidad sube 4.4 veces, la λ también sube 4.4 veces."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "«La frecuencia es de la fuente, la velocidad es del medio y λ se acomoda»: <span class=\"numeros\">v = λ · f</span>. Con f fija, si v sube, λ sube en la misma proporción.",
+        "Revisa unidades: m/s ÷ Hz = m (λ) y m × Hz = m/s (v). Sonido: aire ≈ 340 m/s, agua ≈ 1 500 m/s, acero ≈ 5 100 m/s."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "Una cuerda hace 10 oscilaciones en 2 s y λ = 0.5 m. ¿Con qué velocidad viaja la onda?",
+        "opciones": [
+          {
+            "texto": "A) 0.1 m/s",
+            "explicacion": "Multiplicaste por el periodo (0.5 × 0.2). Con el periodo se divide: v = λ ÷ T = 0.5 ÷ 0.2 = 2.5 m/s."
+          },
+          {
+            "texto": "B) 2.5 m/s",
+            "correcta": true,
+            "explicacion": "f = 10 ÷ 2 = 5 Hz y v = λ · f = 0.5 × 5 = 2.5 m/s (o v = λ ÷ T = 0.5 ÷ 0.2)."
+          },
+          {
+            "texto": "C) 10 m/s",
+            "explicacion": "Dividiste f ÷ λ (5 ÷ 0.5). La velocidad es v = λ · f = 0.5 × 5 = 2.5 m/s."
+          },
+          {
+            "texto": "D) 5 m/s",
+            "explicacion": "Tomaste las 10 oscilaciones como 10 Hz. Duraron 2 s: f = 10 ÷ 2 = 5 Hz y v = 0.5 × 5 = 2.5 m/s."
+          }
+        ]
+      }
+    }
+  ],
+  "instruccion": "Enciende el altavoz y mira la pared de la pecera: los frentes se separan al entrar al agua, pero el contador marca la misma frecuencia en los dos lados. Cambia la frecuencia y compara con la trampa.",
+  "valoresIniciales": {
+    "f": 500,
+    "vA": 340,
+    "vB": 1500,
+    "vC": 5100,
+    "N": 10,
+    "tN": 2,
+    "lc": 0.5
+  },
+  "rangos": {
+    "f": {
+      "min": 400,
+      "max": 1000,
+      "paso": 100
+    }
+  },
+  "escena": {
+    "metrosAire": 2.5,
+    "metrosAgua": 8,
+    "pasoRegla": 0.5,
+    "etiquetasRegla": 1,
+    "lento": 1000
+  },
+  "controles": {
+    "f": "Frecuencia del altavoz",
+    "valorF": "{v} Hz",
+    "encender": "Encender el altavoz",
+    "apagar": "Apagar el altavoz",
+    "trampa": "¿Y si λ se conservara?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "profundizar": "Profundizar: periodo y otros medios",
+    "examen": "Volver al examen",
+    "arrastre": "Gira la perilla del altavoz para encenderlo o apagarlo.",
+    "valorPerilla": "Altavoz {estado}"
+  },
+  "lecturas": {
+    "formulas": {
+      "lA": "vA/f",
+      "lB": "vB/f",
+      "r": "vB/vA",
+      "T": "1/f",
+      "Tms": "1000/f",
+      "qA": "lA",
+      "qC": "f/vB",
+      "qD": "lA*vA/vB",
+      "lC": "vC/f",
+      "rC": "vC/vA",
+      "fc": "N/tN",
+      "Tc": "tN/N",
+      "pA": "lc*Tc",
+      "pB": "lc*fc",
+      "pC": "fc/lc",
+      "pD": "lc*N"
+    },
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV."
+    ],
+    "sinRevelar": "Elige tu predicción o enciende el altavoz para verlo.",
+    "frecuencia": "Frecuencia (la pone el altavoz)",
+    "frecuenciaValor": "f = {f} Hz en el aire y en el agua · T = 1 ÷ {f} = {Tms} ms",
+    "aire": "En el aire",
+    "aireValor": "λ = v ÷ f = {vA} ÷ {f} = {lA} m",
+    "agua": "En el agua",
+    "aguaValor": "λ = v ÷ f = {vB} ÷ {f} = {lB} m",
+    "razon": "Cuánto se estira",
+    "razonValor": "{vB} ÷ {vA} = {r} veces: la λ crece lo mismo que la velocidad ({lA} × {r} = {lB} m).",
+    "trampa": "La trampa",
+    "trampaValor": "Si λ se conservara: {qA} m en el agua. Fórmula invertida: {f} ÷ {vB} = {qC} m. Proporción al revés: {qD} m. De verdad: {lB} m.",
+    "mensaje": "Al cambiar de medio la frecuencia no cambia; cambia la velocidad y λ se acomoda: λ = v ÷ f.",
+    "mensajeAntes": "Altavoz de {f} Hz en el aire, junto a una pecera con agua. Enciéndelo para ver los frentes.",
+    "mensajeAire": "Los frentes viajan por el aire a {vA} m/s, separados {lA} m.",
+    "mensajeAgua": "Ya entraron al agua: van a {vB} m/s y se separan {lB} m, {r} veces más. El contador sigue en {f} Hz.",
+    "mensajeApagado": "Altavoz apagado: ya no salen frentes nuevos, pero los que salieron siguen viajando hasta salir de la lámina.",
+    "mensajeCambio": "Frecuencia nueva: {f} Hz. En el aire λ = {lA} m y en el agua λ = {lB} m.",
+    "mensajeReinicio": "Altavoz de {f} Hz: de vuelta al ejemplo del examen.",
+    "mensajeTrampa": "Si λ se conservara, los frentes punteados seguirían separados {qA} m dentro del agua. Los reales se separan {lB} m."
+  },
+  "profundizar": {
+    "titulo": "Periodo y otros medios",
+    "parrafos": [
+      "Por qué la frecuencia no cambia: cada frente que llega a la pared sale del otro lado. Si entraran {f} por segundo y salieran otro número, los frentes se amontonarían o desaparecerían en la frontera.",
+      "Periodo: <span class=\"numeros\">T = 1 ÷ f</span> = 1 ÷ {f} = {Tms} ms, igual en los dos medios. También sirve <span class=\"numeros\">v = λ ÷ T</span>: {lB} m ÷ {Tms} ms = {vB} m/s.",
+      "En acero el sonido va a ≈ {vC} m/s, {rC} veces más rápido que en el aire: λ = {vC} ÷ {f} = {lC} m. En el vacío no viaja: necesita un medio.",
+      "La regla y los frentes van a escala entre sí; la pecera no está a escala en metros. La animación va {lento} veces más lenta."
+    ]
+  },
+  "figura": {
+    "aria": "Un altavoz en el aire junto a una pecera de vidrio con agua. Los frentes de onda salen del altavoz y, al cruzar la pared de la pecera, se separan más. Una regla debajo marca la longitud de onda en cada medio y dos contadores marcan la misma frecuencia.",
+    "pie": "Lámina I. Al entrar al agua la frecuencia no cambia y la longitud de onda crece lo mismo que la velocidad. La regla y los frentes van a escala entre sí; la pecera no está a escala en metros y la animación está desacelerada.",
+    "frecuencia": "{f} Hz",
+    "frecuenciaInc": "? Hz",
+    "lambdaAire": "λ = {l} m",
+    "lambdaAgua": "λ = {l} m",
+    "lambdaInc": "λ = ? m",
+    "velocidadAire": "v = {v} m/s",
+    "velocidadAgua": "v = {v} m/s",
+    "medioAire": "AIRE",
+    "medioAgua": "AGUA",
+    "regla": "m",
+    "placa": "ONDAS · CAMBIO DE MEDIO"
+  },
+  "rotulos": {
+    "01": [
+      "Altavoz",
+      "Su membrana vibra {f} veces por segundo. Esa frecuencia es de la fuente: ningún medio la cambia."
+    ],
+    "02": [
+      "Perilla",
+      "Enciende o apaga el altavoz. Al apagarlo dejan de salir frentes, pero los que ya salieron siguen su camino."
+    ],
+    "03": [
+      "Frentes en el aire",
+      "Cada arco es una cresta de presión. Viajan a {vA} m/s y quedan separados λ = {vA} ÷ {f} = {lA} m."
+    ],
+    "04": [
+      "Pared de la pecera",
+      "Es la frontera entre medios. Cada frente que llega sale del otro lado: por eso la frecuencia no cambia."
+    ],
+    "05": [
+      "Frentes en el agua",
+      "Viajan a {vB} m/s. En el mismo tiempo entre frentes avanzan más, así que se separan λ = {vB} ÷ {f} = {lB} m."
+    ],
+    "06": [
+      "Regla",
+      "Va a la misma escala que los frentes: la λ del agua mide {r} veces la del aire. La pecera no está a escala en metros."
+    ],
+    "07": [
+      "Contador del aire",
+      "Cuenta los frentes que pasan por segundo en el aire: {f} Hz."
+    ],
+    "08": [
+      "Contador del agua",
+      "Cuenta los del agua: también {f} Hz. Lo que cambia entre los dos lados es la velocidad, no la frecuencia."
+    ],
+    "09": [
+      "Velocidades",
+      "La velocidad es del medio: {vA} m/s en el aire y {vB} m/s en el agua, {r} veces más."
+    ],
+    "10": [
+      "Trampa",
+      "Los frentes punteados serían la onda si λ se conservara: {qA} m en el agua. Los reales se separan {lB} m."
+    ]
+  },
+  "prediccion": {
+    "titulo": "Predice antes de encender",
+    "pregunta": "Un altavoz emite {f} Hz. En el aire viaja a {vA} m/s y en el agua a {vB} m/s. ¿Cuál es su longitud de onda en el agua?",
+    "opciones": [
+      {
+        "tipo": "conserva",
+        "formula": "qA",
+        "retro": "Esa es la λ del aire ({vA} ÷ {f}). Al cambiar de medio se conserva la frecuencia, no la λ: en el agua, {vB} ÷ {f} = {lB} m."
+      },
+      {
+        "tipo": "bien",
+        "formula": "lB",
+        "correcta": true,
+        "retro": "La frecuencia no cambia: λ = {vB} ÷ {f} = {lB} m, {r} veces la del aire ({lA} m)."
+      },
+      {
+        "tipo": "invertida",
+        "formula": "qC",
+        "retro": "Invertiste la fórmula: {f} ÷ {vB} es f ÷ v. La longitud de onda es λ = v ÷ f = {lB} m."
+      },
+      {
+        "tipo": "alReves",
+        "formula": "qD",
+        "retro": "Aplicaste la proporción al revés, como si en el agua la onda se apretara. La velocidad sube {r} veces y la λ también: {lB} m."
+      }
+    ],
+    "unidad": "m"
+  },
+  "trampa": {
+    "fantasma": "Si λ se conservara: {qA} m",
+    "real": "De verdad: {lB} m"
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Una cuerda hace {N} oscilaciones en {tN} s y λ = {lc} m. ¿Con qué velocidad viaja la onda?",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "pA",
+        "retro": "Multiplicaste por el periodo ({lc} × {Tc}). Con el periodo se divide: v = λ ÷ T = {lc} ÷ {Tc} = {pB} m/s."
+      },
+      {
+        "letra": "B",
+        "formula": "pB",
+        "correcta": true,
+        "retro": "f = {N} ÷ {tN} = {fc} Hz y v = λ · f = {lc} × {fc} = {pB} m/s (o v = λ ÷ T = {lc} ÷ {Tc})."
+      },
+      {
+        "letra": "C",
+        "formula": "pC",
+        "retro": "Dividiste f ÷ λ ({fc} ÷ {lc}). La velocidad es v = λ · f = {lc} × {fc} = {pB} m/s."
+      },
+      {
+        "letra": "D",
+        "formula": "pD",
+        "retro": "Tomaste las {N} oscilaciones como {N} Hz. Duraron {tN} s: f = {fc} Hz y v = {lc} × {fc} = {pB} m/s."
+      }
+    ],
+    "unidad": "m/s"
+  }
+}

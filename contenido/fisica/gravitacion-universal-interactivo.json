@@ -1,0 +1,331 @@
+{
+  "titulo": "Gravitación universal",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "Dos esferas se atraen con una fuerza de 36 N. Si la masa de una se triplica y la distancia entre sus centros se duplica, ¿cuál es la nueva fuerza de atracción?",
+        "opciones": [
+          {
+            "texto": "A) 9 N",
+            "explicacion": "Aplicaste la distancia (÷4) pero olvidaste triplicar la masa. F = 36 × 3 ÷ 4 = 27 N."
+          },
+          {
+            "texto": "B) 27 N",
+            "correcta": true,
+            "explicacion": "Masa ×3 → fuerza ×3; distancia ×2 → fuerza ÷ 2² = ÷4. F = 36 × 3 ÷ 4 = 27 N, la misma sobre las dos esferas."
+          },
+          {
+            "texto": "C) 54 N",
+            "explicacion": "Dividiste entre 2, pero la distancia va al cuadrado: al doble de distancia, 1/4. F = 36 × 3 ÷ 4 = 27 N."
+          },
+          {
+            "texto": "D) 108 N",
+            "explicacion": "Triplicaste la masa pero olvidaste la distancia: al doble, la fuerza baja a 1/4. F = 108 ÷ 4 = 27 N."
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "La fuerza crece con cada masa y baja con el cuadrado de la distancia: al doble de distancia, <span class=\"numeros\">1/4</span>; al triple, <span class=\"numeros\">1/9</span>. Y atrae a los dos cuerpos con la misma fuerza, aunque uno sea mucho más grande."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> Masa ×3 → la fuerza ×3.",
+        "<span class=\"numeral\">II.</span> Distancia ×2 → la fuerza ÷ 2² = ÷4.",
+        "<span class=\"numeral\">III.</span> F = 36 × 3 ÷ 4 = <span class=\"numeros\">27 N</span> → respuesta B.",
+        "<span class=\"numeral\">IV.</span> Las dos esferas sienten esos 27 N, aunque una tenga el triple de masa (3.ª ley)."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Dividir entre 2 en vez de entre 4 da 54 N (opción C): la distancia va al cuadrado, al doble de distancia la fuerza queda en 1/4, no en 1/2.",
+        "A (9 N) aplica la distancia pero olvida triplicar la masa. D (108 N) triplica la masa pero olvida la distancia.",
+        "Y la grande no jala más fuerte: la fuerza es la misma sobre las dos; la pequeña se mueve más porque tiene menos masa (a = F/m)."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "Distancia ×1, ×2, ×3, ×4 → fuerza <span class=\"numeros\">×1, 1/4, 1/9, 1/16</span>.",
+        "g = G·M/R² es la misma fórmula con R = radio del planeta: masa ×k → g ×k; radio ×k → g ÷ k².",
+        "G = 6.67 × 10<sup>−11</sup> N·m²/kg²: tan pequeña que entre objetos cotidianos la atracción no se nota."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "Un planeta tiene la mitad de masa y la mitad de radio que la Tierra. Si en la Tierra g = 10 m/s<sup>2</sup>, ¿cuánto vale g en su superficie?",
+        "opciones": [
+          {
+            "texto": "A) 5 m/s²",
+            "explicacion": "Aplicaste la mitad de masa y olvidaste el radio. g = 10 × 0.5 ÷ 0.5² = 20 m/s²."
+          },
+          {
+            "texto": "B) 10 m/s²",
+            "explicacion": "Dividiste entre 0.5 y no entre 0.5² = 0.25: la trampa del cuadrado. g = 10 × 0.5 ÷ 0.25 = 20 m/s²."
+          },
+          {
+            "texto": "C) 20 m/s²",
+            "correcta": true,
+            "explicacion": "g = G·M/R²: g = 10 × 0.5 ÷ 0.5² = 10 × 0.5 ÷ 0.25 = 20 m/s². Más chico, pero con g más fuerte."
+          },
+          {
+            "texto": "D) 40 m/s²",
+            "explicacion": "Aplicaste el radio pero olvidaste la mitad de masa. g = 10 × 0.5 ÷ 0.25 = 20 m/s²."
+          }
+        ]
+      }
+    }
+  ],
+  "valoresIniciales": {
+    "F0": 36,
+    "km": 3,
+    "kr": 2,
+    "n": 3,
+    "g0": 10,
+    "kM": 0.5,
+    "kR": 0.5
+  },
+  "rangos": {
+    "kr": {
+      "valores": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "km": {
+      "valores": [
+        1,
+        2,
+        3
+      ]
+    },
+    "n": {
+      "valores": [
+        3,
+        4
+      ]
+    }
+  },
+  "lecturas": {
+    "formulas": {
+      "kr2": "kr*kr",
+      "F": "F0*km/(kr*kr)",
+      "Fm": "F0*km",
+      "Fsr": "F0*km/kr",
+      "Fsm": "F0/(kr*kr)",
+      "n2": "n*n",
+      "dosn": "2*n",
+      "Pn": "F0/(n*n)",
+      "Pn1": "F0/n",
+      "P0": "F0",
+      "P2n": "F0/(2*n)",
+      "kR2": "kR*kR",
+      "gp": "g0*kM/(kR*kR)",
+      "pA": "g0*kM",
+      "pB": "g0*kM/kR",
+      "pC": "gp",
+      "pD": "g0/(kR*kR)"
+    },
+    "decimales": {
+      "F": 2,
+      "Fm": 0,
+      "Fsr": 2,
+      "Fsm": 2,
+      "Pn": 2,
+      "Pn1": 2,
+      "P0": 0,
+      "P2n": 2,
+      "kM": 1,
+      "kR": 1,
+      "kR2": 2,
+      "gp": 1,
+      "pA": 1,
+      "pB": 1,
+      "pC": 1,
+      "pD": 1,
+      "kr": 1,
+      "kr2": 2
+    },
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV.",
+      "V."
+    ],
+    "fuerza": "Fuerza sobre cada esfera",
+    "fuerzaValor": "F = {F0} × {km} ÷ {kr}² = {F} N",
+    "masa": "Masa de A ×{km}",
+    "masaValor": "La fuerza ×{km}: a la distancia ×1 sería {F0} × {km} = {Fm} N.",
+    "distancia": "Distancia ×{kr}",
+    "distanciaValor": "La fuerza ÷ {kr}² = ÷{kr2}: {Fm} ÷ {kr2} = {F} N.",
+    "tercera": "Sobre cada esfera",
+    "terceraValor": "A y B sienten {F} N, aunque A tenga {km} veces la masa de B (3.ª ley).",
+    "unoSobreR": "Si fuera 1/r",
+    "unoSobreRValor": "{Fm} ÷ {kr} = {Fsr} N. De verdad: {Fm} ÷ {kr2} = {F} N.",
+    "planeta": "En la superficie de un planeta",
+    "planetaValor": "g = G·M/R², la misma fórmula: con la mitad de masa y de radio, g = {g0} × {kM} ÷ {kR2} = {gp} m/s².",
+    "mensajeInicio": "Así empieza el examen: a ×1 y con masas iguales se atraen con {F} N. Arrastra la esfera B para alejarla.",
+    "mensajeMover": "Distancia ×{kr}: F = {Fm} ÷ {kr2} = {F} N, la misma sobre las dos esferas.",
+    "mensajeMasa": "Masa de A ×{km}: A es más grande, pero las dos flechas crecen igual: {F} N en cada una.",
+    "mensajeTope": "El tope no deja acercarla más de ×1: las esferas chocarían.",
+    "mensajeTrampa": "Si bajara como 1/r, a ×{kr} sería {Fsr} N. De verdad baja como 1/r²: {F} N.",
+    "mensajeReinicio": "De vuelta al examen: masa ×{km} y distancia ×{kr}: {F0} × {km} ÷ {kr2} = {F} N (respuesta B), en las dos esferas.",
+    "mensajePrediccion": "Con {F0} N a ×1, a ×{n} queda {F0} ÷ {n2} = {Pn} N."
+  },
+  "prediccion": {
+    "titulo": "Predice antes de alejarlas",
+    "pregunta": "Dos esferas se atraen con {F0} N. Si la distancia entre sus centros se multiplica por {n}, ¿con qué fuerza se atraen?",
+    "unidad": "N",
+    "opciones": [
+      {
+        "tipo": "bien",
+        "formula": "Pn",
+        "correcta": true,
+        "retro": "La distancia va al cuadrado: ×{n} en r → ÷{n2} en F. {F0} ÷ {n2} = {Pn} N."
+      },
+      {
+        "tipo": "unoSobreR",
+        "formula": "Pn1",
+        "retro": "Dividiste entre {n}, pero la distancia va al cuadrado: {F0} ÷ {n}² = {F0} ÷ {n2} = {Pn} N."
+      },
+      {
+        "tipo": "sinCambio",
+        "formula": "P0",
+        "retro": "Las masas no cambiaron, pero la distancia sí: al alejarlas la fuerza baja. {F0} ÷ {n}² = {Pn} N."
+      },
+      {
+        "tipo": "dosN",
+        "formula": "P2n",
+        "retro": "Multiplicaste {n} × 2 = {dosn} en vez de elevar al cuadrado: {n}² = {n2}. {F0} ÷ {n2} = {Pn} N."
+      }
+    ]
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Un planeta tiene la mitad de masa y la mitad de radio que la Tierra. Si en la Tierra g = {g0} m/s², ¿cuánto vale g en su superficie?",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "unidad": "m/s²",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "pA",
+        "retro": "Aplicaste la mitad de masa y olvidaste el radio. g = {g0} × {kM} ÷ {kR}² = {gp} m/s²."
+      },
+      {
+        "letra": "B",
+        "formula": "pB",
+        "retro": "Dividiste entre {kR} y no entre {kR}² = {kR2}: la trampa del cuadrado. g = {g0} × {kM} ÷ {kR2} = {gp} m/s²."
+      },
+      {
+        "letra": "C",
+        "formula": "pC",
+        "correcta": true,
+        "retro": "g = G·M/R²: g = {g0} × {kM} ÷ {kR}² = {g0} × {kM} ÷ {kR2} = {gp} m/s². Más chico, pero con g más fuerte."
+      },
+      {
+        "letra": "D",
+        "formula": "pD",
+        "retro": "Aplicaste el radio pero olvidaste la mitad de masa. g = {g0} ÷ {kR2} = {gp} m/s²."
+      }
+    ]
+  },
+  "pieLamina": "Lámina I. La esfera A está fija y la B va sobre un carrito. Aléjala o arrástrala y cambia la masa de A: compara las dos flechas y las barras del tablero.",
+  "instruccion": "Arrastra la esfera B por el riel, usa «Alejar» o toca una barra del tablero. Cambia la masa de A y compara las dos flechas.",
+  "escena": {
+    "inicio": {
+      "km": 1,
+      "kr": 1
+    },
+    "flechaMax": 15,
+    "dialMax": 120,
+    "recorrido": 2,
+    "velocidad": 1.6
+  },
+  "controles": {
+    "alejar": "Alejar a ×{k}",
+    "regresar": "Regresar a ×1",
+    "kr": "Distancia entre centros",
+    "valorKr": "×{kr}",
+    "km": "Masa de la esfera A",
+    "valorKm": "×{km}",
+    "n": "Distancia de la predicción",
+    "valorN": "×{n}",
+    "chipN": "A ×{n}, desde {F0} N",
+    "trampa": "¿Y si bajara a la mitad?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "examen": "Volver al examen",
+    "arrastre": "Arrastra la esfera B (anillo punteado) a la izquierda o a la derecha.",
+    "valorLamina": "Distancia ×{kr}, masa de A ×{km}: F = {F} N sobre cada esfera"
+  },
+  "figura": {
+    "aria": "Banco de pruebas: la esfera A fija sobre un poste y la esfera B sobre un carrito en un riel marcado ×1 a ×4. Cada esfera tiene un dinamómetro de reloj y una flecha de fuerza; atrás, un tablero con barras de la fuerza a cada distancia.",
+    "pie": "Lámina I. Al doble de distancia la fuerza queda en 1/4, al triple en 1/9 y al cuádruple en 1/16, y las dos esferas sienten siempre la misma fuerza.",
+    "placa": "GRAVITACIÓN · F = G·m₁·m₂/r²",
+    "masaA": "{km}m",
+    "masaB": "m",
+    "fuerza": "{F} N",
+    "marca": "×{j}",
+    "barra": "{x} N",
+    "fraccion": "÷{j2}",
+    "tablero1": "F según r",
+    "tablero2": "masa A ×{km}",
+    "fantasma": "si fuera 1/r: {Fsr} N",
+    "real": "de verdad: {F} N"
+  },
+  "rotulos": {
+    "01": [
+      "Esfera A",
+      "Fija sobre su poste. Su masa es ×{km} la de B (misma densidad: el radio crece con la raíz cúbica). Si A fuera la Tierra y B estuviera en su superficie, F ÷ m = g = G·M/R²."
+    ],
+    "02": [
+      "Dinamómetro de A",
+      "Mide la fuerza que B ejerce sobre A: {F} N. Su aguja y su lectura son iguales a las del de B."
+    ],
+    "03": [
+      "Fuerza sobre A",
+      "{F} N, hacia B. La gravedad siempre atrae: la flecha apunta a la otra esfera."
+    ],
+    "04": [
+      "Fuerza sobre B",
+      "{F} N, hacia A: igual a la de A y en sentido contrario (3.ª ley), aunque B tenga menos masa."
+    ],
+    "05": [
+      "Dinamómetro de B",
+      "Marca {F} N, igual que el de A. La esfera chica no siente menos: se movería más porque a = F/m."
+    ],
+    "06": [
+      "Esfera B y carrito",
+      "Rueda por el riel y se detiene en ×1, ×2, ×3 o ×4. Ahora está a ×{kr}: F = {Fm} ÷ {kr2} = {F} N."
+    ],
+    "07": [
+      "Riel y regla",
+      "La regla mide la distancia entre centros en múltiplos de r: ×1, ×2, ×3, ×4."
+    ],
+    "08": [
+      "Tablero de barras",
+      "La fuerza a cada distancia, a escala entre sí: ÷1, ÷4, ÷9, ÷16. La curva punteada es 1/r² y el punto rojo es donde está B. Toca una barra para llevar B a esa distancia."
+    ],
+    "09": [
+      "Tope",
+      "No deja acercar B a menos de ×1, para que las esferas no choquen."
+    ]
+  }
+}

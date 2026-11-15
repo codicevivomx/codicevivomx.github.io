@@ -1,0 +1,349 @@
+{
+  "titulo": "Refracción de la luz",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pieLamina": "Lámina II. Una lámpara láser, un disco óptico graduado y medio disco de vidrio. Enciende el láser y compara los dos arcos: al entrar al vidrio el rayo se acerca a la normal punteada.",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "Un rayo de luz pasa del aire (n = 1) a un vidrio (n = 1.6) con un ángulo de incidencia de 53° respecto a la normal. ¿Cuál es el ángulo de refracción? (sen 53° = 0.8)",
+        "opciones": [
+          {
+            "texto": "A) 30°",
+            "correcta": true,
+            "explicacion": "Ley de Snell: 1 × sen 53° = 1.6 × sen θ2, así que sen θ2 = 0.8 ÷ 1.6 = 0.5 y θ2 = 30°. Comprueba: 30° < 53°, entró a mayor n y se acercó a la normal."
+          },
+          {
+            "texto": "B) 33°",
+            "explicacion": "Dividiste el ángulo entre n (53 ÷ 1.6 ≈ 33°). Snell trabaja con senos: sen θ2 = 0.8 ÷ 1.6 = 0.5, θ2 = 30°."
+          },
+          {
+            "texto": "C) 53°",
+            "explicacion": "Supusiste que la luz no se dobla. Eso solo pasa si n1 = n2 o si llega por la normal. Con Snell: sen θ2 = 0.8 ÷ 1.6 = 0.5, θ2 = 30°."
+          },
+          {
+            "texto": "D) No entra al vidrio: hay reflexión total",
+            "explicacion": "Invertiste los índices: 1.6 × 0.8 = 1.28 > 1. La reflexión total solo ocurre al ir de mayor a menor n; del aire al vidrio siempre entra: sen θ2 = 0.8 ÷ 1.6 = 0.5, θ2 = 30°."
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "Al pasar a un medio de mayor n, la luz se dobla hacia la normal; lo que se conserva es n·sen θ, no el ángulo: <span class=\"numeros\">n1·sen θ1 = n2·sen θ2</span>."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> Ley de Snell: 1 × sen 53° = 1.6 × sen θ2.",
+        "<span class=\"numeral\">II.</span> sen θ2 = 0.8 ÷ 1.6 = 0.5 → θ2 = <span class=\"numeros\">30°</span> → respuesta A.",
+        "<span class=\"numeral\">III.</span> Comprueba: 1 × 0.8 = 1.6 × 0.5 = <span class=\"numeros\">0.8</span>, y 30° < 53°: entró a mayor n y se acercó a la normal."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Dividir el ángulo en vez del seno da 53 ÷ 1.6 ≈ 33° (opción B). Snell trabaja con senos; con ángulos chicos casi da lo mismo y por eso engaña, pero aquí falla por 3°.",
+        "Pensar que la luz no se dobla da 53° (opción C): eso solo pasa si n1 = n2 o si llega por la normal.",
+        "Invertir los índices da sen θ2 = 1.6 × 0.8 = 1.28 > 1 y parece reflexión total (opción D); pero la reflexión total solo ocurre al ir de mayor a menor n, nunca del aire al vidrio."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "Antes de calcular, decide hacia dónde se dobla: a mayor n, más cerca de la normal (θ2 < θ1); a menor n, se aleja (θ2 > θ1). Descarta lo que no cumpla.",
+        "Opera con senos: <span class=\"numeros\">sen θ2 = n1·sen θ1 ÷ n2</span>. Si te sale un seno mayor que 1, revisa si invertiste los índices. Ángulos del 3-4-5: sen 37° = 0.6 y sen 53° = 0.8."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "Un rayo pasa del agua (n = 4/3) al aire. Dentro del agua forma 37° con la normal. ¿Qué ángulo forma con la normal en el aire? (sen 37° = 0.6, sen 53° = 0.8)",
+        "opciones": [
+          {
+            "texto": "A) 27°",
+            "explicacion": "Invertiste los índices: 0.6 × 3/4 = 0.45 → ≈ 27°; el rayo se acercaría a la normal, y al salir al aire se aleja. Bien: (4/3)(0.6) = 0.8 → 53°."
+          },
+          {
+            "texto": "B) 37°",
+            "explicacion": "Supusiste que la luz no se dobla. Al pasar a menor n se aleja de la normal: (4/3)(0.6) = sen θ2 = 0.8 → 53°."
+          },
+          {
+            "texto": "C) 49°",
+            "explicacion": "Multiplicaste el ángulo (37 × 4/3 ≈ 49°) en vez del seno: (4/3)(0.6) = 0.8 → 53°."
+          },
+          {
+            "texto": "D) 53°",
+            "correcta": true,
+            "explicacion": "(4/3)(0.6) = 1 × sen θ2 → sen θ2 = 0.8 → θ2 = 53°. Sale a menor n: se aleja de la normal."
+          }
+        ]
+      }
+    }
+  ],
+  "instruccion": "Enciende el láser y compara los dos arcos. Arrastra la lámpara por el borde para cambiar θ1 y mira la trampa de pensar que el rayo sigue derecho.",
+  "valoresIniciales": {
+    "t1": 53,
+    "n": 1.6,
+    "t1r": 30,
+    "tp": 37
+  },
+  "rangos": {
+    "t1": {
+      "valores": [
+        45,
+        50,
+        53,
+        55,
+        60,
+        65,
+        70
+      ]
+    },
+    "t1r": {
+      "valores": [
+        8,
+        26,
+        30,
+        36,
+        38,
+        39,
+        50,
+        60
+      ]
+    }
+  },
+  "escena": {
+    "rapidez": 2,
+    "giroArco": 1.6,
+    "barrido": 28
+  },
+  "controles": {
+    "t1": "Ángulo de incidencia θ1 (desde la normal)",
+    "valorT1": "{v}°",
+    "encender": "Encender el láser",
+    "apagar": "Apagar el láser",
+    "trampa": "¿Y si sigue derecho?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "profundizar": "Profundizar: del vidrio al aire",
+    "examen": "Volver al examen",
+    "arrastre": "Arrastra la lámpara por el borde del disco para cambiar θ1.",
+    "valorPerilla": "Lámpara a θ1 = {t1}° de la normal; láser {estado}",
+    "valorPerillaReves": "Lámpara del lado del vidrio, a {t1r}° de la normal; láser {estado}",
+    "encendido": "encendido",
+    "apagado": "apagado",
+    "t1r": "Ángulo dentro del vidrio θ1 (desde la normal)",
+    "reves": "Pasar la lámpara al lado del vidrio",
+    "volverAire": "Regresar la lámpara al aire",
+    "arrastreReves": "Arrastra la lámpara por el borde, del lado del vidrio, para cambiar θ1."
+  },
+  "lecturas": {
+    "formulas": {
+      "s1": "sen(t1)",
+      "s2": "s1/n",
+      "t2": "asen(s2)",
+      "tr": "t1",
+      "qProp": "t1/n",
+      "qRecto": "t1",
+      "qInv": "n*s1",
+      "sr1": "sen(t1r)",
+      "sr2": "n*sr1",
+      "t2r": "asen(sr2)",
+      "trr": "t1r",
+      "tc": "asen(1/n)",
+      "nA": "4/3",
+      "sp": "sen(tp)",
+      "sp2": "nA*sp",
+      "spA": "sp/nA",
+      "pA": "asen(spA)",
+      "pB": "tp",
+      "pC": "tp*nA",
+      "pD": "asen(sp2)"
+    },
+    "decimales": {
+      "n": 1,
+      "s1": 2,
+      "s2": 2,
+      "qInv": 2,
+      "sr1": 2,
+      "sr2": 2,
+      "sp": 2,
+      "sp2": 2,
+      "spA": 2,
+      "tc": 1
+    },
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV."
+    ],
+    "sinRevelar": "Elige tu predicción o enciende el láser para verlo.",
+    "incidencia": "Ángulo de incidencia (en el aire)",
+    "incidenciaValor": "θ1 = {t1}° → sen θ1 = {s1}",
+    "snell": "Ley de Snell",
+    "snellValor": "1 × {s1} = {n} × sen θ2 → sen θ2 = {s1} ÷ {n} = {s2}",
+    "refraccion": "Ángulo de refracción (en el vidrio)",
+    "refraccionValor": "θ2 = {t2}°",
+    "comprueba": "Comprueba",
+    "compruebaValor": "{t2}° < {t1}°: entró a mayor n y se acercó a la normal. El reflejo tenue sale a θr = {tr}°.",
+    "trampa": "La trampa",
+    "trampaValor": "Sin doblarse: {qRecto}°. Dividiendo el ángulo: {t1} ÷ {n} ≈ {qProp}°. De verdad: θ2 = {t2}°.",
+    "mensaje": "Al entrar al vidrio la luz se acerca a la normal: se conserva n·sen θ, no el ángulo.",
+    "mensajeAntes": "Lámpara a θ1 = {t1}° de la normal, con el láser apagado. Enciéndelo para ver el rayo refractado.",
+    "mensajeEncendido": "Láser encendido: sen θ2 = {s1} ÷ {n} = {s2}, así que θ2 = {t2}°, más chico que θ1 = {t1}°.",
+    "mensajeApagado": "Láser apagado: sin luz no hay rayo refractado ni reflejado.",
+    "mensajeSube": "θ1 = {t1}°: θ2 = {t2}°. Más cerca de la normal, los dos ángulos se achican.",
+    "mensajeBaja": "θ1 = {t1}°: θ2 = {t2}°. Más rasante, θ2 crece cada vez menos.",
+    "mensajeReinicio": "θ1 = {t1}°: de vuelta al ejemplo del examen.",
+    "mensajeTrampa": "Si el rayo siguiera derecho, entraría a {qRecto}° de la normal (punteado). El real entra a θ2 = {t2}°: se dobló hacia la normal.",
+    "mensajeGiro": "Gira el arco θ1 media vuelta sobre el centro: cae en la prolongación del rayo, la trampa de seguir derecho. θ2 = {t2}° queda adentro, más chico.",
+    "mensajeBarrido": "Mira la lámpara recorrer de {min}° a {max}°: θ2 crece con θ1, pero siempre se queda más chico. Toca para detenerla.",
+    "mensajeFinBarrido": "La lámpara volvió a θ1 = {t1}°: θ2 = {t2}°. Arrástrala tú para probar otros ángulos.",
+    "mensajeReves": "Del vidrio al aire: θ1 = {t1r}° dentro del vidrio, sen θ2 = {n} × {sr1} = {sr2} y sale a θ2 = {t2r}°, alejándose de la normal.",
+    "mensajeRevesTotal": "Del vidrio al aire con θ1 = {t1r}°: {n} × {sr1} = {sr2}, mayor que 1. No sale: reflexión total, todo se refleja a θr = {trr}°.",
+    "mensajeExamen": "De vuelta del aire al vidrio: θ1 = {t1}° y θ2 = {t2}°."
+  },
+  "profundizar": {
+    "titulo": "Del vidrio al aire: el ángulo crítico",
+    "parrafos": [
+      "Pon la lámpara del lado curvo: el rayo entra por un radio sin doblarse y llega a la cara plana desde adentro, con θ1 = {t1r}°.",
+      "Ahora sale a menor n y se aleja de la normal: sen θ2 = {n} × {sr1} = {sr2}.",
+      "Si ese producto pasa de 1, no hay ángulo que lo cumpla: el rayo no sale y se refleja completo. Pasa desde <span class=\"numeros\">sen θc = 1 ÷ {n}, θc = {tc}°</span>.",
+      "Así viaja la luz por la fibra óptica: rebota por dentro sin escaparse."
+    ],
+    "total": "No sale: reflexión total (θ1 pasa de θc = {tc}°)."
+  },
+  "figura": {
+    "aria": "Un disco óptico graduado con medio disco de vidrio en la mitad de abajo, una lámpara láser en el borde y la normal punteada. El rayo se dobla en la cara plana y entra al vidrio más cerca de la normal; un reflejo tenue sale hacia arriba.",
+    "pie": "Lámina II. Al pasar del aire al vidrio la luz se acerca a la normal: n1·sen θ1 = n2·sen θ2. Se dobla solo en la cara plana; dentro del vidrio va por un radio y sale por el lado curvo sin doblarse.",
+    "incidencia": "θ1 = {t1}°",
+    "incidenciaInc": "θ1 = ?",
+    "refraccion": "θ2 = {t2}°",
+    "refraccionInc": "θ2 = ?",
+    "reflejo": "θr = {tr}°",
+    "fantasma": "{qRecto}°",
+    "normal": "normal",
+    "aire": "aire · n = 1",
+    "vidrio": "vidrio · n = {n}",
+    "placa": "REFRACCIÓN · n1 sen θ1 = n2 sen θ2",
+    "total": "reflexión total",
+    "critico": "θc = {tc}°",
+    "dato": "θ1 = {t1}° · n = {n}"
+  },
+  "rotulos": {
+    "01": [
+      "Lámpara láser",
+      "Va en el borde del disco. Ahora el rayo llega a θ1 = {t1}° de la normal."
+    ],
+    "02": [
+      "Rayo incidente",
+      "Viaja por el aire (n = 1) hasta el centro de la cara plana."
+    ],
+    "03": [
+      "Cara plana",
+      "La frontera aire-vidrio: aquí, y solo aquí, se dobla la luz."
+    ],
+    "04": [
+      "Normal",
+      "La perpendicular a la cara plana en el punto donde llega el rayo. Desde ella se miden θ1 y θ2."
+    ],
+    "05": [
+      "Ángulo de incidencia",
+      "θ1 = {t1}°, sen θ1 = {s1}."
+    ],
+    "06": [
+      "Ángulo de refracción",
+      "sen θ2 = {s1} ÷ {n} = {s2}, θ2 = {t2}°: más chico que θ1."
+    ],
+    "07": [
+      "Rayo refractado",
+      "Dentro del vidrio va por un radio, así que sale por el lado curvo sin doblarse otra vez."
+    ],
+    "08": [
+      "Medio disco de vidrio",
+      "n = {n}: la luz va más lenta que en el aire y por eso se acerca a la normal."
+    ],
+    "09": [
+      "Reflejo tenue",
+      "Una parte de la luz rebota en la cara plana con θr = θ1 = {tr}°, como en la lámina de reflexión."
+    ],
+    "10": [
+      "Trampa",
+      "El rayo punteado es el que seguiría derecho: entraría a {qRecto}° de la normal, no a {t2}°."
+    ]
+  },
+  "prediccion": {
+    "titulo": "Predice antes de encender",
+    "pregunta": "Un rayo pasa del aire (n = 1) al vidrio (n = {n}) con θ1 = {t1}° desde la normal. ¿Cuál es el ángulo de refracción?",
+    "opciones": [
+      {
+        "tipo": "bien",
+        "formula": "t2",
+        "unidad": "°",
+        "correcta": true,
+        "retro": "sen θ2 = {s1} ÷ {n} = {s2}, así que θ2 = {t2}°: más chico que θ1, se acercó a la normal."
+      },
+      {
+        "tipo": "proporcion",
+        "formula": "qProp",
+        "unidad": "°",
+        "retro": "Dividiste el ángulo: {t1} ÷ {n} ≈ {qProp}°. Snell trabaja con senos: sen θ2 = {s1} ÷ {n} = {s2}, θ2 = {t2}°."
+      },
+      {
+        "tipo": "recto",
+        "formula": "qRecto",
+        "unidad": "°",
+        "retro": "Supusiste que no se dobla. Al entrar a mayor n se acerca a la normal: θ2 = {t2}°."
+      },
+      {
+        "tipo": "total",
+        "texto": "No entra: reflexión total",
+        "retro": "Invertir los índices da {n} × {s1} = {qInv} > 1, pero la reflexión total solo pasa al ir de mayor a menor n. Del aire al vidrio siempre entra: θ2 = {t2}°."
+      }
+    ],
+    "unidad": "°"
+  },
+  "trampa": {
+    "fantasma": "Si siguiera derecho: {qRecto}°",
+    "real": "De verdad: θ2 = {t2}°"
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "Un rayo pasa del agua (n = 4/3) al aire. Dentro del agua forma {tp}° con la normal. ¿Qué ángulo forma con la normal en el aire? (sen 37° = 0.6, sen 53° = 0.8)",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "pA",
+        "retro": "Invertiste los índices: {sp} × 3/4 = {spA} → ≈ {pA}°; el rayo se acercaría a la normal, y al salir al aire se aleja. Bien: (4/3)({sp}) = {sp2} → {pD}°."
+      },
+      {
+        "letra": "B",
+        "formula": "pB",
+        "retro": "Supusiste que la luz no se dobla. Al pasar a menor n se aleja de la normal: (4/3)({sp}) = {sp2} → {pD}°."
+      },
+      {
+        "letra": "C",
+        "formula": "pC",
+        "retro": "Multiplicaste el ángulo ({tp} × 4/3 ≈ {pC}°) en vez del seno: (4/3)({sp}) = {sp2} → {pD}°."
+      },
+      {
+        "letra": "D",
+        "formula": "pD",
+        "correcta": true,
+        "retro": "(4/3)({sp}) = 1 × sen θ2 → sen θ2 = {sp2} → θ2 = {pD}°. Sale a menor n: se aleja de la normal."
+      }
+    ],
+    "unidad": "°"
+  }
+}

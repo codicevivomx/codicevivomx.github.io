@@ -28,3 +28,4 @@ principio-de-arquimedes · 2.5D+ (rehecho desde v2) · Opus 5.5
 Sesión: 27 → 49 % (lámina, 22 %) · 49 → 83 % (ronda 1: agua realista y «máx», 34 %) · total 56 %
 Semana: __ → __ %
 Notas: JSON en formato viejo (11 campos nuevos), dibujo nuevo desde cero (vaso de derrame, probeta y balanza), modelo de nivel del agua.
+| 15-nov-2026 | tanda física (9 láminas: conservacion-de-la-energia, ley-de-ohm, reflexion, refraccion, ondas, cantidad-de-movimiento, calor-y-temperatura, caida-libre, gravitacion-universal) | lámina 2.5D+ | claude.ai Opus 5.5 | sin medir | sin medir | hechas desde el celular, subidas en una sola rama |

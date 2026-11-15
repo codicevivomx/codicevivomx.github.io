@@ -1,0 +1,318 @@
+{
+  "titulo": "Reflexión de la luz",
+  "subtitulo": "Física · Examen de admisión UNAM",
+  "pieLamina": "Lámina I. Una lámpara láser, un espejo plano y una mesa graduada en un banco óptico. Enciende el láser y compara los dos arcos: los ángulos se miden desde la normal punteada.",
+  "pasos": [
+    {
+      "n": 1,
+      "titulo": "Pregunta de examen",
+      "pregunta": {
+        "enunciado": "Un rayo de luz llega a un espejo plano formando 35° con la superficie del espejo. ¿Cuál es el ángulo de reflexión?",
+        "opciones": [
+          {
+            "texto": "A) 35°",
+            "explicacion": "Tomaste el ángulo con el espejo como si fuera θi. Los ángulos se miden desde la normal: θi = 90° − 35° = 55° y θr = θi = 55°."
+          },
+          {
+            "texto": "B) 55°",
+            "correcta": true,
+            "explicacion": "Desde la normal, θi = 90° − 35° = 55°, y por la ley de la reflexión θr = θi = 55°. Comprueba: entre los rayos hay 55° + 55° = 110°."
+          },
+          {
+            "texto": "C) 70°",
+            "explicacion": "Duplicaste el ángulo con el espejo (2 × 35 = 70°): eso es lo que se desvía el rayo (180° − 110°), no θr. Desde la normal, θr = 90° − 35° = 55°."
+          },
+          {
+            "texto": "D) 110°",
+            "explicacion": "Ese es el ángulo entre el rayo incidente y el reflejado (θi + θr = 55° + 55°). El ángulo de reflexión es solo uno de los dos: 55°."
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "titulo": "Idea en una frase",
+      "parrafos": [
+        "El rayo sale del espejo con el mismo ángulo con que llega, <span class=\"numeros\">θi = θr</span>, y los dos se miden desde la normal (la perpendicular al espejo), no desde el espejo."
+      ]
+    },
+    {
+      "n": 3,
+      "titulo": "Ejemplo resuelto",
+      "parrafos": [
+        "<span class=\"numeral\">I.</span> Primero pasa a la normal: θi = 90° − 35° = <span class=\"numeros\">55°</span>.",
+        "<span class=\"numeral\">II.</span> Ley de la reflexión: θr = θi = <span class=\"numeros\">55°</span> → respuesta B.",
+        "<span class=\"numeral\">III.</span> Comprueba: entre los dos rayos hay 55° + 55° = <span class=\"numeros\">110°</span>, y cada rayo forma 35° con el espejo: la figura es simétrica."
+      ]
+    },
+    {
+      "n": 4,
+      "titulo": "La trampa",
+      "parrafos": [
+        "Tomar el ángulo con el espejo como θi da la opción A: 35°. El ángulo de reflexión se mide desde la normal, así que primero se resta de 90°.",
+        "Duplicar el ángulo con el espejo da 2 × 35 = 70° (opción C): es lo que se desvía el rayo, no θr.",
+        "Sumar los dos ángulos da θi + θr = 110° (opción D): es el ángulo entre los rayos, no solo θr."
+      ]
+    },
+    {
+      "n": 5,
+      "titulo": "Truco de examen",
+      "parrafos": [
+        "La normal es la regla: si te dan el ángulo con el espejo, réstalo de 90° antes de hacer cualquier otra cosa: <span class=\"numeros\">θ = 90° − α</span>.",
+        "Entre los dos rayos siempre hay 2θ; si te dan ese ángulo, divídelo entre 2. Sentido común: θi y θr van de 0° a 90°; una respuesta mayor que 90° nunca es θr."
+      ]
+    },
+    {
+      "n": 6,
+      "titulo": "Ponte a prueba",
+      "pregunta": {
+        "enunciado": "El rayo incidente y el reflejado forman 100° entre sí. ¿Qué ángulo forma el rayo reflejado con la superficie del espejo?",
+        "opciones": [
+          {
+            "texto": "A) 40°",
+            "correcta": true,
+            "explicacion": "θr = 100 ÷ 2 = 50° desde la normal, y con el espejo son 90° − 50° = 40°."
+          },
+          {
+            "texto": "B) 50°",
+            "explicacion": "Ese es θr (100 ÷ 2), medido desde la normal. Te faltó pasarlo al espejo: 90° − 50° = 40°."
+          },
+          {
+            "texto": "C) 80°",
+            "explicacion": "Es lo que se desvía el rayo (180° − 100°), el doble del ángulo con el espejo. Con el espejo: 90° − 100 ÷ 2 = 40°."
+          },
+          {
+            "texto": "D) 100°",
+            "explicacion": "Tomaste el ángulo entre los rayos como si fuera el ángulo con el espejo. θr = 100 ÷ 2 = 50° y con el espejo son 90° − 50° = 40°."
+          }
+        ]
+      }
+    }
+  ],
+  "instruccion": "Enciende el láser y compara los dos arcos. Arrastra la lámpara por el borde para cambiar el ángulo con el espejo y mira la trampa de medir desde el espejo.",
+  "valoresIniciales": {
+    "alfa": 35,
+    "beta": 10,
+    "E": 100
+  },
+  "rangos": {
+    "alfa": {
+      "valores": [
+        10,
+        15,
+        20,
+        25,
+        35,
+        40,
+        50,
+        55,
+        65,
+        70,
+        75,
+        80
+      ]
+    }
+  },
+  "escena": {
+    "rapidez": 2,
+    "giroEspejo": 10,
+    "doblez": 1.6,
+    "barrido": 28
+  },
+  "controles": {
+    "alfa": "Ángulo de la lámpara con el espejo",
+    "valorAlfa": "{v}°",
+    "encender": "Encender el láser",
+    "apagar": "Apagar el láser",
+    "trampa": "¿Y si mido desde el espejo?",
+    "ocultarTrampa": "Ocultar la trampa",
+    "profundizar": "Profundizar: girar el espejo",
+    "examen": "Volver al examen",
+    "arrastre": "Arrastra el brazo de la lámpara para cambiar el ángulo con el espejo.",
+    "valorPerilla": "Lámpara a {alfa}° del espejo; láser {estado}",
+    "girar": "Girar el espejo {beta}°",
+    "enderezar": "Enderezar el espejo",
+    "encendido": "encendido",
+    "apagado": "apagado"
+  },
+  "lecturas": {
+    "formulas": {
+      "ti": "90-alfa",
+      "tr": "ti",
+      "entre": "ti+tr",
+      "desv": "180-entre",
+      "qA": "alfa",
+      "qC": "2*alfa",
+      "qD": "ti+tr",
+      "ti2": "ti-beta",
+      "tr2": "ti2",
+      "entre2": "ti2+tr2",
+      "giro": "2*beta",
+      "pr": "E/2",
+      "pA": "90-E/2",
+      "pB": "pr",
+      "pC": "180-E",
+      "pD": "E"
+    },
+    "decimales": {},
+    "numerales": [
+      "I.",
+      "II.",
+      "III.",
+      "IV."
+    ],
+    "sinRevelar": "Elige tu predicción o enciende el láser para verlo.",
+    "espejo": "Con el espejo (lo da el problema)",
+    "espejoValor": "α = {alfa}°",
+    "incidencia": "Ángulo de incidencia (pásalo a la normal)",
+    "incidenciaValor": "θi = 90° − {alfa}° = {ti}°",
+    "reflexion": "Ángulo de reflexión",
+    "reflexionValor": "θr = θi = {tr}°",
+    "comprueba": "Comprueba",
+    "compruebaValor": "entre los rayos hay {ti}° + {tr}° = {entre}°, y cada rayo forma {alfa}° con el espejo.",
+    "trampa": "La trampa",
+    "trampaValor": "Desde el espejo: {qA}°. El doble del espejo: {qC}°. Entre los rayos: {qD}°. De verdad: θr = {tr}°.",
+    "mensaje": "El rayo sale con el mismo ángulo con que llega, θi = θr, medido desde la normal.",
+    "mensajeAntes": "Lámpara a {alfa}° del espejo, con el láser apagado. Enciéndelo para ver el rayo reflejado.",
+    "mensajeEncendido": "Láser encendido: θi = 90° − {alfa}° = {ti}° y sale con θr = {tr}°. Los dos arcos son iguales.",
+    "mensajeApagado": "Láser apagado: sin luz que llegue al espejo, no hay rayo reflejado.",
+    "mensajeSube": "Lámpara a {alfa}° del espejo: θi = θr = {ti}°. Más inclinada hacia la normal, ángulos más chicos.",
+    "mensajeBaja": "Lámpara a {alfa}° del espejo: θi = θr = {ti}°. Más rasante, ángulos más grandes.",
+    "mensajeReinicio": "Lámpara a {alfa}° del espejo: de vuelta al ejemplo del examen.",
+    "mensajeTrampa": "Si midieras desde el espejo, el rayo punteado saldría a {qA}° de la normal y la figura dejaría de ser simétrica. El real sale a {tr}°.",
+    "mensajeGiro": "Espejo girado {beta}°: la normal gira con él, θi = θr = {ti2}° y el rayo reflejado gira {giro}°, el doble.",
+    "mensajeEnderezar": "Espejo derecho otra vez: θi = θr = {ti}°.",
+    "mensajeEndereza": "Al mover la lámpara el espejo vuelve a su lugar: θi = θr = {ti}°.",
+    "mensajeDoblez": "Dobla el arco θi sobre la normal como una hoja: cae justo encima de θr. Por eso θi = θr = {ti}°.",
+    "mensajeBarrido": "Mira la lámpara recorrer de {min}° a {max}° con el espejo: θi y θr cambian siempre juntos. Toca para detenerla.",
+    "mensajeFinBarrido": "La lámpara volvió a {alfa}° con el espejo: θi = θr = {ti}°. Arrástrala tú para probar otros ángulos."
+  },
+  "profundizar": {
+    "titulo": "Girar el espejo gira el rayo el doble",
+    "parrafos": [
+      "Gira el espejo {beta}°: la normal gira con él, así que ahora θi = {ti}° − {beta}° = {ti2}° y θr = {tr2}°.",
+      "El rayo incidente no se movió, pero el reflejado giró <span class=\"numeros\">2 × {beta}° = {giro}°</span>: el espejo gira β y el rayo reflejado gira 2β.",
+      "Por eso se usan espejos en los aparatos que miden giros pequeños: el rayo reflejado los duplica.",
+      "La ley no cambia: θi = θr, siempre desde la normal del espejo en su nueva posición."
+    ]
+  },
+  "figura": {
+    "aria": "Un banco óptico con una lámpara láser en un brazo que gira sobre una mesa graduada, un espejo plano de pie en el centro y la normal punteada. El rayo incidente y el reflejado forman ángulos iguales con la normal.",
+    "pie": "Lámina I. Los ángulos de incidencia y de reflexión se miden desde la normal y son iguales, θi = θr. El ángulo con el espejo es su complemento, 90° − θ.",
+    "incidencia": "θi = {ti}°",
+    "incidenciaInc": "θi = ?",
+    "reflexion": "θr = {tr}°",
+    "reflexionInc": "θr = ?",
+    "espejo": "{alfa}°",
+    "fantasma": "{qA}°",
+    "normal": "normal",
+    "placa": "REFLEXIÓN · θi = θr",
+    "giro": "2β = {giro}°",
+    "antes": "antes",
+    "dato": "α = {alfa}°"
+  },
+  "rotulos": {
+    "01": [
+      "Lámpara láser",
+      "Va en un brazo que gira sobre la mesa. Ahora forma {alfa}° con el espejo."
+    ],
+    "02": [
+      "Rayo incidente",
+      "Es el que llega al espejo. Forma θi = {ti}° con la normal."
+    ],
+    "03": [
+      "Espejo plano",
+      "La luz rebota en su cara plateada. El problema da el ángulo con su superficie, α = {alfa}°, y ese no es θ: α y θ suman 90°."
+    ],
+    "04": [
+      "Normal",
+      "La línea perpendicular al espejo en el punto donde llega el rayo. Desde ella se miden los dos ángulos."
+    ],
+    "05": [
+      "Ángulo de incidencia",
+      "θi = 90° − {alfa}° = {ti}°."
+    ],
+    "06": [
+      "Ángulo de reflexión",
+      "θr = θi = {tr}°: el mismo arco al otro lado de la normal."
+    ],
+    "07": [
+      "Rayo reflejado",
+      "Sale del otro lado de la normal. Entre los dos rayos hay {ti}° + {tr}° = {entre}°."
+    ],
+    "08": [
+      "Mesa graduada",
+      "Marca los grados desde la normal (0°) hasta el espejo (90°). Así se lee θ directo."
+    ],
+    "09": [
+      "Trampa",
+      "El rayo punteado sería el reflejado si tomaras los {alfa}° del espejo como θr: saldría a {qA}° de la normal, no a {tr}°."
+    ]
+  },
+  "prediccion": {
+    "titulo": "Predice antes de encender",
+    "pregunta": "Un rayo llega a un espejo plano formando {alfa}° con su superficie. ¿Cuál es el ángulo de reflexión?",
+    "opciones": [
+      {
+        "tipo": "desdeEspejo",
+        "formula": "qA",
+        "unidad": "°",
+        "retro": "Mediste desde el espejo. Desde la normal: θi = 90° − {alfa}° = {ti}° y θr = {tr}°."
+      },
+      {
+        "tipo": "bien",
+        "formula": "tr",
+        "unidad": "°",
+        "correcta": true,
+        "retro": "θi = 90° − {alfa}° = {ti}° y θr = θi = {tr}°. Comprueba: entre los rayos hay {entre}°."
+      },
+      {
+        "tipo": "doble",
+        "formula": "qC",
+        "unidad": "°",
+        "retro": "Duplicaste el ángulo con el espejo: {qC}° es lo que se desvía el rayo. θr = 90° − {alfa}° = {tr}°."
+      },
+      {
+        "tipo": "suma",
+        "formula": "qD",
+        "unidad": "°",
+        "retro": "{qD}° es el ángulo entre los dos rayos (θi + θr). El ángulo de reflexión es solo uno: {tr}°."
+      }
+    ],
+    "unidad": "°"
+  },
+  "trampa": {
+    "fantasma": "Desde el espejo: {qA}°",
+    "real": "De verdad: θr = {tr}°"
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "El rayo incidente y el reflejado forman {E}° entre sí. ¿Qué ángulo forma el rayo reflejado con la superficie del espejo?",
+    "marcaCorrecta": "Correcto",
+    "marcaIncorrecta": "No",
+    "opciones": [
+      {
+        "letra": "A",
+        "formula": "pA",
+        "correcta": true,
+        "retro": "θr = {E} ÷ 2 = {pr}° desde la normal, y con el espejo son 90° − {pr}° = {pA}°."
+      },
+      {
+        "letra": "B",
+        "formula": "pB",
+        "retro": "Ese es θr ({E} ÷ 2), medido desde la normal. Te faltó pasarlo al espejo: 90° − {pr}° = {pA}°."
+      },
+      {
+        "letra": "C",
+        "formula": "pC",
+        "retro": "Es lo que se desvía el rayo (180° − {E}°), el doble del ángulo con el espejo. Con el espejo: {pA}°."
+      },
+      {
+        "letra": "D",
+        "formula": "pD",
+        "retro": "Tomaste el ángulo entre los rayos como si fuera el ángulo con el espejo. θr = {pr}° y con el espejo son {pA}°."
+      }
+    ],
+    "unidad": "°"
+  }
+}

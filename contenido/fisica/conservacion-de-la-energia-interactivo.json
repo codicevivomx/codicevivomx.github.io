@@ -1,0 +1,135 @@
+{
+  "titulo": "Conservación de la energía",
+  "subtitulo": "Laboratorio de la rampa",
+  "instruccion": "Suelta la caja o arrástrala. Cambia la altura, la masa y la inclinación.",
+  "constantes": { "g": 10, "decimales": 1 },
+  "valoresIniciales": { "h": 5, "m": 2, "angulo": 30, "bajada": 0 },
+  "rangos": {
+    "h": { "min": 1, "max": 10, "paso": 1 },
+    "m": { "min": 1, "max": 10, "paso": 1 },
+    "angulo": { "min": 30, "max": 60, "paso": 5 },
+    "bajada": { "min": 0, "max": 100, "paso": 5 }
+  },
+  "controles": {
+    "h": "Altura de la rampa",
+    "m": "Masa de la caja",
+    "angulo": "Inclinación de la rampa",
+    "bajada": "Cuánto ha bajado",
+    "valorH": "{v} m",
+    "valorM": "{v} kg",
+    "valorAngulo": "{v}°",
+    "valorBajada": "{v} %",
+    "soltar": "Soltar",
+    "reiniciar": "Volver al inicio",
+    "trampa": "Ver la trampa",
+    "ocultarTrampa": "Ocultar la trampa",
+    "examen": "Volver al examen"
+  },
+  "figura": {
+    "aria": "Conservación de la energía: una caja baja por una rampa sin fricción; dos barras muestran cómo la energía potencial se convierte en cinética y la suma no cambia.",
+    "pie": "Lámina I. Conservación de la energía mecánica. Rampa sin fricción y sin resistencia del aire; la caja parte del reposo; g = 10 m/s²; el nivel de referencia (h = 0) es el piso. Las probetas de energía van a escala (llenas = energía total); la caja y la flecha de velocidad no.",
+    "h": "h = {h} m",
+    "m": "m = {m} kg",
+    "angulo": "{angulo}°",
+    "Ep": "E<sub>p</sub> = {Ep} J",
+    "Ec": "E<sub>c</sub> = {Ec} J",
+    "E": "E = {E} J",
+    "v": "v = {v} m/s",
+    "referencia": "h = 0",
+    "fantasma": "si fuera {mFantasma} kg",
+    "real": "de verdad: {vf} m/s",
+    "fantasmaRampa": "rampa más larga: misma v, tarda más"
+  },
+  "rotulos": [
+    { "n": "01", "nombre": "Caja", "ficha": "Su masa multiplica la Ep y también la Ec; por eso se cancela y no cambia la rapidez final." },
+    { "n": "02", "nombre": "Regla de altura", "ficha": "La altura h es lo único que decide la rapidez abajo: v = √(2·g·h)." },
+    { "n": "03", "nombre": "Rampa sin fricción", "ficha": "Sin fricción no se pierde energía en calor; la suma Ep + Ec se queda fija." },
+    { "n": "04", "nombre": "Media altura", "ficha": "{vMedio} m/s es la rapidez a la mitad, no abajo: ahí solo la mitad de la Ep se ha vuelto Ec." },
+    { "n": "05", "nombre": "Probeta Ep", "ficha": "Energía potencial, m·g·h: baja en línea recta conforme la caja pierde altura." },
+    { "n": "06", "nombre": "Probeta Ec", "ficha": "Energía cinética, ½·m·v²: sube exactamente lo que baja la Ep." },
+    { "n": "07", "nombre": "Energía total", "ficha": "La suma de las dos probetas: {E} J arriba, a la mitad y abajo. El tubo que las une recuerda que la energía solo pasa de una a otra." },
+    { "n": "08", "nombre": "Nivel de referencia", "ficha": "El piso es h = 0. Elegir otro nivel cambia la Ep, pero no la rapidez." },
+    { "n": "09", "nombre": "Inclinación", "ficha": "Una rampa más suave es más larga y tarda más, pero llega con la misma rapidez." },
+    { "n": "10", "nombre": "Flecha de velocidad", "ficha": "Crece con la raíz de lo bajado: a la mitad de la altura aún no lleva la mitad de la rapidez final." }
+  ],
+  "lecturas": {
+    "numerales": ["I.", "II.", "III.", "IV."],
+    "energia": "Energía al inicio",
+    "energiaValor": "E = m·g·h = {m} × {g} × {h} = {E} J",
+    "reparto": "Mientras baja",
+    "epValor": "E<sub>p</sub> = {m} × {g} × {y} = {Ep} J",
+    "ecValor": "E<sub>c</sub> = {E} − {Ep} = {Ec} J",
+    "suma": "E<sub>p</sub> + E<sub>c</sub> = {E} J siempre",
+    "rapidez": "Rapidez",
+    "rapidezValor": "v = √(2 × {g} × {bajadaM}) = {v} m/s",
+    "rapidezAbajo": "Abajo: v = √(2 × {g} × {h}) = {vf} m/s",
+    "rampa": "Rampa de {angulo}°: L = {L} m, tarda {t} s",
+    "trampa": "Con {mFantasma} kg: E = {EFantasma} J, pero ½ × {mFantasma} × v² = {EFantasma} → v = {vf} m/s. Igual.",
+    "pendiente": "?",
+    "mensaje": "La masa se cancela: v = √(2·g·h).",
+    "sinRevelar": "Elige tu predicción o suelta la caja para verlo.",
+    "mensajeArriba": "Caja arriba y en reposo: toda su energía es potencial, Ep = {E} J, y Ec = 0.",
+    "mensajeFin": "Llegó abajo: toda la Ep ({E} J) se volvió Ec y la caja va a {vf} m/s. A la mitad iba a {vMedio} m/s.",
+    "mensajeTrampa": "La caja de {mFantasma} kg tiene {EFantasma} J, pero también necesita más energía para moverse: llega igual a {vf} m/s.",
+    "mensajeReinicio": "De vuelta al examen: {m} kg desde {h} m en una rampa de {angulo}°.",
+    "formulas": {
+      "E": "m*g*h",
+      "Ep": "m*g*y",
+      "Ec": "E-Ep",
+      "EF": "mF*g*h",
+      "gh": "g*h",
+      "v2": "2*g*h",
+      "W": "m*g*h",
+      "Pot": "W/tGrua"
+    }
+  },
+  "trampa": { "factor": 5 },
+  "examen": {
+    "pregunta": "Una caja de {m} kg se suelta desde el reposo en lo alto de una rampa sin fricción de {h} m de altura. ¿Con qué rapidez llega abajo? (g = {g} m/s²)",
+    "opciones": [
+      { "letra": "A", "formula": "vMedio", "retro": "Olvidaste el ½ de la Ec: m·g·h = m·v² da v = √({g} × {h}) = {vMedio} m/s. Además, esa es la rapidez a media altura, no abajo." },
+      { "letra": "B", "formula": "vf", "correcta": true, "retro": "Ep arriba = {m} × {g} × {h} = {E} J; abajo toda es Ec: {E} = ½ × {m} × v², v² = {v2} y v = {vf} m/s." },
+      { "letra": "C", "formula": "gh", "retro": "Usaste v = g·h = {gh}: faltan el 2 y la raíz. Es v = √(2·g·h)." },
+      { "letra": "D", "formula": "v2", "retro": "{v2} es v², no v. Falta sacar la raíz: √{v2} = {vf} m/s." }
+    ]
+  },
+  "prueba": {
+    "titulo": "Ponte a prueba",
+    "pregunta": "La misma caja de 2 kg se suelta desde 20 m en una rampa sin fricción (g = 10 m/s²). ¿Con qué rapidez llega abajo?",
+    "opciones": [
+      { "letra": "A", "texto": "14.1 m/s", "correcta": false, "retro": "Olvidaste el ½ de la energía cinética: √(10 × 20) = √200. Es ½·m·v², no m·v²." },
+      { "letra": "B", "texto": "20 m/s", "correcta": true, "retro": "v = √(2 × 10 × 20) = √400 = 20 m/s. Cuadruplicar la altura (5 → 20 m) solo duplica la rapidez (10 → 20 m/s)." },
+      { "letra": "C", "texto": "40 m/s", "correcta": false, "retro": "Pensaste que la rapidez crece igual que la altura (4 veces). Crece con la raíz: 4 veces la altura da 2 veces la rapidez." },
+      { "letra": "D", "texto": "400 m/s", "correcta": false, "retro": "400 es v², no v. Falta sacar la raíz: √400 = 20 m/s." }
+    ],
+    "marcaCorrecta": "Correcta",
+    "marcaIncorrecta": "Incorrecta"
+  },
+  "escena": { "anchoRampa": 12 },
+  "prediccion": {
+    "titulo": "Predice antes de soltar",
+    "pregunta": "Desde {h} m, ¿cómo llegaría abajo la caja si fuera de {mFantasma} kg en vez de {m} kg?",
+    "opciones": [
+      { "tipo": "igual", "texto": "Con la misma rapidez", "formula": "vf", "retro": "La masa se cancela: {m}·g·h = ½·{m}·v² y {mFantasma}·g·h = ½·{mFantasma}·v² dan la misma v = {vf} m/s." },
+      { "tipo": "proporcional", "texto": "{factor} veces más rápido", "formula": "vf*mF/m", "retro": "Es la trampa: más masa da más Ep, pero también necesita más Ec para la misma rapidez. Las dos crecen igual y se cancelan." },
+      { "tipo": "raiz", "texto": "√{factor} veces más rápido", "formula": "vf*rf", "retro": "Pusiste la Ep nueva ({EFantasma} J) pero dejaste la masa vieja en ½·m·v². La masa cambia en los dos lados." },
+      { "tipo": "menor", "texto": "{factor} veces más lento", "formula": "vf*m/mF", "retro": "Una caja pesada no baja más lento: su peso es mayor justo en la misma proporción que su masa." }
+    ]
+  },
+  "comportamiento": {
+    "soltar": "La caja baja desde el reposo; las barras se pasan energía y la suma no cambia.",
+    "abajo": "Al llegar abajo sigue por el piso sin fricción con rapidez constante hasta el tope; la lectura queda en la rapidez final.",
+    "reiniciar": "«Volver al inicio» regresa la caja arriba en reposo; «Ejemplo del examen» además vuelve a 2 kg, 5 m y 30°.",
+    "recorrido": "El recorrido automático mueve la caja y las barras, pero deja la rapidez y la ficha 04 en «?» hasta que se prediga o se mueva algo."
+  },
+  "profundizar": {
+    "titulo": "Profundizar",
+    "items": [
+      { "titulo": "De dónde sale v = √(2·g·h)", "texto": "m·g·h = ½·m·v² → se divide entre m → g·h = ½·v² → v = √(2·g·h)." },
+      { "titulo": "Trabajo del peso", "texto": "Al bajar {h} m, el peso hace W = m·g·h = {E} J, justo la Ec que gana la caja." },
+      { "titulo": "Tiempo en la rampa", "texto": "La rampa mide L = h ÷ sen θ = {L} m y la caja acelera a g·sen θ = {aRampa} m/s²; tarda t = √(2L ÷ a) = {t} s. Cambia con el ángulo; la rapidez final no." },
+      { "titulo": "Potencia", "texto": "Si una grúa sube la caja de {m} kg a {h} m con velocidad constante en {tGrua} s, hace {E} J y su potencia es P = {E} ÷ {tGrua} = {P} W." }
+    ],
+    "tGrua": 4
+  }
+}
