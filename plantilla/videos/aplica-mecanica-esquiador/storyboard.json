@@ -1,0 +1,36 @@
+{
+  "titulo": "aplica-mecanica-esquiador",
+  "fps": 30,
+  "formato": "vertical 1080x1920",
+  "estilos": {
+    "isometrico": "base de la marca: isométrico con la paleta de la fusión (códice + moderno)",
+    "plano_azul": "fondo azul con cuadrícula, líneas blancas, cotas y trayectorias punteadas; para cálculos",
+    "termica": "paleta de cámara térmica (azul frío → amarillo → rojo); para mostrar calor por fricción"
+  },
+  "datos": { "g": 10, "altura_rampa_m": 20, "altura_borde_m": 5, "v_salida_ms": 20, "t_caida_s": 1, "alcance_m": 20, "zona_aterrizaje_m": 15 },
+  "tomas": [
+    { "id": 1, "voz": "Pones a un esquiador arriba de una rampa de veinte metros.", "palabra": "", "tipo": "neutro", "accion": "crecer la rampa y la plataforma; el esquiador aparece arriba", "piezas": ["rampa", "plataforma", "esquiador", "cota_20m"], "camara": "iso_general", "estilo": "isometrico" },
+    { "id": 2, "voz": "Lo sueltas desde el reposo, y la nieve casi no lo frena.", "palabra": "", "tipo": "neutro", "accion": "esquiador empieza a resbalar despacio", "piezas": ["esquiador"], "camara": "iso_general", "estilo": "isometrico" },
+    { "id": 3, "voz": "Conforme baja, se acelera. Pero ¿qué tan rápido llega abajo?", "palabra": "se acelera", "tipo": "problema", "accion": "resbalar cada vez más rápido; líneas de velocidad; congelar cuadro abajo", "piezas": ["esquiador", "lineas_velocidad"], "camara": "iso_cerca", "estilo": "isometrico" },
+    { "id": 4, "voz": "Aquí entra la conservación de la energía.", "palabra": "conservación de la energía", "tipo": "solucion", "accion": "transición a plano azul; resaltar la altura de 20 m", "piezas": ["rampa", "cota_20m"], "camara": "corte_detalle", "estilo": "plano_azul" },
+    { "id": 5, "voz": "Toda su energía de altura se convierte en energía de movimiento.", "palabra": "", "tipo": "neutro", "accion": "barra Ep baja mientras barra Ec crece; aparece mgh = ½mv²", "piezas": ["barra_Ep", "barra_Ec", "formula_energia"], "camara": "corte_detalle", "estilo": "plano_azul",
+      "pausa": { "pregunta": "¿Con qué velocidad llega al final de la rampa? (g = 10 m/s²)", "opciones": ["14 m/s", "20 m/s", "200 m/s"], "correcta": 1, "pista": "mgh = ½mv² → la masa se cancela: v = √(2gh)" } },
+    { "id": 6, "voz": "Veinte metros por segundo. Y fíjate: la masa se cancela.", "palabra": "se cancela", "tipo": "solucion", "accion": "tachar la m de ambos lados de la fórmula; resaltar v = 20 m/s", "piezas": ["formula_energia", "resultado_v"], "camara": "corte_detalle", "estilo": "plano_azul" },
+    { "id": 7, "voz": "Un niño o un adulto llegan igual de rápido.", "palabra": "", "tipo": "neutro", "accion": "dos esquiadores (chico y grande) bajan lado a lado y llegan juntos", "piezas": ["esquiador_chico", "esquiador_grande"], "camara": "iso_general", "estilo": "isometrico" },
+    { "id": 8, "voz": "Pero la rampa se acaba a cinco metros sobre la nieve.", "palabra": "", "tipo": "neutro", "accion": "cámara baja y revela el borde y el desnivel de 5 m", "piezas": ["borde", "cota_5m", "nieve_abajo"], "camara": "iso_general", "estilo": "isometrico" },
+    { "id": 9, "voz": "Y el esquiador sale volando.", "palabra": "sale volando", "tipo": "problema", "accion": "volar: esquiador sale horizontal del borde; congelar en el aire", "piezas": ["esquiador"], "camara": "iso_cerca", "estilo": "isometrico" },
+    { "id": 10, "voz": "Sale horizontal, así que es tiro parabólico.", "palabra": "tiro parabólico", "tipo": "solucion", "accion": "transición a plano azul; dibujar la parábola punteada", "piezas": ["trayectoria", "vector_vx"], "camara": "corte_detalle", "estilo": "plano_azul" },
+    { "id": 11, "voz": "Hacia adelante va a velocidad constante. Hacia abajo cae como piedra.", "palabra": "", "tipo": "neutro", "accion": "vector vx igual en cada punto; vector vy crece; sombras en x y en y", "piezas": ["vector_vx", "vector_vy", "trayectoria"], "camara": "corte_detalle", "estilo": "plano_azul",
+      "pausa": { "pregunta": "¿Cuánto tarda en caer esos cinco metros?", "opciones": ["0.5 s", "1 s", "2 s"], "correcta": 1, "pista": "h = ½gt² → 5 = 5t²" } },
+    { "id": 12, "voz": "Un segundo. Pero la zona de aterrizaje termina a quince metros.", "palabra": "", "tipo": "neutro", "accion": "resaltar la zona de aterrizaje con cota de 15 m", "piezas": ["zona_aterrizaje", "cota_15m"], "camara": "iso_general", "estilo": "plano_azul",
+      "pausa": { "pregunta": "¿A qué distancia del borde aterriza?", "opciones": ["15 m", "20 m", "25 m"], "correcta": 1, "pista": "d = v · t = 20 m/s · 1 s" } },
+    { "id": 13, "voz": "A veinte metros: se pasa de la zona.", "palabra": "se pasa", "tipo": "problema", "accion": "caer: esquiador aterriza fuera de la zona, en la nieve sin preparar", "piezas": ["esquiador", "zona_aterrizaje"], "camara": "iso_general", "estilo": "isometrico" },
+    { "id": 14, "voz": "La solución es alargar la zona de aterrizaje.", "palabra": "zona de aterrizaje", "tipo": "solucion", "accion": "crecer la zona de aterrizaje hasta más allá de 20 m", "piezas": ["zona_aterrizaje"], "camara": "iso_general", "estilo": "isometrico" },
+    { "id": 15, "voz": "Pero en la nieve real sí hay fricción.", "palabra": "fricción", "tipo": "problema", "accion": "transición a cámara térmica; los esquís y la huella se ponen naranja y rojo al bajar", "piezas": ["esquiador", "esquis", "huella_nieve"], "camara": "iso_cerca", "estilo": "termica" },
+    { "id": 16, "voz": "Llega más lento… y ahora se queda corto.", "palabra": "se queda corto", "tipo": "problema", "accion": "trayectoria más corta; aterriza antes de la zona", "piezas": ["esquiador", "trayectoria", "zona_aterrizaje"], "camara": "iso_general", "estilo": "termica" },
+    { "id": 17, "voz": "Por eso los ingenieros calculan el trabajo de la fricción.", "palabra": "trabajo de la fricción", "tipo": "solucion", "accion": "resaltar: la energía que falta aparece como calor en la nieve y los esquís", "piezas": ["huella_nieve", "esquis"], "camara": "corte_detalle", "estilo": "termica" },
+    { "id": 18, "voz": "Esto es un problema de examen: dos temas en uno.", "palabra": "", "tipo": "neutro", "accion": "vista completa de la escena; aparecen dos etiquetas: energía y tiro parabólico", "piezas": ["rampa", "trayectoria", "etiqueta_energia", "etiqueta_tiro"], "camara": "iso_general", "estilo": "isometrico" },
+    { "id": 19, "voz": "Energía y tiro parabólico. En Códice Vivo los practicas así, paso a paso.", "palabra": "Códice Vivo", "tipo": "neutro", "accion": "cierre con logo de Códice Vivo", "piezas": ["logo"], "camara": "iso_general", "estilo": "isometrico" }
+  ],
+  "version_tiktok": "cada toma con 'pausa' se cambia por 'pon tu respuesta en comentarios' + cuenta regresiva de 3 s; las pausas no se graban"
+}

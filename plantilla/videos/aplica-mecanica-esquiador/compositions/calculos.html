@@ -1,0 +1,59 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; }
+    /* Plano azul: tomas 5 y 6 (tiempos relativos: 0 = segundo 16) */
+    #cal-panel {
+      position: absolute; left: 70px; top: 1100px; width: 940px; height: 400px;
+      border: 3px solid rgba(255,255,255,.9); border-radius: 28px;
+      background: rgba(12,36,78,.78);
+      color: #fff; font-family: "Inter", sans-serif;
+    }
+    #cal-barras { position: absolute; left: 40px; top: 36px; width: 260px; height: 330px; }
+    .cal-col { position: absolute; bottom: 0; width: 100px; height: 330px; }
+    #cal-col-ep { left: 0; }
+    #cal-col-ec { left: 150px; }
+    .cal-marco { position: absolute; left: 0; right: 0; top: 0; height: 260px; border: 3px dashed rgba(255,255,255,.55); border-radius: 10px; }
+    .cal-barra { position: absolute; left: 8px; right: 8px; bottom: 78px; height: 244px; border-radius: 6px; }
+    #cal-ep { background: #ffd166; }
+    #cal-ec { background: #6fd3a8; }
+    .cal-lbl { position: absolute; left: -20px; right: -20px; bottom: 0; text-align: center; font: 700 40px "JetBrains Mono", monospace; }
+    #cal-formula { position: absolute; left: 340px; top: 70px; width: 580px; font: 900 76px "Inter", sans-serif; white-space: nowrap; letter-spacing: -0.01em; }
+    .cal-m { position: relative; display: inline-block; }
+    .cal-tacha { position: absolute; left: -6px; right: -6px; top: 50%; height: 9px; margin-top: -4px; background: #f0745e; transform-origin: 0% 50%; border-radius: 4px; }
+    #cal-v { position: absolute; left: 340px; top: 200px; font: 700 52px "JetBrains Mono", monospace; white-space: nowrap; }
+    #cal-res { position: absolute; left: 340px; top: 282px; padding: 6px 22px; border-radius: 16px; background: #6fd3a8; color: #12301f; font: 900 64px "Inter", sans-serif; white-space: nowrap; }
+  </style>
+  <div data-hf-id="hf-qtip" id="root" data-composition-id="calculos" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-i1v9" id="cal-panel" data-layout-allow-overlap class="clip" data-start="0" data-duration="14.7" data-track-index="0">
+      <div data-hf-id="hf-zper" id="cal-barras">
+        <div data-hf-id="hf-mj8e" id="cal-col-ep" class="cal-col"><div data-hf-id="hf-prq9" class="cal-marco"></div><div data-hf-id="hf-uaab" id="cal-ep" class="cal-barra"></div><div data-hf-id="hf-5sl0" class="cal-lbl">Ep</div></div>
+        <div data-hf-id="hf-xibh" id="cal-col-ec" class="cal-col"><div data-hf-id="hf-hgol" class="cal-marco"></div><div data-hf-id="hf-4hlk" id="cal-ec" class="cal-barra"></div><div data-hf-id="hf-aykd" class="cal-lbl">Ec</div></div>
+      </div>
+      <div data-hf-id="hf-c5vd" id="cal-formula"><span data-hf-id="hf-c7ek" class="cal-m">m<span data-hf-id="hf-bxkr" id="cal-t1" class="cal-tacha"></span></span>gh = ½<span data-hf-id="hf-5b78" class="cal-m">m<span data-hf-id="hf-39ow" id="cal-t2" class="cal-tacha"></span></span>v²</div>
+      <div data-hf-id="hf-da1z" id="cal-v">v = √(2·10·20)</div>
+      <div data-hf-id="hf-zj4a" id="cal-res">v = 20 m/s</div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#cal-panel", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+    tl.set("#cal-ep", { transformOrigin: "50% 100%" }, 0);
+    tl.set("#cal-ec", { transformOrigin: "50% 100%", scaleY: 0 }, 0);
+    // Ep baja mientras Ec sube
+    tl.fromTo("#cal-ep", { scaleY: 1 }, { scaleY: 0, duration: 2.64, ease: "power1.inOut", immediateRender: false }, 0.88);
+    tl.fromTo("#cal-ec", { scaleY: 0 }, { scaleY: 1, duration: 2.64, ease: "power1.inOut", immediateRender: false }, 0.88);
+    tl.fromTo("#cal-formula", { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 1.76);
+    tl.set(["#cal-v", "#cal-res"], { opacity: 0 }, 0);
+    tl.set(["#cal-t1", "#cal-t2"], { scaleX: 0 }, 0);
+    // T6 (rel 10.2): primero v = 20 m/s; la masa se tacha cuando la voz dice «se cancela»
+    tl.fromTo("#cal-t1", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out", immediateRender: false }, 13.41);
+    tl.fromTo("#cal-t2", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out", immediateRender: false }, 13.76);
+    tl.fromTo("#cal-v", { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: false }, 10.4);
+    tl.fromTo("#cal-res", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2)", immediateRender: false }, 10.7);
+    // Se oculta durante la pausa (rel 4.4-10.2)
+    tl.to("#cal-panel", { opacity: 0, duration: 0.2 }, 4.3);
+    tl.to("#cal-panel", { opacity: 1, duration: 0.3 }, 10.2);
+    tl.to("#cal-panel", { opacity: 0, duration: 0.3 }, 14.4);
+    window.__timelines["calculos"] = tl;
+  </script>
+</template>
