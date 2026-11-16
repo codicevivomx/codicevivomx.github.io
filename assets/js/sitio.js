@@ -8,8 +8,57 @@ var ENLACES = {
   avisame: '#'   // «Avísame cuando salga» (libros próximos, en la biblioteca)
 };
 
+/* LO QUE VIENE (portada): para sumar algo, agrega una línea.
+   estado: 'listo' o 'en camino'. «enlace» es opcional (si lo pones, el título se vuelve liga). */
+var LO_QUE_VIENE = [
+  { tipo: 'Retos «Aplica lo aprendido»', titulo: '¿Con qué velocidad llega el esquiador?', nota: 'El primer reto: un problema completo para usar lo que ya sabes.', estado: 'en camino' },
+  { tipo: 'Para repasar', titulo: 'PDF con marca de agua', nota: 'Cada lámina en una hoja, para imprimir o estudiar sin conexión.', estado: 'en camino' },
+  { tipo: 'Nuevo libro', titulo: 'Matemáticas', nota: 'Con el mismo formato de láminas interactivas.', estado: 'en camino' },
+  { tipo: 'Nuevo libro', titulo: 'Historia', nota: 'Con el mismo formato de láminas interactivas.', estado: 'en camino' }
+];
+
 (function () {
   var quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* «Lo que viene»: se arma con la lista de arriba */
+  var viene = document.getElementById('lo-que-viene');
+  if (viene) LO_QUE_VIENE.forEach(function (x) {
+    var li = document.createElement('li'), listo = x.estado === 'listo';
+    li.className = 'viene__item' + (listo ? ' viene__item--listo' : '');
+    var tipo = document.createElement('span'); tipo.className = 'viene__tipo'; tipo.textContent = x.tipo || '';
+    var h = document.createElement('h3');
+    if (x.enlace) { var a = document.createElement('a'); a.href = x.enlace; a.textContent = x.titulo; h.appendChild(a); } else h.textContent = x.titulo;
+    var p = document.createElement('p'); p.textContent = x.nota || '';
+    var e = document.createElement('span'); e.className = 'viene__estado'; e.textContent = listo ? 'Listo' : 'En camino';
+    li.appendChild(tipo); li.appendChild(h); li.appendChild(p); li.appendChild(e);
+    viene.appendChild(li);
+  });
+
+  /* Despliegue al hacer scroll: cada [data-rev] recibe .visto una sola vez.
+     (html.anima lo pone un script en el <head>; sin él, todo se ve desde el inicio.) */
+  window.__revListo = true;
+  var porVer = document.querySelectorAll('[data-rev]');
+  if (document.documentElement.classList.contains('anima') && 'IntersectionObserver' in window) {
+    var ojo = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('visto'); ojo.unobserve(en.target); } });
+    }, { threshold: 0.18, rootMargin: '0px 0px -6% 0px' });
+    porVer.forEach(function (el) { ojo.observe(el); });
+    /* Recorrido de 6 pasos: el riel se llena conforme bajas */
+    var recorrido = document.querySelector('[data-recorrido]');
+    if (recorrido) {
+      var pendienteR = false;
+      var mide = function () {
+        pendienteR = false;
+        var r = recorrido.getBoundingClientRect();
+        recorrido.style.setProperty('--avance', Math.max(0, Math.min(1, (window.innerHeight * 0.62 - r.top) / r.height)).toFixed(3));
+      };
+      window.addEventListener('scroll', function () { if (!pendienteR) { pendienteR = true; requestAnimationFrame(mide); } }, { passive: true });
+      mide();
+    }
+  } else {
+    document.documentElement.classList.remove('anima');
+    porVer.forEach(function (el) { el.classList.add('visto'); });
+  }
   var conMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   document.querySelectorAll('[data-enlace]').forEach(function (a) {
@@ -45,8 +94,31 @@ var ENLACES = {
       if (!boton.hasAttribute('data-correcta')) boton.classList.add('es-error');
       nota.textContent = boton.getAttribute('data-nota');
       respuesta.hidden = false;
+      bajaLaBola();
     });
   });
+
+  /* Al responder el reto: la bola baja por la rampa (acelerando) y aparece la flecha con v = 20 m/s */
+  function bajaLaBola() {
+    var rampa = document.getElementById('reto-rampa'), bola = document.getElementById('reto-bola'), v = document.getElementById('reto-v');
+    var figura = rampa && rampa.closest('svg');
+    if (!rampa || !bola || !rampa.getTotalLength) return;
+    var largo = rampa.getTotalLength(), dur = 850, t0 = null;
+    var pon = function (f) {
+      var s = largo * (0.03 + 0.97 * f), p = rampa.getPointAtLength(s), q = rampa.getPointAtLength(Math.min(largo, s + 1));
+      var dx = q.x - p.x, dy = q.y - p.y, n = Math.hypot(dx, dy) || 1;
+      bola.setAttribute('cx', (p.x + dy / n * 9).toFixed(1)); bola.setAttribute('cy', (p.y - dx / n * 9).toFixed(1));
+    };
+    var fin = function () { pon(1); v.textContent = 'v = 20 m/s'; figura.classList.add('reto--resuelto'); };
+    if (quieto) return fin();
+    v.style.opacity = 0;
+    requestAnimationFrame(function paso(t) {
+      if (t0 === null) t0 = t;
+      var f = Math.min(1, (t - t0) / dur);
+      pon(f * f);                                   // acelera: recorre más en cada instante
+      if (f < 1) requestAnimationFrame(paso); else { fin(); v.style.opacity = 1; }
+    });
+  }
 
   /* Gatos escondidos: al tocarlos sueltan corazones pixelados */
   var NS = 'http://www.w3.org/2000/svg';

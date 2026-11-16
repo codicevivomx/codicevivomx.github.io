@@ -11,8 +11,9 @@
 <link rel="icon" href="assets/logo/codice-vivo-icono.svg" type="image/svg+xml">
 <link rel="preload" href="plantilla/codice/fuentes/eb-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/sitio.css">
+<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('anima');setTimeout(function(){if(!window.__revListo)document.documentElement.classList.remove('anima')},4000)}</script>
 </head>
-<body>
+<body class="portada">
 <a class="saltar" href="#contenido">Ir al contenido</a>
 <!-- sección: encabezado -->
 <header class="encabezado encabezado--mundo">
@@ -52,18 +53,18 @@
 
 <!-- sección: reto -->
 <section class="seccion reto" id="reto" aria-labelledby="reto-t">
-  <div class="marco">
+  <div class="marco" data-rev="sube">
     <p class="antetitulo">Mini reto</p>
-    <h2 id="reto-t">¿Con qué velocidad llega el esquiador?</h2>
-    <svg class="reto__figura" viewBox="0 0 320 150" role="img" aria-label="Un esquiador en lo alto de una rampa de 20 metros de altura; abajo, una flecha con la velocidad por calcular.">
+    <h2 class="titulo" id="reto-t" data-rev aria-label="¿Con qué velocidad llega el esquiador?"><span aria-hidden="true"><span class="pal"><span style="--i:0">¿Con</span></span> <span class="pal"><span style="--i:1">qué</span></span> <span class="pal"><span style="--i:2"><em>velocidad</em></span></span> <span class="pal"><span style="--i:3">llega</span></span> <span class="pal"><span style="--i:4">el</span></span> <span class="pal"><span style="--i:5">esquiador?</span></span></span></h2>
+    <svg class="reto__figura" data-rev viewBox="0 0 320 150" role="img" aria-label="Un esquiador en lo alto de una rampa de 20 metros de altura; abajo, una flecha con la velocidad por calcular.">
       <path class="f-piso" d="M20 132H300"/>
       <path class="f-rampa" d="M36 30C96 34 120 126 206 130H36Z"/>
-      <path class="f-linea" d="M36 30C96 34 120 126 206 130"/>
+      <path class="f-linea" id="reto-rampa" pathLength="1" d="M36 30C96 34 120 126 206 130"/>
       <path class="f-cota" d="M24 30V130M19 30h10M19 130h10"/>
       <text class="f-texto" x="14" y="84" text-anchor="middle" transform="rotate(-90 14 84)">20 m</text>
-      <circle class="f-esquiador" cx="46" cy="22" r="8"/>
-      <path class="f-flecha" d="M216 122H276M266 115l10 7l-10 7"/>
-      <text class="f-texto f-texto--v" x="246" y="108" text-anchor="middle">v = ?</text>
+      <circle class="f-esquiador" id="reto-bola" cx="42" cy="22" r="8"/>
+      <path class="f-flecha" pathLength="1" d="M222 122H282M272 115l10 7l-10 7"/>
+      <text class="f-texto f-texto--v" id="reto-v" x="252" y="108" text-anchor="middle">v = ?</text>
     </svg>
     <p>Baja desde el reposo por una rampa de 20 m de altura, sin fricción. Usa g = 10 m/s².</p>
     <div class="reto__opciones" role="group" aria-label="Opciones">
@@ -83,11 +84,12 @@
 
 <!-- sección: qué es -->
 <section class="seccion" aria-labelledby="que-t">
-  <div class="ornamento" aria-hidden="true"></div>
+  <div class="orn" data-rev aria-hidden="true"><div class="ornamento"></div></div>
+  <span class="seccion__num" data-rev="sube" aria-hidden="true">I</span>
   <p class="antetitulo">Qué es Códice Vivo</p>
-  <h2 id="que-t">Un códice que responde cuando lo tocas.</h2>
-  <p class="capitular">Cada lámina es una página de códice que puedes mover: una pregunta de examen, un dibujo y una respuesta que descubres tú.</p>
-  <div class="bloques">
+  <h2 class="titulo" id="que-t" data-rev aria-label="Un códice que responde cuando lo tocas."><span aria-hidden="true"><span class="pal"><span style="--i:0">Un</span></span> <span class="pal"><span style="--i:1">códice</span></span> <span class="pal"><span style="--i:2">que</span></span> <span class="pal"><span style="--i:3"><em>responde</em></span></span> <span class="pal"><span style="--i:4">cuando</span></span> <span class="pal"><span style="--i:5">lo</span></span> <span class="pal"><span style="--i:6">tocas.</span></span></span></h2>
+  <p class="capitular" data-rev="sube">Cada lámina es una página de códice que puedes mover: una pregunta de examen, un dibujo y una respuesta que descubres tú.</p>
+  <div class="bloques" data-rev="cascada">
     <article class="bloque">
       <div class="bloque__figura"><span class="vineta" aria-hidden="true">I</span><img src="contenido/fisica/img/caida-libre.svg" alt="Lámina de caída libre: una pelota marcada cada segundo junto a una regla vertical." width="260" height="600" loading="lazy" decoding="async"></div>
       <h3>Una lámina, una idea</h3>
@@ -106,12 +108,48 @@
   </div>
 </section>
 
+<!-- sección: cómo enseñamos (los 6 pasos de cada lámina; el riel se llena al bajar) -->
+<section class="seccion" id="metodo" aria-labelledby="metodo-t">
+  <div class="orn" data-rev aria-hidden="true"><div class="ornamento"></div></div>
+  <span class="seccion__num" data-rev="sube" aria-hidden="true">II</span>
+  <p class="antetitulo">Cómo enseñamos</p>
+  <h2 class="titulo" id="metodo-t" data-rev aria-label="Seis pasos, siempre los mismos."><span aria-hidden="true"><span class="pal"><span style="--i:0">Seis</span></span> <span class="pal"><span style="--i:1">pasos,</span></span> <span class="pal"><span style="--i:2"><em>siempre</em></span></span> <span class="pal"><span style="--i:3">los</span></span> <span class="pal"><span style="--i:4">mismos.</span></span></span></h2>
+  <p class="subtitulo" data-rev="sube">Cada lámina sigue el mismo camino, de la pregunta a la prueba.</p>
+  <ol class="recorrido" data-recorrido>
+    <li class="recorrido__paso" data-rev="sube">
+      <span class="recorrido__icono"><svg class="pix pix--icono" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#2E2117" d="M2 1h12v1h-12zM1 2h1v10h-1zM14 2h1v10h-1zM2 12h6v1h-6zM9 12h5v1h-5zM7 13h1v1h-1zM9 13h1v1h-1zM8 14h1v1h-1z"/><path fill="#FFFCF6" d="M2 2h12v1h-12zM2 3h4v1h-4zM10 3h4v1h-4zM2 4h3v8h-3zM7 4h2v2h-2zM11 4h3v8h-3zM5 5h2v7h-2zM7 6h1v1h-1zM10 6h1v6h-1zM9 7h1v5h-1zM7 9h2v1h-2zM7 11h2v1h-2zM8 12h1v2h-1z"/><path fill="#A5352A" d="M6 3h4v1h-4zM5 4h2v1h-2zM9 4h2v2h-2zM8 6h2v1h-2zM7 7h2v2h-2zM7 10h2v1h-2z"/></svg></span>
+      <div><span class="recorrido__num" aria-hidden="true">I</span><h3>Pregunta de examen</h3><p>Empiezas con una pregunta como las del examen.</p></div>
+    </li>
+    <li class="recorrido__paso" data-rev="sube">
+      <span class="recorrido__icono"><svg class="pix pix--icono" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#2E2117" d="M5 1h6v1h-6zM4 2h1v1h-1zM11 2h1v1h-1zM3 3h1v4h-1zM12 3h1v4h-1zM4 7h1v2h-1zM11 7h1v2h-1zM5 9h1v4h-1zM10 9h1v4h-1zM6 13h4v1h-4z"/><path fill="#F6C65B" d="M5 2h6v1h-6zM4 3h2v1h-2zM8 3h4v4h-4zM4 4h1v3h-1zM7 4h1v6h-1zM6 5h1v5h-1zM5 6h1v3h-1zM8 7h3v2h-3zM8 9h2v1h-2z"/><path fill="#FFF3BE" d="M6 3h2v1h-2zM5 4h2v1h-2zM5 5h1v1h-1z"/><path fill="#D9B26A" d="M6 10h4v1h-4zM6 12h4v1h-4z"/><path fill="#E5DACA" d="M6 11h4v1h-4z"/></svg></span>
+      <div><span class="recorrido__num" aria-hidden="true">II</span><h3>Idea en una frase</h3><p>La idea clave en una sola frase, con su dibujo.</p></div>
+    </li>
+    <li class="recorrido__paso" data-rev="sube">
+      <span class="recorrido__icono"><svg class="pix pix--icono" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#2E2117" d="M2 1h12v1h-12zM2 2h1v12h-1zM13 2h1v12h-1zM6 3h6v1h-6zM6 5h5v1h-5zM6 7h6v1h-6zM3 13h10v1h-10z"/><path fill="#FFFCF6" d="M3 2h10v1h-10zM3 3h1v10h-1zM5 3h1v8h-1zM12 3h1v10h-1zM4 4h1v1h-1zM6 4h6v1h-6zM11 5h1v2h-1zM4 6h1v1h-1zM6 6h5v1h-5zM4 8h1v2h-1zM6 8h6v1h-6zM6 9h4v1h-4zM6 10h1v1h-1zM10 10h2v3h-2zM4 11h1v2h-1zM8 11h2v2h-2zM5 12h3v1h-3z"/><path fill="#2F6F73" d="M4 3h1v1h-1zM4 5h1v1h-1zM4 7h1v1h-1z"/><path fill="#447058" d="M10 9h2v1h-2zM4 10h1v1h-1zM7 10h3v1h-3zM5 11h3v1h-3z"/></svg></span>
+      <div><span class="recorrido__num" aria-hidden="true">III</span><h3>Ejemplo resuelto</h3><p>Un problema resuelto paso a paso.</p></div>
+    </li>
+    <li class="recorrido__paso" data-rev="sube">
+      <span class="recorrido__icono"><svg class="pix pix--icono" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#2E2117" d="M7 1h2v1h-2zM6 2h1v2h-1zM9 2h1v2h-1zM5 4h1v2h-1zM10 4h1v2h-1zM7 5h2v5h-2zM4 6h1v2h-1zM11 6h1v2h-1zM3 8h1v2h-1zM12 8h1v2h-1zM2 10h1v2h-1zM13 10h1v2h-1zM7 11h2v1h-2zM1 12h1v2h-1zM14 12h1v2h-1zM2 13h12v1h-12z"/><path fill="#F6C65B" d="M7 2h2v3h-2zM6 4h1v9h-1zM9 4h1v9h-1zM5 6h1v7h-1zM10 6h1v7h-1zM4 8h1v5h-1zM11 8h1v5h-1zM3 10h1v3h-1zM7 10h2v1h-2zM12 10h1v3h-1zM2 12h1v1h-1zM7 12h2v1h-2zM13 12h1v1h-1z"/></svg></span>
+      <div><span class="recorrido__num" aria-hidden="true">IV</span><h3>La trampa</h3><p>El error típico, para que no caigas en él.</p></div>
+    </li>
+    <li class="recorrido__paso" data-rev="sube">
+      <span class="recorrido__icono"><svg class="pix pix--icono" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#2E2117" d="M9 1h4v1h-4zM8 2h1v1h-1zM11 2h1v1h-1zM7 3h1v1h-1zM10 3h1v1h-1zM6 4h1v1h-1zM9 4h1v3h-1zM5 5h1v1h-1zM4 6h1v1h-1zM10 6h3v1h-3zM3 7h1v2h-1zM12 7h1v1h-1zM4 8h3v1h-3zM11 8h1v1h-1zM6 9h1v2h-1zM10 9h1v1h-1zM9 10h1v1h-1zM5 11h1v1h-1zM8 11h1v1h-1zM4 12h1v2h-1zM7 12h1v1h-1zM5 13h2v1h-2z"/><path fill="#F6C65B" d="M9 2h2v1h-2zM8 3h2v1h-2zM7 4h2v7h-2zM6 5h1v3h-1zM5 6h1v2h-1zM4 7h1v1h-1zM9 7h3v1h-3zM9 8h2v1h-2zM9 9h1v1h-1zM6 11h2v1h-2zM5 12h2v1h-2z"/></svg></span>
+      <div><span class="recorrido__num" aria-hidden="true">V</span><h3>Truco de examen</h3><p>Un atajo para resolver más rápido.</p></div>
+    </li>
+    <li class="recorrido__paso" data-rev="sube">
+      <span class="recorrido__icono"><svg class="pix pix--icono" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#2E2117" d="M5 1h6v1h-6zM3 2h2v1h-2zM11 2h2v1h-2zM2 3h1v1h-1zM13 3h1v1h-1zM1 4h1v6h-1zM14 4h1v6h-1zM2 10h1v1h-1zM13 10h1v1h-1zM3 11h2v1h-2zM11 11h2v1h-2zM5 12h6v1h-6z"/><path fill="#A5352A" d="M5 2h6v1h-6zM3 3h2v1h-2zM11 3h2v1h-2zM2 4h2v1h-2zM6 4h4v1h-4zM12 4h2v1h-2zM2 5h1v5h-1zM5 5h2v1h-2zM9 5h2v1h-2zM13 5h1v5h-1zM4 6h2v2h-2zM10 6h2v2h-2zM5 8h2v1h-2zM9 8h2v1h-2zM3 9h1v2h-1zM6 9h4v1h-4zM12 9h1v2h-1zM4 10h1v1h-1zM11 10h1v1h-1zM5 11h6v1h-6z"/><path fill="#FFFCF6" d="M5 3h6v1h-6zM4 4h2v1h-2zM10 4h2v1h-2zM3 5h2v1h-2zM7 5h2v1h-2zM11 5h2v1h-2zM3 6h1v3h-1zM6 6h1v2h-1zM9 6h1v2h-1zM12 6h1v3h-1zM4 8h1v2h-1zM7 8h2v1h-2zM11 8h1v2h-1zM5 9h1v2h-1zM10 9h1v2h-1zM6 10h4v1h-4z"/><path fill="#D9B26A" d="M7 6h2v2h-2z"/></svg></span>
+      <div><span class="recorrido__num" aria-hidden="true">VI</span><h3>Ponte a prueba</h3><p>Respondes tú. Si fallas, te explica por qué.</p></div>
+    </li>
+  </ol>
+</section>
+
 <!-- sección: muestra -->
 <section class="seccion" aria-labelledby="muestra-t">
-  <div class="ornamento" aria-hidden="true"></div>
+  <div class="orn" data-rev aria-hidden="true"><div class="ornamento"></div></div>
+  <span class="seccion__num" data-rev="sube" aria-hidden="true">III</span>
   <p class="antetitulo">Muestra</p>
-  <h2 id="muestra-t">Tres láminas para empezar.</h2>
-  <ul class="rejilla">
+  <h2 class="titulo" id="muestra-t" data-rev aria-label="Tres láminas para empezar."><span aria-hidden="true"><span class="pal"><span style="--i:0">Tres</span></span> <span class="pal"><span style="--i:1">láminas</span></span> <span class="pal"><span style="--i:2">para</span></span> <span class="pal"><span style="--i:3"><em>empezar</em>.</span></span></span></h2>
+  <ul class="rejilla" data-rev="cascada">
       <li>
         <a class="tarjeta" href="plantilla/interactivos/conservacion-de-la-energia/plus/">
           <span class="tarjeta__figura"><img src="contenido/fisica/img/conservacion-de-la-energia.svg" alt="" width="640" height="420" loading="lazy" decoding="async"><span class="tarjeta__sello">Muestra gratis</span></span>
@@ -135,10 +173,11 @@
 
 <!-- sección: cómo funciona -->
 <section class="seccion" id="como" aria-labelledby="como-t">
-  <div class="ornamento" aria-hidden="true"></div>
+  <div class="orn" data-rev aria-hidden="true"><div class="ornamento"></div></div>
+  <span class="seccion__num" data-rev="sube" aria-hidden="true">IV</span>
   <p class="antetitulo">Cómo funciona</p>
-  <h2 id="como-t">En línea para practicar. En papel para repasar.</h2>
-  <ol class="pasos">
+  <h2 class="titulo" id="como-t" data-rev aria-label="En línea para practicar. En papel para repasar."><span aria-hidden="true"><span class="pal"><span style="--i:0">En</span></span> <span class="pal"><span style="--i:1">línea</span></span> <span class="pal"><span style="--i:2">para</span></span> <span class="pal"><span style="--i:3"><em>practicar</em>.</span></span> <span class="pal"><span style="--i:4">En</span></span> <span class="pal"><span style="--i:5">papel</span></span> <span class="pal"><span style="--i:6">para</span></span> <span class="pal"><span style="--i:7">repasar.</span></span></span></h2>
+  <ol class="pasos" data-rev="cascada">
     <li class="paso">
       <h3>Interactivo en línea</h3>
       <p>Abre la lámina en tu celular y juega con ella. No instalas nada.</p>
@@ -150,11 +189,21 @@
   </ol>
 </section>
 
+<!-- sección: lo que viene (la lista sale de LO_QUE_VIENE, al inicio de assets/js/sitio.js) -->
+<section class="seccion" id="viene" aria-labelledby="viene-t">
+  <div class="orn" data-rev aria-hidden="true"><div class="ornamento"></div></div>
+  <span class="seccion__num" data-rev="sube" aria-hidden="true">V</span>
+  <p class="antetitulo">Lo que viene</p>
+  <h2 class="titulo" id="viene-t" data-rev aria-label="La biblioteca sigue creciendo."><span aria-hidden="true"><span class="pal"><span style="--i:0">La</span></span> <span class="pal"><span style="--i:1">biblioteca</span></span> <span class="pal"><span style="--i:2">sigue</span></span> <span class="pal"><span style="--i:3"><em>creciendo</em>.</span></span></span></h2>
+  <ul class="viene" id="lo-que-viene" data-rev="cascada"></ul>
+  <noscript><p>En camino: retos «Aplica lo aprendido», PDF con marca de agua y nuevos libros (Matemáticas e Historia).</p></noscript>
+</section>
+
 <!-- sección: cierre (estante) -->
 <section class="seccion cierre estanteria" aria-labelledby="cierre-t">
-  <div class="ornamento" aria-hidden="true"></div>
-  <h2 id="cierre-t">La estantería te espera.</h2>
-  <div class="mueble">
+  <div class="orn" data-rev aria-hidden="true"><div class="ornamento"></div></div>
+  <h2 class="titulo" id="cierre-t" data-rev aria-label="La estantería te espera."><span aria-hidden="true"><span class="pal"><span style="--i:0">La</span></span> <span class="pal"><span style="--i:1">estantería</span></span> <span class="pal"><span style="--i:2">te</span></span> <span class="pal"><span style="--i:3"><em>espera</em>.</span></span></span></h2>
+  <div class="mueble" data-rev="sube">
     <ul class="estante">
       <li class="estante__adorno" aria-hidden="true"><svg class="pix pix--planta" viewBox="0 0 14 14" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#447058" d="M6 0h1v2h-1zM5 1h1v3h-1zM7 1h1v3h-1zM10 1h1v2h-1zM2 2h1v2h-1zM9 2h1v5h-1zM11 2h1v3h-1zM1 3h1v3h-1zM3 3h1v3h-1zM6 4h1v5h-1zM4 5h1v4h-1zM8 5h1v4h-1zM10 5h1v1h-1zM2 6h1v1h-1zM3 7h1v1h-1zM5 7h1v2h-1zM7 7h1v2h-1z"/><path fill="#8FA455" d="M6 2h1v2h-1zM10 3h1v2h-1zM2 4h1v2h-1zM3 6h1v1h-1z"/><path fill="#8C4A32" d="M3 9h7v1h-7zM3 10h1v1h-1zM9 10h1v1h-1zM4 11h1v3h-1zM8 11h1v3h-1zM5 13h3v1h-3z"/><path fill="#B8663F" d="M4 10h5v1h-5zM5 11h3v2h-3z"/></svg></li>
       <li class="estante__libro">

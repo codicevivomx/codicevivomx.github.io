@@ -575,3 +575,83 @@ body{background-image:radial-gradient(rgba(var(--fibra),.07) 1px,transparent 1.3
   .producto__fija,.producto__lienzo,.producto__pista,.barra-compra,.barra-compra.es-visible,.chip span,.pestanas a,.tienda .capitulo,.tienda .faq__item{transition:none}
   .tienda .boton:hover{transform:none}
 }
+
+/* =====================================================================
+   Portada, secciones de abajo: títulos con carácter y despliegue al bajar.
+   Todo lo «escondido para animar» cuelga de html.anima, que solo se pone
+   si hay JavaScript y el usuario no pidió menos movimiento.
+   ===================================================================== */
+@font-face{font-family:"Fraunces";font-style:normal;font-weight:300 700;font-display:swap;src:url(../fuentes/fraunces-es.woff2) format("woff2")}
+@font-face{font-family:"EB Garamond";font-style:italic;font-weight:400;font-display:swap;src:url(../../plantilla/codice/fuentes/eb-garamond-italica.woff2) format("woff2")}
+
+/* Títulos: serif de eje óptico, más grandes y apretados; palabra clave en itálica rojo rúbrica */
+.titulo{font-family:"Fraunces",var(--serif);font-optical-sizing:auto;font-weight:380;font-size:clamp(2.15rem,9.4vw,4rem);line-height:1.02;letter-spacing:-.022em;margin-bottom:22px;max-width:16ch}
+.titulo em{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.08em;letter-spacing:-.01em;color:var(--rubrica)}
+.marco .titulo{font-size:clamp(1.9rem,8vw,3rem);margin-inline:auto}
+.cierre .titulo{margin-inline:auto}
+.pal{display:inline-block;overflow:hidden;vertical-align:bottom;padding:.06em .04em .14em;margin:-.06em -.04em -.14em}
+.pal>span{display:inline-block}
+.portada .antetitulo{font-weight:600;letter-spacing:.2em;display:flex;align-items:center;gap:10px}
+.portada .antetitulo::before{content:"";width:22px;height:2px;background:currentColor}
+.reto .antetitulo{justify-content:center}
+.portada .seccion{position:relative;padding-top:58px;padding-bottom:58px}
+.portada .subtitulo{font:400 1.25rem/1.4 var(--serif);margin:-8px 0 28px}
+.portada .bloque h3,.portada .paso h3{font-family:"Fraunces",var(--serif);font-weight:500;font-size:1.4rem;letter-spacing:-.01em}
+
+/* Números romanos grandes como elemento gráfico */
+.seccion__num{position:absolute;right:16px;top:64px;z-index:0;font:italic 400 clamp(5.5rem,26vw,11rem)/.8 var(--serif);color:var(--rubrica);opacity:.13;pointer-events:none;user-select:none}
+.portada .seccion>*:not(.seccion__num){position:relative;z-index:1}
+
+/* ---------- Despliegue al hacer scroll (una sola vez) ---------- */
+.anima [data-rev] .pal>span{transform:translateY(115%);transition:transform .55s cubic-bezier(.2,.75,.2,1);transition-delay:calc(var(--i,0)*45ms)}
+.anima [data-rev].visto .pal>span{transform:none}
+.anima [data-rev="sube"]{opacity:0;transform:translateY(22px);transition:opacity .5s ease-out,transform .5s cubic-bezier(.2,.75,.2,1)}
+.anima [data-rev="sube"].visto{opacity:1;transform:none}
+.anima .seccion__num[data-rev="sube"].visto{opacity:.13}
+.anima [data-rev="cascada"]>*{opacity:0;transform:translateY(28px) scale(.985);transition:opacity .5s ease-out,transform .55s cubic-bezier(.2,.75,.2,1);transition-delay:calc(var(--n,0)*85ms)}
+.anima [data-rev="cascada"].visto>*{opacity:1;transform:none}
+[data-rev="cascada"]>:nth-child(2){--n:1}[data-rev="cascada"]>:nth-child(3){--n:2}[data-rev="cascada"]>:nth-child(4){--n:3}[data-rev="cascada"]>:nth-child(5){--n:4}[data-rev="cascada"]>:nth-child(6){--n:5}
+/* la greca se dibuja de izquierda a derecha */
+.anima .orn[data-rev]>.ornamento{clip-path:inset(0 100% 0 0);transition:clip-path .6s cubic-bezier(.3,.6,.2,1)}
+.anima .orn[data-rev].visto>.ornamento{clip-path:inset(0)}
+/* mini reto: la rampa se traza sola; al responder baja la bola y aparece la flecha */
+.f-flecha{stroke-dasharray:1;stroke-dashoffset:1}
+.reto--resuelto .f-flecha{stroke-dashoffset:0}
+.f-texto--v{transition:opacity .3s}
+.anima .reto__figura[data-rev] .f-linea{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .6s ease-in-out .15s}
+.anima .reto__figura[data-rev].visto .f-linea{stroke-dashoffset:0}
+.anima .reto__figura[data-rev] .f-rampa,.anima .reto__figura[data-rev] .f-esquiador{opacity:0;transition:opacity .35s ease-out .6s}
+.anima .reto__figura[data-rev].visto .f-rampa,.anima .reto__figura[data-rev].visto .f-esquiador{opacity:1}
+.anima .f-flecha{transition:stroke-dashoffset .4s ease-out}
+
+/* ---------- sección: cómo enseñamos (recorrido de 6 pasos) ---------- */
+.recorrido{--avance:1;position:relative;display:grid;gap:18px;max-width:640px;padding-left:0}
+.recorrido::before,.recorrido::after{content:"";position:absolute;left:29px;top:30px;bottom:30px;width:3px;border-radius:2px;background:var(--borde-fuerte)}
+.recorrido::after{background:var(--rubrica);transform-origin:50% 0;transform:scaleY(var(--avance))}
+.recorrido__paso{position:relative;z-index:1;display:flex;gap:16px;align-items:center}
+.recorrido__icono{flex:none;display:grid;place-items:center;width:60px;height:60px;background:#F6F1E6;border-radius:6px;box-shadow:inset 0 0 0 2px #E5DACA,3px 3px 0 var(--borde-fuerte)}
+.recorrido__paso>div{position:relative;flex:1;padding:14px 16px 14px 18px;background:var(--sup);border:1px solid var(--borde);border-radius:14px;box-shadow:0 2px 0 var(--borde-fuerte),0 12px 18px -14px rgba(var(--sombra),.35)}
+.recorrido__num{position:absolute;right:14px;top:8px;font:italic 400 2.4rem/1 var(--serif);color:var(--rubrica);opacity:.22}
+.recorrido__paso h3{font-family:"Fraunces",var(--serif);font-weight:500;font-size:1.3rem;letter-spacing:-.01em;margin-bottom:2px;padding-right:44px}
+.recorrido__paso p{color:var(--suave);font-size:.98rem}
+
+/* ---------- sección: lo que viene ---------- */
+.viene{display:grid;gap:14px}
+.viene__item{position:relative;display:grid;gap:4px;padding:18px 18px 18px 22px;background:var(--sup);border:1px solid var(--borde);border-radius:14px;box-shadow:0 2px 0 var(--borde-fuerte),0 12px 18px -14px rgba(var(--sombra),.35);overflow:hidden}
+.viene__item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--dorado)}
+.viene__item--listo::before{background:var(--bien)}
+.viene__tipo{font:600 .7rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.viene__item h3{font-family:"Fraunces",var(--serif);font-weight:500;font-size:1.3rem;letter-spacing:-.01em}
+.viene__item p{color:var(--suave);font-size:.95rem}
+.viene__estado{justify-self:start;margin-top:8px;padding:5px 10px;border-radius:999px;font:700 .66rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#4A3520;background:linear-gradient(#EBD08A,#C9A85B)}
+.viene__item--listo .viene__estado{color:#fff;background:linear-gradient(#3C8A7E,#2F6F73)}
+.viene__item a{color:var(--acento);text-underline-offset:3px}
+
+@media (min-width:640px){
+  .viene{grid-template-columns:repeat(2,1fr)}
+  .portada .seccion{padding-top:84px;padding-bottom:84px}
+  .seccion__num{right:28px;top:92px}
+}
+@media (prefers-reduced-motion:reduce){
+  .f-texto--v,.anima .f-flecha{transition:none}
+}

@@ -122,3 +122,7 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   tras el primer pintado, con WebGL y sin «menos movimiento»; respaldo `assets/img/libro-fisica-unam.webp`).
   Panel de tienda, pestañas, barra fija en celular. `biblioteca/`: ficha lateral al tocar un libro.
   `ENLACES` suma `avisame`. Sin probar en celular real.
+  Ritmo de la portada (15-nov-2026): títulos en Fraunces (`assets/fuentes/fraunces-es.woff2`, recortada al español, 42 KB)
+  con palabra clave en itálica rúbrica, numerales romanos grandes, despliegue al bajar (`data-rev` + `html.anima`),
+  reto animado (rampa que se traza, bola que baja), sección «Cómo enseñamos» (6 pasos) y «Lo que viene»
+  (lista `LO_QUE_VIENE` al inicio de `assets/js/sitio.js`). Sin probar en celular real.
