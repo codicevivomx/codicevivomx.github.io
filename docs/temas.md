@@ -100,3 +100,25 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   controles (ids) van al modo compacto. Aplicarla a prensa y tiro. Idea para vertical: zoom ~2×
   siguiendo la pieza que se mueve.
 - [ ] Menor: salida `.svg` fija en el generador de tiro (6b), como ya la tiene leyes-de-newton-1.
+- [x] Sitio (prototipo, 15-nov-2026): `index.html`, `biblioteca/`, `libros/fisica-unam/`, un solo CSS
+  `assets/css/sitio.css` y `assets/js/sitio.js` (mini reto). Logo B «Capitular» en `assets/logo/codice-vivo-*.svg`
+  (texto en contornos; `-texto.svg` deja «ódice» editable). Mascotas Griseldo y Chikis en SVG + CSS dentro de la portada.
+  Figura fija nueva `contenido/fisica/img/tiro-parabolico.svg` (sacada del interactivo, con estilos en línea).
+  Pendiente de Gato: elegir estilo de «Vivo» (`assets/logo/muestra.html`), borrar propuestas A y C, y el PDF
+  aparece como «Próximamente» en la portada hasta que exista.
+  Ronda 1 (15-nov-2026, en espera de OK de Gato): portada como mundo en pixel art con parallax (sprites SVG en línea,
+  gatos escondidos sin nombre), libros en CSS 3D sobre estante (portada y `biblioteca/`) y tarjetas con inclinación.
+  Sin probar en celular real ni con giroscopio (solo Android; en iPhone pide permiso y se dejó fuera).
+  Ronda 2 (15-nov-2026, última): la portada pasó a paisaje en pixel fino pintado en canvas por `assets/js/paisaje.js`
+  (cielo, sierra, valle con río, castillo-biblioteca, primer plano; dragón, aves y los dos gatos como sprites SVG).
+  Se quitaron torres de libros, islas y cascada. Placa como tarjeta de papel. Sin probar en celular real.
+  Fase 3 (15-nov-2026): `libros/fisica-unam/` como página de venta (libro 3D, qué incluye, capítulos en acordeón,
+  visor de lámina al tocar, espacio del video, preguntas, cierre); `biblioteca/` con sala interior en pixel
+  (`assets/js/paisaje.js`) y mueble de madera; portada con grecas, capitular y viñetas; pie completo con gatos dormidos.
+  Enlaces pendientes (preventa y TikTok) en un solo lugar: objeto `ENLACES` al inicio de `assets/js/sitio.js`.
+  Precio, fecha, PDF y video siguen como «próximamente». Sin probar en celular real.
+  Zona de compra (15-nov-2026): `libros/fisica-unam/` rediseñada como tienda moderna con escena 3D del libro
+  (`assets/js/escena-libro.js` + three.js r187 vendorizado en `assets/js/vendor/`, 187 KB comprimido; se pide solo ahí,
+  tras el primer pintado, con WebGL y sin «menos movimiento»; respaldo `assets/img/libro-fisica-unam.webp`).
+  Panel de tienda, pestañas, barra fija en celular. `biblioteca/`: ficha lateral al tocar un libro.
+  `ENLACES` suma `avisame`. Sin probar en celular real.

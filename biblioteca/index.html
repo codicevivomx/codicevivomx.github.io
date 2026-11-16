@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Biblioteca · Códice Vivo</title>
+<meta name="description" content="Los libros de Códice Vivo: Física UNAM disponible; Matemáticas e Historia, próximamente.">
+<meta name="theme-color" content="#33283A" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#33283A" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../assets/logo/codice-vivo-icono.svg" type="image/svg+xml">
+<link rel="preload" href="../plantilla/codice/fuentes/eb-garamond.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/css/sitio.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+<!-- sección: encabezado -->
+<header class="encabezado encabezado--mundo">
+  <a class="encabezado__logo" href="../" aria-label="Códice Vivo, inicio">
+    <img src="../assets/logo/codice-vivo-horizontal-oscuro.svg" alt="Códice Vivo" width="551" height="160">
+  </a>
+  <nav aria-label="Principal"><a class="enlace" href="../biblioteca/">Biblioteca</a></nav>
+</header>
+<main id="contenido">
+<!-- sección: sala (escena interior en pixel art; la pinta assets/js/paisaje.js) -->
+<section class="sala" aria-label="Sala de la biblioteca con un ventanal hacia el castillo">
+  <canvas data-sala aria-hidden="true"></canvas><canvas data-sala-fx aria-hidden="true"></canvas>
+  <svg class="mundo__disolver" aria-hidden="true" focusable="false"><defs><pattern id="tramado" width="16" height="64" patternUnits="userSpaceOnUse"><path d="M0 0h4v4h-4zM8 8h4v4h-4zM0 16h4v4h-4zM8 16h4v4h-4zM4 20h4v4h-4zM0 24h4v4h-4zM8 24h4v4h-4zM4 28h4v4h-4zM12 28h4v4h-4zM0 32h4v4h-4zM4 32h4v4h-4zM8 32h4v4h-4zM4 36h4v4h-4zM12 36h4v4h-4zM0 40h4v4h-4zM8 40h4v4h-4zM12 40h4v4h-4zM4 44h4v4h-4zM12 44h4v4h-4zM0 48h4v4h-4zM4 48h4v4h-4zM8 48h4v4h-4zM12 48h4v4h-4zM0 52h4v4h-4zM4 52h4v4h-4zM12 52h4v4h-4zM0 56h4v4h-4zM4 56h4v4h-4zM8 56h4v4h-4zM12 56h4v4h-4zM0 60h4v4h-4zM4 60h4v4h-4zM8 60h4v4h-4zM12 60h4v4h-4z"/></pattern></defs><rect width="100%" height="64" fill="url(#tramado)"/></svg>
+</section>
+
+<!-- sección: estantería -->
+<section class="seccion estanteria" aria-labelledby="bib-t">
+  <p class="antetitulo">Biblioteca</p>
+  <h1 id="bib-t">Elige un libro.</h1>
+  <div class="mueble mueble--alto">
+    <ul class="estante">
+      <li class="estante__adorno" aria-hidden="true"><svg class="pix pix--planta" viewBox="0 0 14 14" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#447058" d="M6 0h1v2h-1zM5 1h1v3h-1zM7 1h1v3h-1zM10 1h1v2h-1zM2 2h1v2h-1zM9 2h1v5h-1zM11 2h1v3h-1zM1 3h1v3h-1zM3 3h1v3h-1zM6 4h1v5h-1zM4 5h1v4h-1zM8 5h1v4h-1zM10 5h1v1h-1zM2 6h1v1h-1zM3 7h1v1h-1zM5 7h1v2h-1zM7 7h1v2h-1z"/><path fill="#8FA455" d="M6 2h1v2h-1zM10 3h1v2h-1zM2 4h1v2h-1zM3 6h1v1h-1z"/><path fill="#8C4A32" d="M3 9h7v1h-7zM3 10h1v1h-1zM9 10h1v1h-1zM4 11h1v3h-1zM8 11h1v3h-1zM5 13h3v1h-3z"/><path fill="#B8663F" d="M4 10h5v1h-5zM5 11h3v2h-3z"/></svg></li>
+      <li class="estante__libro">
+        <a class="libro3d" data-ficha="ficha-fisica" href="../libros/fisica-unam/" aria-label="Física UNAM, disponible: 15 láminas. Abrir el libro">
+          <span class="libro3d__sombra"></span>
+          <span class="libro3d__cuerpo">
+            <span class="libro3d__contra"></span>
+            <span class="libro3d__lomo"><span>Física · UNAM</span></span>
+            <span class="libro3d__hojas"></span>
+            <span class="libro3d__canto"></span>
+            <span class="libro3d__pagina">Lámina 01<i></i><i></i><i></i><i></i></span>
+            <span class="libro3d__portada"><span class="libro3d__figura"><img src="../contenido/fisica/img/caida-libre.svg" alt="" width="260" height="600" loading="lazy" decoding="async"></span>
+              <span class="libro3d__titulo">Física</span>
+              <span class="libro3d__examen">UNAM</span>
+              <span class="libro3d__dato">15 láminas</span></span>
+          </span>
+        </a>
+        <span class="estante__rotulo estante__rotulo--si">Disponible</span>
+      </li>
+      <li class="estante__libro">
+        <button type="button" class="libro3d libro3d--pronto" data-ficha="ficha-matematicas" aria-disabled="true" aria-label="Matemáticas, próximamente">
+          <span class="libro3d__sombra"></span>
+          <span class="libro3d__cuerpo">
+            <span class="libro3d__contra"></span>
+            <span class="libro3d__lomo"><span>Matemáticas</span></span>
+            <span class="libro3d__hojas"></span>
+            <span class="libro3d__canto"></span>
+            <span class="libro3d__pagina">Próximamente<i></i><i></i><i></i></span>
+            <span class="libro3d__portada"><span class="libro3d__liston">Próximamente</span>
+              <svg class="libro3d__candado" viewBox="0 0 9 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path d="M2 0h5v1h1v4h1v6h-9v-6h1v-4h1zM3 2v3h3v-3zM4 7v2h1v-2z" fill-rule="evenodd"/></svg>
+              <span class="libro3d__titulo">Matemáticas</span></span>
+          </span>
+        </button>
+        <span class="estante__rotulo">Próximamente</span>
+      </li>
+      <li class="estante__libro">
+        <button type="button" class="libro3d libro3d--pronto libro3d--historia" data-ficha="ficha-historia" aria-disabled="true" aria-label="Historia, próximamente">
+          <span class="libro3d__sombra"></span>
+          <span class="libro3d__cuerpo">
+            <span class="libro3d__contra"></span>
+            <span class="libro3d__lomo"><span>Historia</span></span>
+            <span class="libro3d__hojas"></span>
+            <span class="libro3d__canto"></span>
+            <span class="libro3d__pagina">Próximamente<i></i><i></i><i></i></span>
+            <span class="libro3d__portada"><span class="libro3d__liston">Próximamente</span>
+              <svg class="libro3d__candado" viewBox="0 0 9 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path d="M2 0h5v1h1v4h1v6h-9v-6h1v-4h1zM3 2v3h3v-3zM4 7v2h1v-2z" fill-rule="evenodd"/></svg>
+              <span class="libro3d__titulo">Historia</span></span>
+          </span>
+        </button>
+        <span class="estante__rotulo">Próximamente</span>
+      </li>
+      <li class="estante__adorno" aria-hidden="true"><svg class="pix pix--vela" viewBox="0 0 7 12" width="7" height="12" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><circle class="vela__luz" cx="3.5" cy="2" r="5" fill="#F6C65B" fill-opacity=".22"/><path fill="#2E2117" d="M3 3h1v1h-1z"/><path fill="#FFFCF6" d="M2 4h3v1h-3zM2 5h2v4h-2z"/><path fill="#E5DACA" d="M4 5h1v4h-1z"/><path fill="#D9B26A" d="M1 9h5v1h-5zM2 10h1v2h-1zM4 10h1v2h-1zM1 11h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1z"/><path fill="#8C4A32" d="M3 10h1v1h-1z"/><g class="vela__a"><path fill="#F6C65B" d="M3 0h1v2h-1zM2 1h1v2h-1zM4 1h1v2h-1z"/><path fill="#FFF3BE" d="M3 2h1v1h-1z"/></g><g class="vela__b"><path fill="#F6C65B" d="M2 0h1v3h-1zM3 1h1v1h-1zM4 2h1v1h-1z"/><path fill="#FFF3BE" d="M3 2h1v1h-1z"/></g></svg></li>
+    </ul>
+    <ul class="estante estante--vacio" aria-hidden="true">
+      <li class="estante__adorno"><svg class="pix pix--vela" viewBox="0 0 7 12" width="7" height="12" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><circle class="vela__luz" cx="3.5" cy="2" r="5" fill="#F6C65B" fill-opacity=".22"/><path fill="#2E2117" d="M3 3h1v1h-1z"/><path fill="#FFFCF6" d="M2 4h3v1h-3zM2 5h2v4h-2z"/><path fill="#E5DACA" d="M4 5h1v4h-1z"/><path fill="#D9B26A" d="M1 9h5v1h-5zM2 10h1v2h-1zM4 10h1v2h-1zM1 11h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1z"/><path fill="#8C4A32" d="M3 10h1v1h-1z"/><g class="vela__a"><path fill="#F6C65B" d="M3 0h1v2h-1zM2 1h1v2h-1zM4 1h1v2h-1z"/><path fill="#FFF3BE" d="M3 2h1v1h-1z"/></g><g class="vela__b"><path fill="#F6C65B" d="M2 0h1v3h-1zM3 1h1v1h-1zM4 2h1v1h-1z"/><path fill="#FFF3BE" d="M3 2h1v1h-1z"/></g></svg></li>
+      <li class="estante__nota">Más libros en camino</li>
+      <li class="estante__adorno"><svg class="pix pix--planta" viewBox="0 0 14 14" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#447058" d="M6 0h1v2h-1zM5 1h1v3h-1zM7 1h1v3h-1zM10 1h1v2h-1zM2 2h1v2h-1zM9 2h1v5h-1zM11 2h1v3h-1zM1 3h1v3h-1zM3 3h1v3h-1zM6 4h1v5h-1zM4 5h1v4h-1zM8 5h1v4h-1zM10 5h1v1h-1zM2 6h1v1h-1zM3 7h1v1h-1zM5 7h1v2h-1zM7 7h1v2h-1z"/><path fill="#8FA455" d="M6 2h1v2h-1zM10 3h1v2h-1zM2 4h1v2h-1zM3 6h1v1h-1z"/><path fill="#8C4A32" d="M3 9h7v1h-7zM3 10h1v1h-1zM9 10h1v1h-1zM4 11h1v3h-1zM8 11h1v3h-1zM5 13h3v1h-3z"/><path fill="#B8663F" d="M4 10h5v1h-5zM5 11h3v2h-3z"/></svg></li>
+    </ul>
+  </div>
+</section>
+
+<!-- fichas: panel de selección de cada libro -->
+<dialog class="ficha" id="ficha-fisica" aria-labelledby="ficha-fisica-t">
+  <form method="dialog"><button class="ficha__cerrar" aria-label="Cerrar">✕</button></form>
+  <div class="ficha__dentro">
+    <div class="libro3d portada-plana" aria-hidden="true"><span class="libro3d__portada"><span class="libro3d__figura"><img src="../contenido/fisica/img/caida-libre.svg" alt="" width="260" height="600" loading="lazy" decoding="async"></span>
+              <span class="libro3d__titulo">Física</span>
+              <span class="libro3d__examen">UNAM</span>
+              <span class="libro3d__dato">15 láminas</span></span></div>
+    <div class="ficha__texto">
+      <h2 id="ficha-fisica-t">Física UNAM</h2>
+      <p class="precio"><span class="precio__etq">Precio de lanzamiento</span><strong class="precio__valor">Próximamente</strong></p>
+      <ul class="ficha__datos"><li>15 láminas interactivas</li><li>5 capítulos</li><li>3 láminas de muestra gratis</li></ul>
+      <a class="boton boton--ancho" href="../libros/fisica-unam/">Ver libro</a>
+    </div>
+  </div>
+</dialog>
+<dialog class="ficha" id="ficha-matematicas" aria-labelledby="ficha-matematicas-t">
+  <form method="dialog"><button class="ficha__cerrar" aria-label="Cerrar">✕</button></form>
+  <div class="ficha__dentro">
+    <div class="libro3d portada-plana libro3d--pronto" aria-hidden="true"><span class="libro3d__portada"><span class="libro3d__liston">Próximamente</span><svg class="libro3d__candado" viewBox="0 0 9 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path d="M2 0h5v1h1v4h1v6h-9v-6h1v-4h1zM3 2v3h3v-3zM4 7v2h1v-2z" fill-rule="evenodd"/></svg><span class="libro3d__titulo">Matemáticas</span></span></div>
+    <div class="ficha__texto">
+      <h2 id="ficha-matematicas-t">Matemáticas</h2>
+      <p class="precio"><span class="precio__etq">Disponibilidad</span><strong class="precio__valor">Próximamente</strong></p>
+      <ul class="ficha__datos"><li>En preparación</li><li>Láminas interactivas, como Física</li><li>Aún sin fecha</li></ul>
+      <a class="boton boton--sec boton--ancho" href="#" data-enlace="avisame">Avísame cuando salga</a>
+    </div>
+  </div>
+</dialog>
+<dialog class="ficha" id="ficha-historia" aria-labelledby="ficha-historia-t">
+  <form method="dialog"><button class="ficha__cerrar" aria-label="Cerrar">✕</button></form>
+  <div class="ficha__dentro">
+    <div class="libro3d portada-plana libro3d--pronto libro3d--historia" aria-hidden="true"><span class="libro3d__portada"><span class="libro3d__liston">Próximamente</span><svg class="libro3d__candado" viewBox="0 0 9 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path d="M2 0h5v1h1v4h1v6h-9v-6h1v-4h1zM3 2v3h3v-3zM4 7v2h1v-2z" fill-rule="evenodd"/></svg><span class="libro3d__titulo">Historia</span></span></div>
+    <div class="ficha__texto">
+      <h2 id="ficha-historia-t">Historia</h2>
+      <p class="precio"><span class="precio__etq">Disponibilidad</span><strong class="precio__valor">Próximamente</strong></p>
+      <ul class="ficha__datos"><li>En preparación</li><li>Láminas interactivas, como Física</li><li>Aún sin fecha</li></ul>
+      <a class="boton boton--sec boton--ancho" href="#" data-enlace="avisame">Avísame cuando salga</a>
+    </div>
+  </div>
+</dialog>
+</main>
+<!-- sección: pie -->
+<footer class="pie">
+  <div class="pie__dentro">
+    <a class="pie__logo" href="../" aria-label="Códice Vivo, inicio">
+      <picture>
+        <source srcset="../assets/logo/codice-vivo-horizontal-oscuro.svg" media="(prefers-color-scheme: dark)">
+        <img src="../assets/logo/codice-vivo-horizontal.svg" alt="Códice Vivo" width="551" height="160" loading="lazy">
+      </picture>
+    </a>
+    <nav class="pie__enlaces" aria-label="Pie de página">
+      <a href="../biblioteca/">Biblioteca</a>
+      <a href="../libros/fisica-unam/">Física UNAM</a>
+      <a href="../#como">Cómo funciona</a>
+      <a href="#" data-enlace="tiktok">TikTok</a>
+    </nav>
+    <div class="pie__firma">
+      <svg class="pix dormidos" viewBox="0 -6 34 14" width="34" height="14" shape-rendering="crispEdges" role="img" aria-label="Dos gatos dormidos"><g class="dormidos__z"><path fill="#77634F" d="M14 -2h3v1h-1v1h-1v1h3v1h-4v-1h1v-1h1v-1h-2z"/></g><g class="dormidos__z dormidos__z--b"><path fill="#77634F" d="M19 -5h2v1h-1v1h1v1h-2v-1h1v-1h-1z"/></g><g class="dormidos__gato"><path fill="#8B8C97" d="M2 0h1v3h-1zM5 0h1v5h-1zM1 1h1v2h-1zM3 1h2v4h-2zM6 1h1v5h-1zM10 1h4v4h-4zM0 2h1v4h-1zM7 2h3v4h-3zM14 2h1v1h-1zM15 3h1v3h-1zM1 4h2v2h-2zM14 4h1v2h-1zM3 5h1v1h-1zM12 5h2v1h-2z"/><path fill="#1E1A1C" d="M1 3h2v1h-2z"/><path fill="#6C6D79" d="M14 3h1v1h-1zM4 5h2v3h-2zM10 5h2v3h-2zM1 6h3v1h-3zM6 6h4v2h-4zM12 6h4v1h-4zM2 7h2v1h-2zM12 7h2v1h-2z"/></g><g transform="translate(18 0)"><g class="dormidos__gato dormidos__gato--b"><path fill="#2A2429" d="M10 0h1v5h-1zM13 0h1v3h-1zM2 1h4v4h-4zM9 1h1v5h-1zM11 1h2v4h-2zM14 1h1v2h-1zM1 2h1v1h-1zM6 2h3v4h-3zM15 2h1v4h-1zM0 3h1v3h-1zM1 4h1v2h-1zM13 4h2v2h-2zM2 5h2v1h-2zM12 5h1v1h-1z"/><path fill="#3A3238" d="M1 3h1v1h-1zM4 5h2v3h-2zM10 5h2v3h-2zM0 6h4v1h-4zM6 6h4v2h-4zM12 6h3v1h-3zM2 7h2v1h-2zM12 7h2v1h-2z"/><path fill="#1E1A1C" d="M13 3h2v1h-2z"/></g></g></svg>
+      <p>Hecho en México</p>
+    </div>
+  </div>
+</footer>
+<script src="../assets/js/sitio.js" defer></script>
+<script src="../assets/js/paisaje.js" defer></script>
+</body>
+</html>
