@@ -122,3 +122,23 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   tras el primer pintado, con WebGL y sin «menos movimiento»; respaldo `assets/img/libro-fisica-unam.webp`).
   Panel de tienda, pestañas, barra fija en celular. `biblioteca/`: ficha lateral al tocar un libro.
   `ENLACES` suma `avisame`. Sin probar en celular real.
+  Ritmo de la portada (15-nov-2026): títulos en Fraunces (`assets/fuentes/fraunces-es.woff2`, recortada al español, 42 KB)
+  con palabra clave en itálica rúbrica, numerales romanos grandes, despliegue al bajar (`data-rev` + `html.anima`),
+  reto animado (rampa que se traza, bola que baja), sección «Cómo enseñamos» (6 pasos) y «Lo que viene»
+  (lista `LO_QUE_VIENE` al inicio de `assets/js/sitio.js`). Sin probar en celular real.
+  Bandas de la portada (16-nov-2026): cada sección a todo lo ancho con su ambiente (claro, tostado, verde azulado,
+  pergamino, rojo vino), divisores variados (papel rasgado, curva, friso de greca `assets/img/greca.svg`),
+  «Cómo enseñamos» con íconos de línea que se dibujan y lámina en miniatura fija que resalta el paso activo
+  (frases de `contenido/fisica/conservacion-de-la-energia.md`, solo lectura), cabeceras en dos columnas en PC,
+  planta y vela vectoriales en el estante de la portada. Sin pixel fuera de portada, biblioteca y gatos.
+  «Cómo enseñamos» elegible a mano (16-nov-2026): pasos como botones (pestañas con flechas del teclado y aria-selected),
+  chips I-VI, deslizar la lámina en celular; la elección manda hasta desplazarse ~60 % de la pantalla.
+  Tarjeta de prensa-hidraulica: usa `assets/img/tarjetas/prensa-hidraulica.svg` (figura 2.5D+ extraída de su
+  interactivo); el SVG de `contenido/` no se tocó.
+  Pie, dorado y profundidad (16-nov-2026): pie en banda verde azulado con friso de greca, 4 columnas
+  («Próximamente» sale de `LO_QUE_VIENE`, «Comunidad» de `ENLACES`), gatos dormidos sobre libros que despiertan al tocarlos,
+  páginas `aviso-de-privacidad/` y `terminos/` «en preparación». Palabras clave doradas (`em.oro`) con destello único,
+  subrayado dorado en títulos, sombras en capas e inclinación 3D con reflejo en tarjetas y cajas de la portada.
+  Carga (16-nov-2026): Fraunces y la itálica de EB Garamond ya no van en el CSS; las registra `assets/js/sitio.js`
+  cuando la página terminó de cargar (respaldo `<noscript>` en el `<head>`), y cada página solo baja la que usa.
+  La profundidad y el reflejo al pasar el cursor también están en `libros/fisica-unam/` (tarjetas, ventajas y «En camino»).

@@ -8,8 +8,130 @@ var ENLACES = {
   avisame: '#'   // «Avísame cuando salga» (libros próximos, en la biblioteca)
 };
 
+/* LO QUE VIENE (portada): para sumar algo, agrega una línea.
+   estado: 'listo' o 'en camino'. «enlace» es opcional (si lo pones, el título se vuelve liga). */
+var LO_QUE_VIENE = [
+  { tipo: 'Retos «Aplica lo aprendido»', titulo: '¿Con qué velocidad llega el esquiador?', corto: 'Retos «Aplica lo aprendido»', nota: 'El primer reto: un problema completo para usar lo que ya sabes.', estado: 'en camino' },
+  { tipo: 'Para repasar', titulo: 'PDF con marca de agua', nota: 'Cada lámina en una hoja, para imprimir o estudiar sin conexión.', estado: 'en camino' },
+  { tipo: 'Nuevo libro', titulo: 'Matemáticas', nota: 'Con el mismo formato de láminas interactivas.', estado: 'en camino' },
+  { tipo: 'Nuevo libro', titulo: 'Historia', nota: 'Con el mismo formato de láminas interactivas.', estado: 'en camino' }
+];
+
+/* Fuentes que solo se usan abajo del primer pantallazo (títulos en Fraunces e itálicas):
+   se piden cuando la página ya cargó, para no competir con lo de arriba. Mientras llegan se ve la serif base. */
+var RAIZ = ((document.currentScript && document.currentScript.src) || '').replace(/assets\/js\/[^\/]*$/, '');
+function fuentesDeAbajo() {
+  if (!window.FontFace || !document.fonts) return;
+  [['Fraunces', 'assets/fuentes/fraunces-es.woff2', { weight: '300 700', style: 'normal' }],
+   ['EB Garamond', 'plantilla/codice/fuentes/eb-garamond-italica.woff2', { weight: '400', style: 'italic' }]
+  ].forEach(function (f) {
+    var cara = new FontFace(f[0], 'url(' + RAIZ + f[1] + ') format("woff2")', f[2]);
+    cara.display = 'swap';
+    document.fonts.add(cara);   // solo se descarga si la página de verdad la usa; si falla, queda la serif base
+  });
+}
+if (document.readyState === 'complete') setTimeout(fuentesDeAbajo, 0);
+else window.addEventListener('load', function () { setTimeout(fuentesDeAbajo, 0); });
+
 (function () {
   var quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* «Lo que viene»: se arma con la lista de arriba */
+  var viene = document.getElementById('lo-que-viene');
+  if (viene) LO_QUE_VIENE.forEach(function (x) {
+    var li = document.createElement('li'), listo = x.estado === 'listo';
+    li.className = 'viene__item' + (listo ? ' viene__item--listo' : '');
+    var tipo = document.createElement('span'); tipo.className = 'viene__tipo'; tipo.textContent = x.tipo || '';
+    var h = document.createElement('h3');
+    if (x.enlace) { var a = document.createElement('a'); a.href = x.enlace; a.textContent = x.titulo; h.appendChild(a); } else h.textContent = x.titulo;
+    var p = document.createElement('p'); p.textContent = x.nota || '';
+    var e = document.createElement('span'); e.className = 'viene__estado'; e.textContent = listo ? 'Listo' : 'En camino';
+    li.appendChild(tipo); li.appendChild(h); li.appendChild(p); li.appendChild(e);
+    viene.appendChild(li);
+  });
+
+  /* Pie, columna «Próximamente»: lo que en la lista de arriba aún no está listo
+     («corto» es el nombre breve; si falta, se usa el título) */
+  document.querySelectorAll('[data-proximamente]').forEach(function (ul) {
+    var base = ul.getAttribute('data-base') || './';
+    LO_QUE_VIENE.forEach(function (x) {
+      if (x.estado === 'listo') return;
+      var li = document.createElement('li'), a = document.createElement('a');
+      a.href = base + '#viene'; a.textContent = x.corto || x.titulo;
+      li.appendChild(a); ul.appendChild(li);
+    });
+  });
+
+  /* Despliegue al hacer scroll: cada [data-rev] recibe .visto una sola vez.
+     (html.anima lo pone un script en el <head>; sin él, todo se ve desde el inicio.) */
+  window.__revListo = true;
+  var porVer = document.querySelectorAll('[data-rev]');
+  if (document.documentElement.classList.contains('anima') && 'IntersectionObserver' in window) {
+    var ojo = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('visto'); ojo.unobserve(en.target); } });
+    }, { threshold: 0.18, rootMargin: '0px 0px -6% 0px' });
+    porVer.forEach(function (el) { ojo.observe(el); });
+  } else {
+    document.documentElement.classList.remove('anima');
+    porVer.forEach(function (el) { el.classList.add('visto'); });
+  }
+
+  /* «Cómo enseñamos»: al bajar se marca el paso activo, la lámina de muestra resalta esa parte
+     y el riel se llena. (No es animación: también funciona con «menos movimiento», sin transiciones.) */
+  var metodo = document.querySelector('[data-metodo]'), recorrido = document.querySelector('[data-recorrido]');
+  if (metodo && recorrido) {
+    var pasos = recorrido.querySelectorAll('.recorrido__paso'), botones = recorrido.querySelectorAll('.recorrido__boton'),
+      chips = metodo.querySelectorAll('.mini__chip'), hoja = metodo.querySelector('.mini__hoja'), activo = 0, pendienteR = false, mano = null;
+    // activa un paso: lista, lámina y chips quedan sincronizados
+    var activa = function (n, foco) {
+      n = Math.max(1, Math.min(pasos.length, n));
+      if (n !== activo) {
+        metodo.style.setProperty('--lado', n > activo ? 1 : -1);      // de qué lado entra la zona en celular
+        activo = n; metodo.setAttribute('data-activo', n);
+        pasos.forEach(function (p, i) { p.classList.toggle('es-activo', i === n - 1); });
+        botones.forEach(function (b, i) { b.setAttribute('aria-selected', i === n - 1 ? 'true' : 'false'); b.tabIndex = i === n - 1 ? 0 : -1; });
+        chips.forEach(function (c, i) { c.setAttribute('aria-pressed', i === n - 1 ? 'true' : 'false'); });
+      }
+      if (foco && botones[n - 1]) botones[n - 1].focus({ preventScroll: true });
+    };
+    // elección a mano: manda hasta que el usuario se desplace un buen tramo (tramo = fracción del alto de pantalla)
+    var elige = function (n, tramo, foco) { mano = { y: window.scrollY, d: window.innerHeight * tramo }; activa(n, foco); };
+    var conPuntero = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    botones.forEach(function (b, i) {
+      b.addEventListener('click', function () { elige(i + 1, 0.6); });
+      if (conPuntero) b.addEventListener('mouseenter', function () { if (!mano || mano.d < 200) elige(i + 1, 0.12); });
+      b.addEventListener('keydown', function (e) {
+        var k = e.key, n = k === 'ArrowDown' || k === 'ArrowRight' ? activo + 1 : k === 'ArrowUp' || k === 'ArrowLeft' ? activo - 1 : k === 'Home' ? 1 : k === 'End' ? pasos.length : 0;
+        if (n) { e.preventDefault(); elige(n, 0.6, true); }
+      });
+    });
+    chips.forEach(function (c, i) { c.addEventListener('click', function () { elige(i + 1, 0.6); }); });
+    if (hoja) {                                                       // deslizar la lámina: siguiente o anterior
+      var x0 = null, y0 = 0;
+      hoja.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+      hoja.addEventListener('touchend', function (e) {
+        if (x0 === null) return;
+        var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) elige(activo + (dx < 0 ? 1 : -1), 0.6);
+      }, { passive: true });
+    }
+    var mide = function () {
+      pendienteR = false;
+      var angosto = window.innerWidth < 800, linea = window.innerHeight * (angosto ? 0.72 : 0.55), n = 1;
+      if (mano && Math.abs(window.scrollY - mano.y) > mano.d) mano = null;
+      if (!mano) {
+        pasos.forEach(function (p, i) { if (p.getBoundingClientRect().top < linea) n = i + 1; });
+        activa(n);
+      }
+      if (!quieto) {
+        var r = recorrido.getBoundingClientRect();
+        recorrido.style.setProperty('--avance', Math.max(0, Math.min(1, (linea - r.top) / r.height)).toFixed(3));
+      }
+    };
+    window.addEventListener('scroll', function () { if (!pendienteR) { pendienteR = true; requestAnimationFrame(mide); } }, { passive: true });
+    window.addEventListener('resize', mide);
+    mide();
+  }
   var conMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   document.querySelectorAll('[data-enlace]').forEach(function (a) {
@@ -45,13 +167,41 @@ var ENLACES = {
       if (!boton.hasAttribute('data-correcta')) boton.classList.add('es-error');
       nota.textContent = boton.getAttribute('data-nota');
       respuesta.hidden = false;
+      bajaLaBola();
     });
   });
 
+  /* Al responder el reto: la bola baja por la rampa (acelerando) y aparece la flecha con v = 20 m/s */
+  function bajaLaBola() {
+    var rampa = document.getElementById('reto-rampa'), bola = document.getElementById('reto-bola'), v = document.getElementById('reto-v');
+    var figura = rampa && rampa.closest('svg');
+    if (!rampa || !bola || !rampa.getTotalLength) return;
+    var largo = rampa.getTotalLength(), dur = 850, t0 = null;
+    var pon = function (f) {
+      var s = largo * (0.03 + 0.97 * f), p = rampa.getPointAtLength(s), q = rampa.getPointAtLength(Math.min(largo, s + 1));
+      var dx = q.x - p.x, dy = q.y - p.y, n = Math.hypot(dx, dy) || 1;
+      bola.setAttribute('cx', (p.x + dy / n * 9).toFixed(1)); bola.setAttribute('cy', (p.y - dx / n * 9).toFixed(1));
+    };
+    var fin = function () { pon(1); v.textContent = 'v = 20 m/s'; figura.classList.add('reto--resuelto'); };
+    if (quieto) return fin();
+    v.style.opacity = 0;
+    requestAnimationFrame(function paso(t) {
+      if (t0 === null) t0 = t;
+      var f = Math.min(1, (t - t0) / dur);
+      pon(f * f);                                   // acelera: recorre más en cada instante
+      if (f < 1) requestAnimationFrame(paso); else { fin(); v.style.opacity = 1; }
+    });
+  }
+
   /* Gatos escondidos: al tocarlos sueltan corazones pixelados */
   var NS = 'http://www.w3.org/2000/svg';
-  document.querySelectorAll('.gatos').forEach(function (gato) {
+  document.querySelectorAll('.gatos, .siesta').forEach(function (gato) {
     gato.addEventListener('click', function () {
+      if (gato.classList.contains('siesta')) {            // los del pie despiertan un momento
+        gato.classList.add('es-despierto');
+        clearTimeout(gato.__sueno);
+        gato.__sueno = setTimeout(function () { gato.classList.remove('es-despierto'); }, 2200);
+      }
       for (var i = 0; i < 3; i++) {
         var c = document.createElementNS(NS, 'svg');
         c.setAttribute('viewBox', '0 0 7 6');
@@ -136,17 +286,26 @@ var ENLACES = {
     }
   }
 
-  /* Tarjetas: se inclinan hacia el puntero */
+  /* En pantallas táctiles, las cajas se hunden un poco mientras las tocas (clase es-presion) */
+  document.querySelectorAll('.portada .tarjeta, .portada .paso, .portada .viene__item, .portada .bloque, .tienda .tarjeta, .tienda .ventajas li, .tienda .proximos li').forEach(function (t) {
+    t.addEventListener('touchstart', function () { t.classList.add('es-presion'); }, { passive: true });
+    ['touchend', 'touchcancel'].forEach(function (ev) { t.addEventListener(ev, function () { t.classList.remove('es-presion'); }, { passive: true }); });
+  });
+
+  /* Tarjetas y cajas grandes: se inclinan en 3D hacia el puntero (máx. ~6°).
+     --rx/--ry los usa .tarjeta (transform); --ax/--ay/--ang, las cajas que se inclinan con «rotate». */
   if (conMouse) {
-    document.querySelectorAll('.tarjeta').forEach(function (t) {
+    document.querySelectorAll('.tarjeta, .portada .paso, .portada .viene__item, .portada .bloque, .tienda .ventajas li, .tienda .proximos li').forEach(function (t) {
       t.addEventListener('pointermove', function (e) {
-        var r = t.getBoundingClientRect();
-        t.style.setProperty('--ry', ((e.clientX - r.left) / r.width - 0.5) * 9 + 'deg');
-        t.style.setProperty('--rx', (0.5 - (e.clientY - r.top) / r.height) * 7 + 'deg');
+        var r = t.getBoundingClientRect(), dx = (e.clientX - r.left) / r.width - 0.5, dy = (e.clientY - r.top) / r.height - 0.5;
+        t.style.setProperty('--ry', (dx * 12).toFixed(2) + 'deg');
+        t.style.setProperty('--rx', (-dy * 12).toFixed(2) + 'deg');
+        t.style.setProperty('--ax', (-dy).toFixed(3));
+        t.style.setProperty('--ay', dx.toFixed(3));
+        t.style.setProperty('--ang', Math.min(6, Math.hypot(dx, dy) * 12).toFixed(2) + 'deg');
       });
       t.addEventListener('pointerleave', function () {
-        t.style.removeProperty('--rx');
-        t.style.removeProperty('--ry');
+        ['--rx', '--ry', '--ax', '--ay', '--ang'].forEach(function (v) { t.style.removeProperty(v); });
       });
     });
   }
