@@ -29,3 +29,22 @@ Sesión: 27 → 49 % (lámina, 22 %) · 49 → 83 % (ronda 1: agua realista y «
 Semana: __ → __ %
 Notas: JSON en formato viejo (11 campos nuevos), dibujo nuevo desde cero (vaso de derrame, probeta y balanza), modelo de nivel del agua.
 | 15-nov-2026 | tanda física (9 láminas: conservacion-de-la-energia, ley-de-ohm, reflexion, refraccion, ondas, cantidad-de-movimiento, calor-y-temperatura, caida-libre, gravitacion-universal) | lámina 2.5D+ | claude.ai Opus 5.5 | sin medir | sin medir | hechas desde el celular, subidas en una sola rama |
+5:03 PM
+Session (5hr)
+2%
+Resets at 9:40 PM
+Weekly (7 day)
+69%
+Resets Thu, Nov 19 at 2:00 PM
+Weekly Fable
+13%
+Resets Thu, Nov 19 at 1:59 PM
+Manage usage on claude.ai
+Session (5hr)
+71%
+Resets at 2:40 AM
+Weekly (7 day)
+92%
+Resets Thu, Nov 19 at 2:00 PM
+Weekly Fable
+56%

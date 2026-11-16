@@ -1,0 +1,577 @@
+/* Códice Vivo · estilos del sitio (portada, biblioteca, libros).
+   Un solo archivo, sin frameworks. Cada bloque «sección: …» del HTML
+   corresponde a una sección del futuro tema de Shopify. */
+
+@font-face{font-family:"EB Garamond";font-style:normal;font-weight:400 600;font-display:swap;src:url(../../plantilla/codice/fuentes/eb-garamond.woff2) format("woff2")}
+
+/* ---------- Tokens (los mismos de las láminas) ---------- */
+:root{
+  --bg:#F6F1E6;--sup:#FFFCF6;--texto:#2E2117;--suave:#77634F;--borde:#E5DACA;--borde-fuerte:#CDBEA5;
+  --acento:#2F6F73;--rubrica:#A5352A;--dorado:#B08A3E;--bien:#2F7D5B;--mal:#A5352A;--sobre-acento:#FFFFFF;
+  --papel:#F6F1E6;--sombra:46,33,23;
+  --serif:"EB Garamond","Iowan Old Style",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --ancho:1040px;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#17120D;--sup:#211912;--texto:#EFE4CF;--suave:#B6A385;--borde:#382C20;--borde-fuerte:#4D3D2C;
+  --acento:#7FB3B0;--rubrica:#E07A5F;--dorado:#D9B26A;--bien:#7FC9A0;--mal:#E07A5F;--sobre-acento:#17120D;--sombra:0,0,0;
+}}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--texto);font:400 17px/1.55 var(--sans)}
+img,svg{max-width:100%;height:auto}
+h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.12;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.1rem,8.5vw,3.6rem);letter-spacing:-.01em}
+h2{font-size:clamp(1.6rem,6vw,2.4rem)}
+h3{font-size:1.3rem}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--acento);outline-offset:3px;border-radius:4px}
+.saltar{position:absolute;left:-999px}
+.saltar:focus{left:12px;top:12px;z-index:9;background:var(--sup);padding:8px 12px}
+.enlace{color:var(--acento);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.antetitulo{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--rubrica);margin-bottom:8px}
+.antetitulo .enlace{letter-spacing:.04em;text-transform:none;font-size:.95rem}
+.etiqueta{display:inline-block;vertical-align:middle;font:600 .68rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--suave);border:1px solid var(--borde-fuerte);border-radius:999px;padding:4px 8px}
+.formula{font-family:var(--serif);font-size:1.2rem;line-height:1.5;font-variant-numeric:lining-nums}
+.subtitulo{color:var(--suave);font-size:1.1rem;margin:-8px 0 22px}
+
+/* Botón principal: uno por pantalla */
+.boton{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:12px 26px;border-radius:999px;
+  background:var(--rubrica);color:var(--sobre-acento);font:600 1.05rem/1.2 var(--sans);text-decoration:none;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--rubrica) 70%,#000);transition:transform .12s,box-shadow .12s}
+.boton:hover{transform:translateY(-1px)}
+.boton:active{transform:translateY(2px);box-shadow:0 1px 0 color-mix(in srgb,var(--rubrica) 70%,#000)}
+
+/* ---------- sección: encabezado ---------- */
+.encabezado{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--ancho);margin:0 auto;padding:12px 20px}
+.encabezado__logo{display:block;line-height:0}
+.encabezado__logo img{height:38px;width:auto}
+/* Sobre el mundo de la portada: flota encima del cielo */
+.encabezado--mundo{position:absolute;inset:0 0 auto 0;z-index:6}
+.encabezado--mundo .enlace{color:#F6E7C6}
+
+/* ---------- Secciones ---------- */
+.seccion{max-width:var(--ancho);margin:0 auto;padding:44px 20px}
+.seccion>h2,.seccion>h1{margin-bottom:20px}
+.seccion+.seccion{border-top:1px solid var(--borde)}
+
+/* ---------- sección: mundo (portada: paisaje en pixel art) ----------
+   El paisaje lo pinta assets/js/paisaje.js en canvas pequeños que aquí se amplían sin suavizar.
+   Parallax: el JS solo escribe --mx, --my (puntero o giroscopio, de -1 a 1) y --sy (scroll en px);
+   cada capa trae su profundidad en --p (px) y --q (factor de scroll). */
+.mundo{--px:2px;position:relative;height:100vh;height:100svh;min-height:600px;max-height:1000px;overflow:hidden;isolation:isolate;
+  background:linear-gradient(#213C4B,#44697A 14%,#A3868C 24%,#EBA868 30%,#EFCB94 32%,#84995C 46%,#325E58 70%,#1A383C)}
+.mundo__capa{position:absolute;inset:0;pointer-events:none;
+  transform:translate3d(calc(var(--mx,0)*var(--p,0)*1px),calc(var(--my,0)*var(--p,0)*.5px + var(--sy,0)*var(--q,0)*1px),0)}
+.mundo canvas{position:absolute;top:0;left:0;max-width:none;image-rendering:pixelated;image-rendering:crisp-edges;image-rendering:pixelated;opacity:0;transition:opacity .5s}
+.mundo--listo canvas{opacity:1}
+.sp{position:absolute;display:block;width:calc(var(--w)*var(--px));max-width:none;height:auto;overflow:visible}
+.sp--dragon{top:13%;left:0}
+.sp--aves{top:22%;left:0}
+.dragon__2,.dragon__3,.dragon__4,.ave__b,.gatos__cola-b{opacity:0}
+
+/* Gatos (easter egg discreto): sentados de espaldas en el primer plano; al tocarlos sueltan corazones */
+.gatos{position:absolute;left:50%;top:80%;width:68px;padding:0;border:0;background:none;line-height:0;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+.gatos::before{content:"";position:absolute;inset:-10px}
+.gatos>svg:first-of-type{display:block;width:100%;height:auto;overflow:visible}
+.gatos .corazon{position:absolute;left:50%;top:-8px;width:calc(var(--px)*7);height:auto;margin-left:calc(var(--px)*-3.5);pointer-events:none;fill:#E0503F}
+
+@media (prefers-reduced-motion:no-preference){
+  .mundo__capa{will-change:transform}
+  .dragon__1{animation:pose4 1.8s steps(1) infinite}
+  .dragon__2{animation:pose4 1.8s steps(1) infinite -1.35s}
+  .dragon__3{animation:pose4 1.8s steps(1) infinite -.9s}
+  .dragon__4{animation:pose4 1.8s steps(1) infinite -.45s}
+  .ave__a{animation:cola .5s steps(1) infinite}
+  .ave__b{animation:cola-b .5s steps(1) infinite}
+  .gatos__cabeza{animation:respira 3.6s ease-in-out infinite}
+  .gatos__cola-a{animation:cola 2.6s steps(1) infinite}
+  .gatos__cola-b{animation:cola-b 2.6s steps(1) infinite}
+  .corazon{animation:corazon 1.3s ease-out forwards}
+}
+@keyframes dragon{from{transform:translate(-14vw,10px)}50%{transform:translate(48vw,-14px)}to{transform:translate(112vw,6px)}}
+@keyframes aves{from{transform:translate(108vw,0)}to{transform:translate(-20vw,-30px)}}
+@keyframes pose4{0%,24.9%{opacity:1}25%,100%{opacity:0}}
+@keyframes respira{0%,100%{transform:translateY(0)}50%{transform:translateY(.5px)}}
+@keyframes cola{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes cola-b{0%,49%{opacity:0}50%,100%{opacity:1}}
+@keyframes corazon{0%{opacity:0;transform:translate(0,4px) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx,0),-46px) scale(1)}}
+
+/* Transición: el pixel se disuelve en el papel del códice */
+.mundo__disolver{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:64px;max-width:none;z-index:3;pointer-events:none;fill:var(--bg)}
+
+/* Placa: tarjeta limpia de papel fino, con sombra suave (colores fijos: siempre legible sobre el paisaje) */
+.placa{position:absolute;left:50%;bottom:calc(17% + 44px);transform:translateX(-50%);z-index:4;width:min(calc(100% - 36px),440px);
+  padding:22px 20px 20px;text-align:center;background:#FFFCF6;color:#2E2117;border-radius:18px;border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 2px 4px rgba(20,32,40,.18),0 18px 40px -12px rgba(16,30,38,.55)}
+.placa h1{font-size:clamp(1.7rem,7.2vw,2.7rem);max-width:15ch;margin:0 auto}
+.placa__sub{color:#6B5540;font-size:1rem;line-height:1.4;max-width:32ch;margin:10px auto 0}
+.placa__nota{margin-top:10px;font-size:.84rem;color:#77634F}
+.placa .boton{margin-top:16px;background:#A5352A;color:#fff;box-shadow:0 3px 0 #6E1F17}
+
+/* ---------- sección: reto ---------- */
+.reto{text-align:center}
+.reto>p{max-width:40ch;margin:0 auto}
+.reto__figura{display:block;width:min(100%,360px);margin:0 auto 12px}
+.f-piso,.f-linea,.f-cota,.f-flecha{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.f-piso{stroke:var(--borde-fuerte);stroke-width:2}
+.f-rampa{fill:var(--sup);stroke:none}
+.f-linea{stroke:var(--texto);stroke-width:2.5}
+.f-cota{stroke:var(--dorado);stroke-width:1.5}
+.f-flecha{stroke:var(--acento);stroke-width:3}
+.f-esquiador{fill:var(--rubrica)}
+.f-texto{fill:var(--dorado);font:500 15px var(--serif)}
+.f-texto--v{fill:var(--acento);font-size:18px;font-style:italic}
+.reto__opciones{display:grid;gap:10px;max-width:420px;margin:20px auto 0}
+.opcion{min-height:52px;padding:10px 16px;border:1.5px solid var(--borde-fuerte);border-radius:12px;background:var(--sup);color:var(--texto);
+  font:500 1.25rem/1.2 var(--serif);font-variant-numeric:lining-nums;cursor:pointer;box-shadow:0 3px 0 var(--borde-fuerte)}
+.opcion:hover:not(:disabled){border-color:var(--acento)}
+.opcion:disabled{cursor:default;opacity:.6}
+.opcion.es-correcta{border-color:var(--bien);color:var(--bien);opacity:1;box-shadow:inset 0 0 0 1.5px var(--bien)}
+.opcion.es-error{border-color:var(--mal);color:var(--mal);opacity:1}
+.reto__respuesta{max-width:440px;margin:20px auto 0;padding:18px;border-radius:14px;background:var(--sup);border:1px solid var(--borde);text-align:left}
+.reto__respuesta[hidden]{display:none}
+.reto__respuesta>p+p{margin-top:10px}
+.reto__nota{font-weight:600;color:var(--acento)}
+
+/* ---------- sección: qué es (bloques con figura) ---------- */
+.bloques{display:grid;gap:28px}
+.bloque h3{margin:14px 0 6px}
+.bloque p{color:var(--suave)}
+.bloque__figura,.tarjeta__figura{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;overflow:hidden;
+  background:var(--papel);border:1px solid var(--borde);border-radius:12px}
+.bloque__figura{box-shadow:0 2px 0 var(--borde-fuerte),0 16px 24px -16px rgba(var(--sombra),.4)}
+.bloque__figura img,.tarjeta__figura img{width:100%;height:100%;object-fit:contain}
+
+/* ---------- Tarjetas de lámina: se inclinan y tienen sombra con volumen ---------- */
+.rejilla{display:grid;gap:20px;grid-template-columns:1fr}
+.tarjeta{display:block;height:100%;text-decoration:none;background:var(--sup);border:1px solid var(--borde);border-radius:14px;padding:8px;
+  transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px));transform-style:preserve-3d;
+  box-shadow:0 2px 0 var(--borde-fuerte),0 4px 0 var(--borde),0 14px 20px -12px rgba(var(--sombra),.35);
+  transition:transform .25s cubic-bezier(.3,.7,.2,1),box-shadow .25s,border-color .25s}
+.tarjeta:hover,.tarjeta:focus-visible{--rx:3deg;--ry:-4deg;--ty:-6px;border-color:var(--acento);
+  box-shadow:0 2px 0 var(--borde-fuerte),0 5px 0 var(--borde),0 30px 34px -18px rgba(var(--sombra),.5)}
+.tarjeta:active{--ty:-2px}
+.tarjeta__figura{border-radius:8px;transform:translateZ(18px)}
+.tarjeta__texto{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:baseline;padding:10px 6px 6px}
+.tarjeta__num{grid-row:span 2;font:italic 400 1.2rem var(--serif);color:var(--rubrica);font-variant-numeric:lining-nums}
+.tarjeta__titulo{font:500 1.2rem/1.2 var(--serif)}
+.tarjeta__sub{font-size:.88rem;color:var(--suave)}
+
+/* ---------- sección: cómo funciona ---------- */
+.pasos{display:grid;gap:14px;counter-reset:paso}
+.paso{counter-increment:paso;position:relative;padding:18px 18px 18px 64px;background:var(--sup);border:1px solid var(--borde);border-radius:14px;
+  box-shadow:0 2px 0 var(--borde-fuerte),0 12px 18px -14px rgba(var(--sombra),.35)}
+.paso::before{content:counter(paso);position:absolute;left:18px;top:14px;width:32px;height:32px;border-radius:50%;
+  display:grid;place-items:center;font:500 1.15rem var(--serif);font-variant-numeric:lining-nums;color:var(--rubrica);border:1.5px solid var(--rubrica)}
+.paso h3{margin-bottom:4px}
+.paso p{color:var(--suave)}
+
+/* ---------- Estante con libros en 3D (CSS 3D, sin librerías) ---------- */
+.estanteria{text-align:center}
+.estante{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:clamp(14px,5vw,56px);
+  margin:44px auto 40px;padding:0 10px 0;max-width:720px;perspective:1100px;perspective-origin:50% 10%}
+/* Tabla de madera: cara de arriba + canto */
+.estante::before,.estante::after{content:"";position:absolute;left:0;right:0;border-radius:3px}
+.estante::before{bottom:-6px;height:26px;z-index:-1;background:linear-gradient(#B58355,#9A6B42)}
+.estante::after{bottom:-24px;height:18px;background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.07) 46px 48px),linear-gradient(#855A36,#6B4527);
+  box-shadow:0 5px 0 #4E321C,0 22px 26px -10px rgba(var(--sombra),.5)}
+.estante li{position:relative;z-index:1}
+.libro3d{--w:clamp(84px,24vw,156px);--h:calc(var(--w)*1.42);--d:calc(var(--w)*.26);--tapa:#A5352A;--tapa2:#7A241C;--tinta:#FFFCF6;--filete:#E6C27A;
+  position:relative;display:block;width:var(--w);height:var(--h);padding:0;border:0;background:none;text-decoration:none;color:var(--tinta);
+  transform-style:preserve-3d;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.libro3d__sombra{position:absolute;left:-18%;right:-30%;bottom:-7px;height:16px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,0,0,.42),transparent);transform:translateZ(calc(var(--d)*-1))}
+.libro3d__cuerpo{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(27deg);transform-origin:50% 100%;transition:transform .5s cubic-bezier(.3,.7,.2,1)}
+.libro3d__cuerpo>*{position:absolute;display:block}
+.libro3d__contra{inset:0;background:var(--tapa2);border-radius:2px 5px 5px 2px;transform:translateZ(calc(var(--d)/-2))}
+.libro3d__lomo{left:0;top:0;width:var(--d);height:100%;background:linear-gradient(90deg,var(--tapa2),var(--tapa) 45%,var(--tapa2));
+  transform:translateX(calc(var(--d)/-2)) rotateY(-90deg);display:flex;align-items:center;justify-content:center;overflow:hidden;
+  box-shadow:inset 0 calc(var(--h)*.08) 0 calc(var(--h)*-.06) var(--filete),inset 0 calc(var(--h)*-.08) 0 calc(var(--h)*-.06) var(--filete)}
+.libro3d__lomo span{writing-mode:vertical-rl;transform:rotate(180deg);font:500 calc(var(--d)*.42)/1 var(--serif);letter-spacing:.06em;white-space:nowrap;color:var(--filete)}
+.libro3d__hojas{right:0;top:3px;width:var(--d);height:calc(100% - 6px);transform:translateX(calc(var(--d)/2 - 4px)) rotateY(90deg);
+  background:repeating-linear-gradient(90deg,#F6ECD4 0 2px,#DCCDAA 2px 3px)}
+.libro3d__canto{left:0;top:0;width:calc(100% - 4px);height:var(--d);transform:translateY(calc(var(--d)/-2 + 3px)) rotateX(90deg);
+  background:repeating-linear-gradient(0deg,#F6ECD4 0 2px,#DCCDAA 2px 3px)}
+.libro3d__pagina{inset:3px 4px 3px 0;background:#FBF4E2;color:#2E2117;transform:translateZ(calc(var(--d)/2 - 1px));
+  display:flex;flex-direction:column;justify-content:center;gap:6%;padding:10% 10% 10% 16%;text-align:left;font:italic 400 calc(var(--w)*.1)/1.2 var(--serif);
+  box-shadow:inset 8px 0 10px -6px rgba(0,0,0,.25)}
+.libro3d__pagina i{display:block;height:2px;background:#D8C9A8;border-radius:1px}
+.libro3d__pagina i:nth-of-type(2n){width:70%}
+.libro3d__portada{inset:0;transform:translateZ(calc(var(--d)/2));transform-origin:0 50%;transition:transform .5s cubic-bezier(.3,.7,.2,1);
+  background:linear-gradient(100deg,var(--tapa2) 0 5%,var(--tapa) 9%);border-radius:2px 5px 5px 2px;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4%;padding:9% 8% 9% 13%;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.libro3d__portada::after{content:"";position:absolute;inset:5% 5% 5% 10%;border:1px solid var(--filete);border-radius:3px;opacity:.8;pointer-events:none}
+.libro3d__figura{width:100%;aspect-ratio:1/1;background:#F6F1E6;border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px var(--filete)}
+.libro3d__figura img{width:100%;height:100%;object-fit:contain;display:block}
+.libro3d__titulo{font:500 calc(var(--w)*.17)/1.05 var(--serif)}
+.libro3d__examen{font:600 calc(var(--w)*.075)/1 var(--sans);letter-spacing:.2em;text-indent:.2em}
+.libro3d__dato{font:400 calc(var(--w)*.075)/1 var(--sans);opacity:.85}
+/* Al pasar el mouse, tocar o enfocar: se inclina y se asoma la primera página */
+.libro3d:hover .libro3d__cuerpo,.libro3d:focus-visible .libro3d__cuerpo,.libro3d:active .libro3d__cuerpo,.libro3d.es-abierto .libro3d__cuerpo{transform:rotateY(8deg) rotateX(5deg) rotateZ(-2deg) translateY(-6px)}
+.libro3d:hover .libro3d__portada,.libro3d:focus-visible .libro3d__portada,.libro3d:active .libro3d__portada,.libro3d.es-abierto .libro3d__portada{transform:translateZ(calc(var(--d)/2)) rotateY(-46deg)}
+/* Próximamente: listón y candado */
+.libro3d--pronto{--tapa:#2F5F63;--tapa2:#1F4347;--filete:#C9B27A;cursor:default}
+.libro3d--historia{--tapa:#5A3A48;--tapa2:#3F2733}
+.libro3d--pronto:hover .libro3d__portada,.libro3d--pronto:focus-visible .libro3d__portada,.libro3d--pronto:active .libro3d__portada,.libro3d--pronto.es-abierto .libro3d__portada{transform:translateZ(calc(var(--d)/2)) rotateY(-22deg)}
+.libro3d__candado{width:26%;height:auto;fill:var(--filete)}
+.libro3d__liston{position:absolute;left:-25%;right:-25%;top:13%;transform:rotate(-16deg);padding:4% 0;background:#D9B26A;color:#2E2117;
+  font:700 calc(var(--w)*.062)/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+
+/* ---------- sección: cierre ---------- */
+.cierre{text-align:center}
+
+
+/* ---------- Pantallas anchas ---------- */
+@media (min-width:640px){
+  .rejilla{grid-template-columns:repeat(2,1fr)}
+  .bloques{grid-template-columns:repeat(3,1fr)}
+  .pasos{grid-template-columns:repeat(2,1fr)}
+  .reto__opciones{grid-template-columns:repeat(3,1fr)}
+  .seccion{padding-top:64px;padding-bottom:64px}
+  .encabezado__logo img{height:46px}
+}
+@media (min-width:800px){
+  .placa{left:max(6%,calc(50% - 560px));bottom:auto;top:52%;transform:translateY(-50%);width:430px;padding:34px 34px 30px;text-align:left}
+  .placa h1,.placa__sub{margin-left:0}
+  .sp--dragon{top:16%}
+}
+@media (min-width:960px){
+  .rejilla{grid-template-columns:repeat(3,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .boton,.tarjeta,.libro3d__cuerpo,.libro3d__portada,.mundo canvas{transition:none}
+  .tarjeta:hover,.tarjeta:focus-visible{--rx:0deg;--ry:0deg;--ty:0px}
+}
+
+/* =====================================================================
+   Fase 3: página de venta, biblioteca, adornos de códice y pie completo
+   ===================================================================== */
+.oculto{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.pix{display:block;image-rendering:pixelated;max-width:none}
+
+/* Papel con textura sutil (solo CSS: dos tramas de fibras muy tenues) */
+body{background-image:radial-gradient(rgba(var(--fibra),.07) 1px,transparent 1.3px),radial-gradient(rgba(var(--fibra),.045) 1px,transparent 1.3px);
+  background-size:7px 7px,13px 11px;background-position:0 0,4px 6px;--fibra:120,90,50}
+@media (prefers-color-scheme:dark){body{--fibra:255,220,170}}
+
+/* Separador ornamental tipo códice (greca); el SVG es una máscara: toma el color del tema */
+.seccion+.seccion{border-top:0}
+.ornamento{height:18px;margin:0 auto 34px;background:var(--dorado);opacity:.9;
+  -webkit-mask:url(../img/ornamento.svg) center/auto 18px no-repeat;mask:url(../img/ornamento.svg) center/auto 18px no-repeat}
+
+/* Marco con esquinas de pixel */
+.marco{--e:var(--dorado);position:relative;padding:30px 18px;border-radius:4px;background-color:var(--sup);border:1px solid var(--borde);
+  box-shadow:0 2px 0 var(--borde-fuerte),0 18px 28px -18px rgba(var(--sombra),.4);
+  background-image:linear-gradient(var(--e),var(--e)),linear-gradient(var(--e),var(--e)),linear-gradient(var(--e),var(--e)),linear-gradient(var(--e),var(--e)),linear-gradient(var(--e),var(--e)),linear-gradient(var(--e),var(--e)),linear-gradient(var(--e),var(--e)),linear-gradient(var(--e),var(--e)),
+    linear-gradient(var(--rubrica),var(--rubrica)),linear-gradient(var(--rubrica),var(--rubrica)),linear-gradient(var(--rubrica),var(--rubrica)),linear-gradient(var(--rubrica),var(--rubrica));
+  background-repeat:no-repeat;
+  background-size:18px 3px,3px 18px,18px 3px,3px 18px,18px 3px,3px 18px,18px 3px,3px 18px,3px 3px,3px 3px,3px 3px,3px 3px;
+  background-position:6px 6px,6px 6px,calc(100% - 6px) 6px,calc(100% - 6px) 6px,6px calc(100% - 6px),6px calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),
+    12px 12px,calc(100% - 12px) 12px,12px calc(100% - 12px),calc(100% - 12px) calc(100% - 12px)}
+
+/* Capitular y viñetas */
+.capitular{max-width:60ch;margin:-4px 0 26px;font:400 1.3rem/1.45 var(--serif);color:var(--texto)}
+.capitular::first-letter{float:left;margin:4px 10px 0 0;padding:6px 10px 4px;font:500 2.6rem/1 var(--serif);color:#FFFCF6;background:#A5352A;
+  box-shadow:3px 3px 0 #7A241C,inset 0 0 0 2px #A5352A,inset 0 0 0 3px #E6C27A}
+.bloque__figura,.tarjeta__figura{position:relative}
+.vineta{position:absolute;left:8px;top:8px;z-index:1;min-width:28px;padding:3px 6px;text-align:center;font:italic 500 1rem/1.2 var(--serif);color:#FFFCF6;background:#A5352A;box-shadow:2px 2px 0 #7A241C}
+
+/* Sellos en las tarjetas: muestra gratis / candado sutil */
+.tarjeta__sello{position:absolute;left:6px;top:6px;z-index:1;padding:5px 8px;font:700 .64rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:#2F6F73;box-shadow:2px 2px 0 #1F4E52}
+.tarjeta__sello--candado{left:auto;right:6px;padding:5px;background:rgba(46,33,23,.72);box-shadow:none;border-radius:4px}
+.tarjeta__candado{display:block;width:11px;height:auto;fill:#E6C27A}
+.tarjeta--pago .tarjeta__figura img{filter:saturate(.75)}
+.tarjeta--pago:hover .tarjeta__figura img{filter:none}
+
+/* Botón secundario */
+.boton--sec{background:var(--sup);color:var(--acento);box-shadow:inset 0 0 0 1.5px var(--acento),0 3px 0 var(--borde-fuerte);gap:10px}
+.boton--sec .pix{width:11px;height:auto;fill:currentColor}
+
+/* ---------- sección: venta ---------- */
+.venta{display:grid;gap:8px;max-width:var(--ancho);margin:0 auto;padding:8px 20px 44px;text-align:center;justify-items:center}
+.venta__texto{max-width:34rem}
+.venta h1{font-size:clamp(2.6rem,11vw,4.4rem)}
+.venta__promesa{margin-top:12px;font:400 1.3rem/1.4 var(--serif);color:var(--texto)}
+.venta__precio{margin:18px 0 16px;font-size:.95rem;color:var(--suave)}
+.venta__precio strong{font:500 1.35rem/1 var(--serif);color:var(--rubrica)}
+.venta__nota{margin-top:16px;font-size:.95rem}
+.cierre .venta__precio{margin:-8px 0 0}
+
+/* ---------- sección: qué incluye ---------- */
+.incluye{display:grid;gap:14px}
+.incluye__item{display:flex;gap:14px;align-items:flex-start;padding:16px;background:var(--sup);border:1px solid var(--borde);border-radius:14px;
+  box-shadow:0 2px 0 var(--borde-fuerte),0 12px 18px -14px rgba(var(--sombra),.35)}
+.incluye__icono{flex:none;display:grid;place-items:center;width:60px;height:60px;background:#F6F1E6;border-radius:6px;box-shadow:inset 0 0 0 2px #E5DACA,3px 3px 0 var(--borde-fuerte)}
+.pix--icono{width:48px;height:48px}
+.incluye__item h3{font-size:1.2rem;margin-bottom:2px}
+.incluye__item p{color:var(--suave);font-size:.95rem}
+
+/* ---------- Acordeones (capítulos y preguntas): <details>, sin JS ---------- */
+.capitulo,.faq__item{background:var(--sup);border:1px solid var(--borde);border-radius:14px;box-shadow:0 2px 0 var(--borde-fuerte)}
+.capitulo+.capitulo,.faq__item+.faq__item{margin-top:12px}
+.capitulo>summary,.faq__item>summary{display:flex;align-items:center;gap:12px;min-height:60px;padding:12px 16px;cursor:pointer;list-style:none;font:500 1.3rem/1.2 var(--serif)}
+.capitulo>summary::-webkit-details-marker,.faq__item>summary::-webkit-details-marker{display:none}
+.capitulo>summary::after,.faq__item>summary::after{content:"";flex:none;width:10px;height:10px;margin:-4px 4px 0 auto;border-right:2px solid var(--rubrica);border-bottom:2px solid var(--rubrica);transform:rotate(45deg);transition:transform .2s}
+.capitulo[open]>summary::after,.faq__item[open]>summary::after{transform:rotate(-135deg);margin-top:6px}
+.capitulo__num{flex:none;min-width:34px;padding:5px 6px;text-align:center;font:italic 500 1rem/1 var(--serif);color:#FFFCF6;background:#A5352A;box-shadow:2px 2px 0 #7A241C}
+.capitulo__cuenta{font:400 .85rem/1 var(--sans);color:var(--suave)}
+.capitulo>.rejilla{padding:6px 14px 18px}
+.capitulo .tarjeta{background:var(--bg)}
+.faq{max-width:44rem}
+.faq__item>summary{font-size:1.2rem}
+.faq__item>p{padding:0 16px 18px;color:var(--suave)}
+
+/* ---------- sección: así se ve por dentro ---------- */
+.visor{max-width:860px;margin:0 auto;border:1px solid var(--borde-fuerte);border-radius:16px;overflow:hidden;background:var(--papel);
+  box-shadow:0 3px 0 var(--borde-fuerte),0 26px 40px -24px rgba(var(--sombra),.55)}
+.visor__poster{position:relative;display:grid;place-items:center;min-height:300px}
+.visor__poster img{width:100%;height:auto;display:block;opacity:.9}
+.visor__boton{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);white-space:nowrap}
+.visor__boton:hover,.visor__boton:active{transform:translateX(-50%)}
+.visor iframe{display:block;width:100%;height:min(86vh,760px);border:0;background:#F6F1E6}
+
+/* ---------- sección: video (espacio reservado) ---------- */
+.video{display:grid;place-items:center;align-content:center;gap:16px;width:min(100%,300px);aspect-ratio:9/16;margin:0 auto;border-radius:18px;color:#F6E7C6;
+  background:linear-gradient(#213C4B,#44697A 38%,#A3868C 58%,#EBA868 72%,#447058 72%,#1A383C);box-shadow:0 3px 0 var(--borde-fuerte),0 26px 40px -24px rgba(var(--sombra),.6);overflow:hidden}
+.video__play{display:grid;place-items:center;width:72px;height:72px;background:#FFFCF6;border-radius:50%;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.video__play .pix{width:22px;height:auto;margin-left:5px;fill:#A5352A}
+.video .etiqueta{color:#2E2117;background:#FFFCF6;border-color:transparent}
+
+/* ---------- Estantes de madera con más detalle ---------- */
+.mueble{position:relative;max-width:760px;margin:36px auto 44px;padding:26px 14px 30px;border-radius:8px 8px 4px 4px;
+  background:repeating-linear-gradient(90deg,rgba(0,0,0,.09) 0 2px,transparent 2px 58px),repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 5px),linear-gradient(#4E3222,#3B2519);
+  box-shadow:inset 0 0 0 6px #6B4527,inset 0 0 0 8px #3A2418,inset 0 26px 30px -14px rgba(0,0,0,.55),0 4px 0 #2B1A12,0 30px 40px -22px rgba(var(--sombra),.7)}
+.mueble .estante{margin:0 auto 30px;max-width:none}
+.mueble .estante:last-child{margin-bottom:0}
+.estante{align-items:flex-end;gap:clamp(8px,3.4vw,40px)}
+.estante::before{background:repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 1px,transparent 1px 37px),linear-gradient(#C08D5C,#A27147)}
+.estante::after{background:repeating-linear-gradient(90deg,transparent 0 61px,rgba(0,0,0,.14) 61px 63px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 4px),linear-gradient(#8E6038,#6B4527)}
+.estante__libro{position:relative;display:block}
+.estante__adorno{position:relative;z-index:1;flex:none;align-self:flex-end;display:block;margin-bottom:-2px}
+.pix--planta{width:42px;height:auto}
+.pix--vela{width:21px;height:auto;overflow:visible}
+.vela__b{opacity:0}
+/* Rótulo de latón en el canto del estante */
+.estante__rotulo{position:absolute;left:50%;bottom:-22px;z-index:2;transform:translateX(-50%);padding:3px 7px;white-space:nowrap;font:700 clamp(.5rem,2.1vw,.62rem)/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;
+  color:#4A3520;background:linear-gradient(#EBD08A,#C9A85B);box-shadow:0 0 0 1px #7A5A2C,0 1px 0 1px rgba(0,0,0,.3)}
+.estante__rotulo--si{color:#fff;background:linear-gradient(#3C8A7E,#2F6F73);box-shadow:0 0 0 1px #1F4E52,0 1px 0 1px rgba(0,0,0,.3)}
+.mueble .estante:not(.estante--vacio)>.estante__adorno{display:none}
+.estante--vacio{min-height:74px;justify-content:space-between;padding:0 18px}
+.estante__nota{align-self:center;font:italic 400 1rem/1.2 var(--serif);color:#D9C29A;opacity:.8}
+/* Venta: un solo libro, grande, sobre su repisa */
+.estante--uno{margin:26px auto 54px;max-width:420px;justify-content:center;gap:18px;padding:0 16px}
+.libro3d--grande{--w:clamp(150px,46vw,220px)}
+.libro3d--gira{cursor:default}
+.venta .estante--uno{margin-top:38px}
+
+/* ---------- sección: sala (escena interior de la biblioteca) ---------- */
+.sala{position:relative;height:52vh;height:52svh;min-height:300px;max-height:480px;overflow:hidden;background:linear-gradient(#33283A,#644A44 40%,#8A6450 62%,#523326 76%,#3A2420)}
+.sala canvas{position:absolute;left:0;top:0;max-width:none;image-rendering:pixelated;opacity:0;transition:opacity .5s}
+.sala--lista canvas{opacity:1}
+.sala+.seccion{padding-top:20px}
+.sala::before{content:"";position:absolute;inset:0 0 auto 0;height:84px;z-index:1;background:linear-gradient(rgba(24,14,22,.72),transparent);pointer-events:none}
+.sala .mundo__disolver{height:44px}
+
+/* ---------- sección: pie completo ---------- */
+.pie{margin-top:30px;padding:0;border-top:0;text-align:left;font-size:.95rem;color:var(--suave);background:var(--sup);box-shadow:0 -1px 0 var(--borde),inset 0 4px 0 var(--bg),inset 0 5px 0 var(--borde-fuerte)}
+.pie__dentro{display:grid;gap:22px;max-width:var(--ancho);margin:0 auto;padding:38px 20px 34px;justify-items:center;text-align:center}
+.pie__logo{display:block;line-height:0}
+.pie__logo img{height:40px;width:auto}
+.pie__enlaces{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px}
+.pie__enlaces a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;color:var(--texto);text-decoration:none;border-radius:8px}
+.pie__enlaces a:hover{color:var(--acento);text-decoration:underline;text-underline-offset:3px}
+.pie__firma{display:grid;justify-items:center;gap:6px}
+.dormidos{width:102px;height:auto;overflow:visible}
+.dormidos__z{opacity:0}
+
+@media (prefers-reduced-motion:no-preference){
+  .libro3d--gira .libro3d__cuerpo{animation:gira 7s ease-in-out infinite alternate}
+  .libro3d--gira:hover .libro3d__cuerpo{animation-play-state:paused}
+  .vela__a{animation:cola .36s steps(1) infinite}
+  .vela__b{animation:cola-b .36s steps(1) infinite}
+  .vela__luz{animation:titila 1.7s steps(3) infinite}
+  .dormidos__gato{transform-box:fill-box;transform-origin:50% 100%;animation:ronca 3.8s ease-in-out infinite}
+  .dormidos__gato--b{animation-delay:-1.6s}
+  .dormidos__z{animation:zeta 3.8s ease-out infinite}
+  .dormidos__z--b{animation-delay:-1.9s}
+}
+@keyframes gira{from{transform:rotateY(14deg)}to{transform:rotateY(44deg) rotateX(2deg)}}
+@keyframes titila{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes ronca{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.06)}}
+@keyframes zeta{0%{opacity:0;transform:translate(0,2px)}30%{opacity:.8}100%{opacity:0;transform:translate(2px,-4px)}}
+
+@media (min-width:640px){
+  .incluye{grid-template-columns:repeat(2,1fr)}
+  .marco{padding:44px 40px}
+  .mueble .estante:not(.estante--vacio)>.estante__adorno{display:block}
+  .pix--planta{width:56px}
+  .pix--vela{width:28px}
+}
+@media (min-width:800px){
+  .venta{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:center;gap:30px;padding:30px 20px 70px;text-align:left;justify-items:stretch}
+  .venta__libro{order:0}
+  .pie__dentro{grid-template-columns:auto 1fr auto;align-items:center;justify-items:start;text-align:left}
+  .pie__enlaces{justify-content:center;justify-self:center}
+}
+@media (prefers-reduced-motion:reduce){
+  .sala canvas,.capitulo>summary::after,.faq__item>summary::after{transition:none}
+}
+
+/* =====================================================================
+   Zona de compra (libros/fisica-unam/): e-commerce moderno con escena 3D.
+   Todo cuelga de body.tienda para no tocar la portada ni la biblioteca.
+   ===================================================================== */
+.tienda{background-image:none;--radio:20px;--suave-1:0 1px 2px rgba(var(--sombra),.08),0 14px 34px -16px rgba(var(--sombra),.28);--suave-2:0 2px 4px rgba(var(--sombra),.1),0 26px 50px -20px rgba(var(--sombra),.38)}
+.tienda main{overflow-x:clip}
+.boton--ancho{width:100%}
+.lin{flex:none;width:24px;height:24px}
+.precio{display:grid;gap:2px;margin:0}
+.precio__etq{font:600 .72rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.precio__valor{font:500 clamp(2rem,8vw,2.7rem)/1.05 var(--serif);color:var(--texto)}
+
+/* Encabezado de producto */
+.producto{display:grid;gap:22px;max-width:1180px;margin:0 auto;padding:4px 20px 40px}
+.producto__escena{position:relative;aspect-ratio:1/1;width:100%;max-width:560px;margin:0 auto;border-radius:28px;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 18%,var(--sup),transparent 62%),linear-gradient(var(--sup),color-mix(in srgb,var(--borde) 70%,var(--bg)));box-shadow:inset 0 0 0 1px var(--borde)}
+.producto__fija,.producto__lienzo{position:absolute;inset:0;width:100%;height:100%;display:block}
+.producto__fija{object-fit:contain;transition:opacity .5s}
+.producto__lienzo{opacity:0;transition:opacity .5s;touch-action:pan-y;cursor:grab;outline:0}
+.es-3d .producto__lienzo{opacity:1}
+.es-3d .producto__fija{opacity:0}
+.es-arrastre .producto__lienzo{cursor:grabbing}
+.producto__pista{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);padding:6px 12px;border-radius:999px;font:500 .78rem/1 var(--sans);color:var(--suave);background:color-mix(in srgb,var(--sup) 82%,transparent);box-shadow:0 0 0 1px var(--borde);opacity:0;transition:opacity .4s;pointer-events:none}
+.es-3d .producto__pista{opacity:1}
+.es-arrastre .producto__pista{opacity:0}
+
+.producto__panel{display:grid;gap:18px;align-content:start}
+.migas{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.9rem;color:var(--suave)}
+.migas a{color:var(--suave);text-underline-offset:3px}
+.migas a:hover{color:var(--acento)}
+.migas [aria-current]{color:var(--texto)}
+.producto h1{font-size:clamp(2.8rem,12vw,4.6rem);line-height:1;letter-spacing:-.02em}
+.producto__sub{margin-top:-8px;font:400 1.3rem/1.35 var(--serif);color:var(--suave);max-width:26ch}
+.formato{margin:0;padding:0;border:0;display:flex;flex-wrap:wrap;gap:8px}
+.formato legend{padding:0;margin-bottom:8px;font:600 .72rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.chip{position:relative;display:inline-flex;cursor:pointer}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:inherit}
+.chip span{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 16px;border-radius:999px;font:500 .95rem/1.2 var(--sans);color:var(--texto);background:var(--sup);box-shadow:inset 0 0 0 1.5px var(--borde-fuerte);transition:box-shadow .15s,background .15s}
+.chip input:checked+span{box-shadow:inset 0 0 0 2px var(--acento);background:color-mix(in srgb,var(--acento) 9%,var(--sup))}
+.chip input:focus-visible+span{outline:3px solid var(--acento);outline-offset:3px}
+.chip--pronto{cursor:not-allowed}
+.chip--pronto span{color:var(--suave);background:transparent;box-shadow:inset 0 0 0 1.5px var(--borde)}
+.chip small{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.producto__botones{display:grid;gap:10px}
+.tienda .boton{min-height:56px;border-radius:16px;font-size:1.08rem;transition:transform .15s,box-shadow .15s,filter .15s}
+.tienda .boton:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.tienda .boton--sec{box-shadow:inset 0 0 0 1.5px var(--borde-fuerte);color:var(--texto)}
+.tienda .boton--sec:hover{box-shadow:inset 0 0 0 1.5px var(--acento);color:var(--acento)}
+.ventajas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ventajas li{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--sup);box-shadow:inset 0 0 0 1px var(--borde);font-size:.95rem;color:var(--texto)}
+.ventajas .lin{color:var(--acento)}
+.confianza{font-size:.88rem;color:var(--suave)}
+
+/* Pestañas (anclas) */
+.pestanas{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-block:1px solid var(--borde)}
+.pestanas__dentro{display:flex;gap:6px;max-width:var(--ancho);margin:0 auto;padding:8px 14px;overflow-x:auto;scrollbar-width:none}
+.pestanas__dentro::-webkit-scrollbar{display:none}
+.pestanas a{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;font:500 .95rem/1 var(--sans);color:var(--suave);text-decoration:none;transition:background .15s,color .15s}
+.pestanas a:hover,.pestanas a:focus-visible{background:var(--sup);color:var(--texto)}
+
+/* Apartados limpios, con separadores sobrios */
+.tienda .apartado{padding-top:56px;padding-bottom:56px;scroll-margin-top:60px}
+.tienda .seccion+.seccion{border-top:1px solid var(--borde)}
+.tienda .apartado>h2{font-size:clamp(2rem,7.5vw,3rem);letter-spacing:-.01em;margin-bottom:8px}
+.apartado__sub{margin:36px 0 16px;font:600 .8rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--suave);scroll-margin-top:70px}
+.tienda .tarjeta{border-radius:var(--radio);border-color:transparent;box-shadow:var(--suave-1)}
+.tienda .tarjeta:hover,.tienda .tarjeta:focus-visible{box-shadow:var(--suave-2);border-color:transparent}
+.tienda .tarjeta__figura{border-radius:14px}
+.tienda .tarjeta__sello{border-radius:999px;box-shadow:none;padding:6px 10px}
+.tienda .tarjeta__sello--candado{padding:6px;border-radius:50%}
+.tienda .capitulo,.tienda .faq__item{border-radius:var(--radio);border-color:transparent;box-shadow:var(--suave-1);transition:box-shadow .2s}
+.tienda .capitulo:hover,.tienda .faq__item:hover{box-shadow:var(--suave-2)}
+.tienda .capitulo>summary,.tienda .faq__item>summary{min-height:68px;padding:14px 20px}
+.tienda .capitulo__num{border-radius:10px;box-shadow:none;background:color-mix(in srgb,var(--rubrica) 12%,var(--sup));color:var(--rubrica);font-style:normal}
+.tienda .capitulo .tarjeta{box-shadow:inset 0 0 0 1px var(--borde)}
+.proximos{display:grid;gap:12px}
+.proximos li{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:var(--radio);background:var(--sup);box-shadow:var(--suave-1)}
+.proximos .lin{color:var(--suave)}
+.proximos div{display:grid;gap:2px;flex:1}
+.proximos strong{font:500 1.15rem/1.2 var(--serif)}
+.proximos div span{font-size:.92rem;color:var(--suave)}
+.proximos .etiqueta{flex:none}
+.dentro{display:grid;gap:28px;margin-top:22px}
+.tienda .visor{border-radius:var(--radio);border-color:transparent;box-shadow:var(--suave-2);margin:0}
+.dentro__video{margin:0;display:grid;gap:10px;justify-items:center}
+.dentro__video figcaption{font-size:.92rem;color:var(--suave);text-align:center}
+.tienda .video{border-radius:24px;box-shadow:var(--suave-2);width:min(100%,260px)}
+.tienda .faq{margin-top:22px}
+.cierre-venta{display:grid;gap:8px;justify-items:center;text-align:center;padding:28px 22px 32px;border-radius:28px;background:var(--sup);box-shadow:var(--suave-2)}
+.cierre-venta img{width:min(100%,300px);height:auto}
+.cierre-venta>div{display:grid;gap:16px;justify-items:center}
+.cierre-venta .precio{justify-items:center}
+
+/* Barra fija de compra (celular) */
+.barra-compra{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  background:color-mix(in srgb,var(--sup) 92%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 -1px 0 var(--borde),0 -12px 30px -14px rgba(var(--sombra),.4);
+  transform:translateY(110%);visibility:hidden;transition:transform .28s cubic-bezier(.3,.7,.2,1),visibility 0s .28s}
+.barra-compra.es-visible{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.3,.7,.2,1)}
+.barra-compra .precio__valor{font-size:1.35rem}
+.barra-compra .boton{min-height:48px;padding:10px 24px;flex:none}
+.tienda .pie{padding-bottom:76px}
+
+/* ---------- Ficha de selección (biblioteca): panel lateral / tarjeta deslizante ---------- */
+.ficha{position:fixed;inset:auto 0 0 0;width:100%;max-width:none;max-height:88dvh;margin:0;padding:0;border:0;border-radius:24px 24px 0 0;overflow:auto;color:var(--texto);background:var(--sup);box-shadow:0 -20px 60px -20px rgba(0,0,0,.5)}
+.ficha::backdrop{background:rgba(24,16,12,.52)}
+.ficha__dentro{display:grid;gap:22px;justify-items:center;padding:34px 24px calc(28px + env(safe-area-inset-bottom));text-align:center}
+.ficha__texto{display:grid;gap:16px;width:100%;max-width:340px}
+.ficha .precio{justify-items:center}
+.ficha h2{font-size:2.2rem}
+.ficha__cerrar{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;border-radius:50%;background:var(--bg);color:var(--texto);font-size:1rem;cursor:pointer;box-shadow:inset 0 0 0 1px var(--borde)}
+.ficha__datos{display:grid;gap:8px;text-align:left}
+.ficha__datos li{position:relative;padding:10px 12px 10px 38px;border-radius:12px;background:var(--bg);font-size:.95rem}
+.ficha__datos li::before{content:"";position:absolute;left:14px;top:50%;width:12px;height:6px;margin-top:-6px;border-left:2px solid var(--acento);border-bottom:2px solid var(--acento);transform:rotate(-45deg)}
+.portada-plana{--w:150px;cursor:default;box-shadow:0 2px 4px rgba(0,0,0,.2),0 22px 34px -16px rgba(0,0,0,.5);border-radius:2px 6px 6px 2px}
+.portada-plana .libro3d__portada{position:absolute;transform:none}
+
+@media (prefers-reduced-motion:no-preference){
+  .ficha[open]{animation:ficha-sube .32s cubic-bezier(.3,.7,.2,1)}
+  .ficha[open]::backdrop{animation:ficha-fondo .32s ease-out}
+}
+@keyframes ficha-sube{from{transform:translateY(100%)}}
+@keyframes ficha-lado{from{transform:translateX(100%)}}
+@keyframes ficha-fondo{from{opacity:0}}
+
+@media (min-width:640px){
+  .dentro{grid-template-columns:minmax(0,1fr) auto;align-items:start}
+  .cierre-venta{grid-template-columns:auto 1fr;text-align:left;justify-items:start;align-items:center;gap:30px;padding:26px 44px}
+  .cierre-venta>div,.cierre-venta .precio{justify-items:start}
+  .cierre-venta img{width:260px}
+}
+@media (min-width:800px){
+  .producto{grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);align-items:center;gap:56px;padding:22px 32px 72px}
+  .producto__escena{max-width:none}
+  .producto__panel{gap:22px;max-width:480px}
+  .producto__botones{grid-template-columns:1fr}
+  .tienda .apartado{padding-top:84px;padding-bottom:84px}
+  .barra-compra{display:none}
+  .tienda .pie{padding-bottom:0}
+  .ficha{inset:0 0 0 auto;width:420px;height:100dvh;max-height:none;border-radius:24px 0 0 24px;box-shadow:-30px 0 70px -30px rgba(0,0,0,.55)}
+  .ficha__dentro{padding-top:72px}
+}
+@media (min-width:800px) and (prefers-reduced-motion:no-preference){
+  .ficha[open]{animation-name:ficha-lado}
+}
+@media (prefers-reduced-motion:reduce){
+  .producto__fija,.producto__lienzo,.producto__pista,.barra-compra,.barra-compra.es-visible,.chip span,.pestanas a,.tienda .capitulo,.tienda .faq__item{transition:none}
+  .tienda .boton:hover{transform:none}
+}
