@@ -104,8 +104,11 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   `assets/css/sitio.css` y `assets/js/sitio.js` (mini reto). Logo B «Capitular» en `assets/logo/codice-vivo-*.svg`
   (texto en contornos; `-texto.svg` deja «ódice» editable). Mascotas Griseldo y Chikis en SVG + CSS dentro de la portada.
   Figura fija nueva `contenido/fisica/img/tiro-parabolico.svg` (sacada del interactivo, con estilos en línea).
-  Pendiente de Gato: elegir estilo de «Vivo» (`assets/logo/muestra.html`), borrar propuestas A y C, y el PDF
-  aparece como «Próximamente» en la portada hasta que exista.
+  Logo final (16-nov-2026): B «Capitular» con «VIVO» pixel. Favicon = `codice-vivo-icono.svg`. PNG del ícono
+  (1080 y 200) y video del esquiador con el logo claro renderizados en `C:\Users\Gato\Videos\codice-vivo\`.
+  Borradas las propuestas A, C, la B anterior, el ícono oscuro y `muestra.html`; en `assets/logo/` quedan
+  horizontal, horizontal-oscuro (clara), horizontal-texto e ícono. El PDF aparece como «Próximamente»
+  en la portada hasta que exista.
   Ronda 1 (15-nov-2026, en espera de OK de Gato): portada como mundo en pixel art con parallax (sprites SVG en línea,
   gatos escondidos sin nombre), libros en CSS 3D sobre estante (portada y `biblioteca/`) y tarjetas con inclinación.
   Sin probar en celular real ni con giroscopio (solo Android; en iPhone pide permiso y se dejó fuera).
