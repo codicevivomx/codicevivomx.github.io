@@ -68,8 +68,14 @@ button{font:inherit;color:inherit}
    cada capa trae su profundidad en --p (px) y --q (factor de scroll). */
 .mundo{--px:2px;position:relative;height:100vh;height:100svh;min-height:600px;max-height:1000px;overflow:hidden;isolation:isolate;
   background:linear-gradient(#213C4B,#44697A 14%,#A3868C 24%,#EBA868 30%,#EFCB94 32%,#84995C 46%,#325E58 70%,#1A383C)}
+/* Memoria gráfica: en celular las capas se mueven en 2D (sin capa propia en la GPU); solo con mouse van en 3D
+   con will-change. Fuera de la vista (clase es-fuera, la pone paisaje.js) las capas se sueltan. */
 .mundo__capa{position:absolute;inset:0;pointer-events:none;
-  transform:translate3d(calc(var(--mx,0)*var(--p,0)*1px),calc(var(--my,0)*var(--p,0)*.5px + var(--sy,0)*var(--q,0)*1px),0)}
+  transform:translate(calc(var(--mx,0)*var(--p,0)*1px),calc(var(--my,0)*var(--p,0)*.5px + var(--sy,0)*var(--q,0)*1px))}
+.mundo.es-fuera .mundo__capa{display:none}
+@media (hover:hover) and (pointer:fine){
+  .mundo__capa{transform:translate3d(calc(var(--mx,0)*var(--p,0)*1px),calc(var(--my,0)*var(--p,0)*.5px + var(--sy,0)*var(--q,0)*1px),0)}
+}
 .mundo canvas{position:absolute;top:0;left:0;max-width:none;image-rendering:pixelated;image-rendering:crisp-edges;image-rendering:pixelated;opacity:0;transition:opacity .5s}
 .mundo--listo canvas{opacity:1}
 .sp{position:absolute;display:block;width:calc(var(--w)*var(--px));max-width:none;height:auto;overflow:visible}
@@ -83,8 +89,10 @@ button{font:inherit;color:inherit}
 .gatos>svg:first-of-type{display:block;width:100%;height:auto;overflow:visible}
 .gatos .corazon{position:absolute;left:50%;top:-8px;width:calc(var(--px)*7);height:auto;margin-left:calc(var(--px)*-3.5);pointer-events:none;fill:#E0503F}
 
+@media (prefers-reduced-motion:no-preference) and (hover:hover) and (pointer:fine){
+  .mundo:not(.es-fuera) .mundo__capa{will-change:transform}
+}
 @media (prefers-reduced-motion:no-preference){
-  .mundo__capa{will-change:transform}
   .dragon__1{animation:pose4 1.8s steps(1) infinite}
   .dragon__2{animation:pose4 1.8s steps(1) infinite -1.35s}
   .dragon__3{animation:pose4 1.8s steps(1) infinite -.9s}
@@ -999,3 +1007,17 @@ body{background-image:radial-gradient(rgba(var(--fibra),.07) 1px,transparent 1.3
   .tienda .tarjeta{--sc:1!important;--ty:0px!important;--rx:0deg!important;--ry:0deg!important}
   .tienda .tarjeta::after,.tienda .ventajas li::after,.tienda .proximos li::after{display:none}
 }
+
+/* ---------- Memoria gráfica en celular ----------
+   En pantallas táctiles (y navegadores internos de Instagram/TikTok) cada elemento con transform 3D o
+   desenfoque de fondo es una capa más en la GPU. Ahí las tarjetas quedan planas y las barras, opacas. */
+@media (hover:none),(pointer:coarse){
+  .tarjeta{transform:translateY(var(--ty,0px)) scale(var(--sc,1));transform-style:flat}
+  .tarjeta__figura{transform:none}
+  .pestanas,.barra-compra{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .pestanas{background:var(--bg)}
+  .barra-compra{background:var(--sup)}
+}
+/* Escena del libro en celular: imagen fija; el 3D se carga al tocar (clase es-toca, la pone sitio.js) */
+.producto__escena.es-toca{cursor:pointer}
+.es-toca .producto__pista{opacity:1}

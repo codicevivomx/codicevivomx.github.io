@@ -25,7 +25,11 @@
     #esc-medio { top: 560px; }
     #esc-mundo { position: absolute; left: 0; top: 0; width: 2600px; height: 3200px; transform-origin: 0 0; }
     #esc-mundo svg, .capa svg { display: block; overflow: visible; }
-    #esc-nieve-a, #esc-nieve-b { position: absolute; inset: 0; pointer-events: none; }
+    /* La nieve cae moviendo la capa con transform (no con background-position, que repinta toda la pantalla
+       en cada cuadro). Cada capa sobra un mosaico arriba y a la derecha; el guion la mueve módulo un mosaico. */
+    #esc-nieve-a, #esc-nieve-b { position: absolute; left: 0; bottom: 0; pointer-events: none; }
+    #esc-nieve-a { top: -420px; width: calc(100% + 420px); }
+    #esc-nieve-b { top: -260px; width: calc(100% + 260px); }
     #esc-nieve-a {
       background-image:
         radial-gradient(circle at 20% 30%, rgba(255,255,255,.95) 0 4px, transparent 5px),
@@ -619,8 +623,10 @@
     const LH = huella && huella.getTotalLength ? huella.getTotalLength() : 1200;
     ini("#esc-huella", { strokeDasharray: LH, strokeDashoffset: LH });
     // Nieve que cae y brillos que titilan (todo el video)
-    TL.fromTo("#esc-nieve-a", { backgroundPosition: "0px 0px" }, { backgroundPosition: "-360px 5460px", duration: 100, ease: "none", immediateRender: false }, 0);
-    TL.fromTo("#esc-nieve-b", { backgroundPosition: "0px 0px" }, { backgroundPosition: "-170px 2790px", duration: 100, ease: "none", immediateRender: false }, 0);
+    // Nieve: mismo recorrido de antes (-360, 5460 y -170, 2790 px en 100 s), ahora con transform módulo un mosaico
+    const nevar = (sel, dx, dy, mosaico) => { const m = (v) => (parseFloat(v) % mosaico) + "px"; TL.fromTo(sel, { x: 0, y: 0 }, { x: dx, y: dy, duration: 100, ease: "none", immediateRender: false, modifiers: { x: m, y: m } }, 0); };
+    nevar("#esc-nieve-a", -360, 5460, 420);
+    nevar("#esc-nieve-b", -170, 2790, 260);
     [["#esc-brillo-a", 0], ["#esc-brillo-b", 0.5], ["#esc-brillo-c", 1]].forEach(([s, d]) =>
       TL.fromTo(s, { opacity: 0.15 }, { opacity: 1, duration: 0.75, ease: "sine.inOut", yoyo: true, repeat: 133, immediateRender: false }, d));
     // Ruido de sensor (térmica): saltos aleatorios con semilla, cada 0.1 s

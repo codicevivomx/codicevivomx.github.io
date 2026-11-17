@@ -309,6 +309,8 @@
   pinta();
   var espera;
   window.addEventListener('resize', function () { if (mundo.clientWidth === ancho0) return; clearTimeout(espera); espera = setTimeout(pinta, 200); });
+  /* Memoria gráfica: cuando el paisaje ya no se ve, sus capas dejan de ocupar la GPU (ver .mundo.es-fuera en sitio.css) */
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { mundo.classList.toggle('es-fuera', !e[0].isIntersecting); }, { rootMargin: '300px 0px' }).observe(mundo);
 
   /* ---------- animación ligera (~10 cuadros/s): río, humo, ventanas y luciérnagas ---------- */
   if (quieto || !fx.rio) return;

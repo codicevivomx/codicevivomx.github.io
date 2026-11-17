@@ -1,0 +1,43 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; }
+    /* Frase grande (campo «caption» del storyboard): una por toma, centrada arriba.
+       Blanca con contorno de tinta y sombra suave; coral = problema, menta = solución. */
+    .fra { position: absolute; left: 60px; right: 60px; top: 205px; height: 260px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .fra-txt {
+      font: 900 104px/1.02 "Nunito", sans-serif; letter-spacing: -.01em; color: #fffdf6;
+      -webkit-text-stroke: 14px #1d1a16; paint-order: stroke fill; text-wrap: balance;
+      text-shadow: 0 10px 0 #1d1a16, 0 22px 26px rgba(29,26,22,.35);
+    }
+    .problema .fra-txt { color: #ff8a73; }
+    .solucion .fra-txt { color: #86e6bb; }
+  </style>
+  <div id="root" data-composition-id="frases" data-width="1080" data-height="1920">
+    <div id="fra-1" class="fra clip neutro" data-start="0" data-duration="5" data-track-index="0"><div class="fra-txt">ya tienes una catapulta</div></div>
+    <div id="fra-2" class="fra clip problema" data-start="5" data-duration="4.4" data-track-index="0"><div class="fra-txt">cae a tus pies</div></div>
+    <div id="fra-3" class="fra clip solucion" data-start="9.4" data-duration="4.4" data-track-index="0"><div class="fra-txt">ahora es un trabuquete</div></div>
+    <div id="fra-4" class="fra clip neutro" data-start="13.8" data-duration="5.4" data-track-index="0"><div class="fra-txt">20&nbsp;m/s a 37°</div></div>
+    <div id="fra-5" class="fra clip problema" data-start="19.2" data-duration="4" data-track-index="0"><div class="fra-txt">¿qué tan rápido avanza?</div></div>
+    <div id="fra-6" class="fra clip solucion" data-start="23.2" data-duration="4.8" data-track-index="0"><div class="fra-txt">sepárala en dos</div></div>
+    <div id="fra-7" class="fra clip solucion" data-start="33.4" data-duration="7.8" data-track-index="0"><div class="fra-txt">usa 0.8 y 0.6</div></div>
+    <div id="fra-8" class="fra clip problema" data-start="41.2" data-duration="4.7" data-track-index="0"><div class="fra-txt">hay una muralla</div></div>
+    <div id="fra-9" class="fra clip solucion" data-start="50.9" data-duration="4.9" data-track-index="0"><div class="fra-txt">pasa por 1 metro</div></div>
+    <div id="fra-10" class="fra clip neutro" data-start="55.8" data-duration="4" data-track-index="0"><div class="fra-txt">la puerta está a 40&nbsp;m</div></div>
+    <div id="fra-11" class="fra clip problema" data-start="64.8" data-duration="4" data-track-index="0"><div class="fra-txt">se queda corta</div></div>
+    <div id="fra-12" class="fra clip solucion" data-start="68.8" data-duration="4.4" data-track-index="0"><div class="fra-txt">45° = alcance máximo</div></div>
+    <div id="fra-13" class="fra clip neutro" data-start="73.2" data-duration="4" data-track-index="0"><div class="fra-txt">¡justo en la puerta!</div></div>
+    <div id="fra-14" class="fra clip neutro" data-start="77.2" data-duration="5.1" data-track-index="0"><div class="fra-txt">problema de examen</div></div>
+  </div>
+  <script>
+    {
+      const tl = gsap.timeline({ paused: true });
+      // [inicio, duración] de cada toma (su audio + 0.6 s, mínimo 4 s): la frase entra con un rebote y sale antes del corte
+      [[0, 5], [5, 4.4], [9.4, 4.4], [13.8, 5.4], [19.2, 4], [23.2, 4.8], [33.4, 7.8], [41.2, 4.7], [50.9, 4.9], [55.8, 4], [64.8, 4], [68.8, 4.4], [73.2, 4], [77.2, 5.1]].forEach(([t, d], i) => {
+        const s = "#fra-" + (i + 1) + " .fra-txt";
+        tl.fromTo(s, { opacity: 0, scale: 0.6, y: -24, rotation: -3 }, { opacity: 1, scale: 1, y: 0, rotation: 0, duration: 0.45, ease: "back.out(2.4)" }, t + 0.12);
+        tl.to(s, { opacity: 0, scale: 0.9, duration: 0.2, ease: "power1.in" }, t + d - 0.22);
+      });
+      window.__timelines["frases"] = tl;
+    }
+  </script>
+</template>
