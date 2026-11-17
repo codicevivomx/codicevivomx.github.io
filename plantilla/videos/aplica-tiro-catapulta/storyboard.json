@@ -1,0 +1,37 @@
+{
+  "titulo": "aplica-tiro-catapulta",
+  "fps": 30,
+  "formato": "vertical 1080x1920",
+  "serie": "Ya tienes…",
+  "estilos": {
+    "tinta": "estilo Stupy Doo: dibujo isométrico con contorno de tinta negra irregular, color plano con sombra simple, textura de papel, pasto con matas sueltas, muro de ladrillo al fondo",
+    "tinta_notas": "mismo estilo, con cálculos escritos a mano (lápiz/tinta) sobre la escena o en una hoja que entra; flechas y cotas dibujadas a mano"
+  },
+  "texto_pantalla": "frase corta grande y centrada arriba (negritas, sombra suave), una por toma; es el campo 'caption'",
+  "datos": { "g": 10, "v": 20, "angulo_grados": 37, "sen37": 0.6, "cos37": 0.8, "vx": 16, "vy": 12, "muralla_x_m": 16, "muralla_alto_m": 6, "t_muralla_s": 1, "y_muralla_m": 7, "t_vuelo_s": 2.4, "alcance_37_m": 38.4, "puerta_x_m": 40, "angulo_final_grados": 45, "alcance_45_m": 40 },
+  "tomas": [
+    { "id": 1, "voz": "Ya tienes una catapulta: un tronco, un brazo y una canasta.", "caption": "ya tienes una catapulta", "palabra": "", "tipo": "neutro", "accion": "crecer: aparecen el tronco, el brazo y la canasta, pieza por pieza, sobre el pasto", "piezas": ["tronco", "brazo", "canasta", "piedra"], "camara": "iso_general", "estilo": "tinta" },
+    { "id": 2, "voz": "La jalas, la sueltas… y la piedra cae a tus pies.", "caption": "cae a tus pies", "palabra": "cae a tus pies", "tipo": "problema", "accion": "el brazo gira poco y la piedra cae justo enfrente con un golpe", "piezas": ["brazo", "piedra"], "camara": "iso_cerca", "estilo": "tinta" },
+    { "id": 3, "voz": "Le cuelgas un contrapeso enorme: ahora es un trabuquete.", "caption": "ahora es un trabuquete", "palabra": "trabuquete", "tipo": "solucion", "accion": "crecer: estructura más alta y un contrapeso que cuelga y se balancea", "piezas": ["marco_trabuquete", "contrapeso", "brazo_largo", "honda"], "camara": "iso_general", "estilo": "tinta" },
+    { "id": 4, "voz": "La piedra sale a veinte metros por segundo, inclinada a treinta y siete grados.", "caption": "20 m/s a 37°", "palabra": "", "tipo": "neutro", "accion": "el contrapeso cae, el brazo gira y la piedra sale; congelar con flecha de velocidad y arco del ángulo", "piezas": ["piedra", "vector_v", "arco_37"], "camara": "iso_general", "estilo": "tinta" },
+    { "id": 5, "voz": "Pero, ¿qué tan rápido avanza hacia el castillo?", "caption": "¿qué tan rápido avanza?", "palabra": "avanza", "tipo": "problema", "accion": "cámara se aleja y revela el castillo a lo lejos, a la derecha", "piezas": ["castillo", "piedra"], "camara": "iso_general", "estilo": "tinta" },
+    { "id": 6, "voz": "Truco del tiro parabólico: separa la velocidad en adelante y arriba.", "caption": "sepárala en dos", "palabra": "tiro parabólico", "tipo": "solucion", "accion": "la flecha de velocidad se parte en dos flechas dibujadas a mano: horizontal y vertical",
+      "piezas": ["vector_v", "vector_vx", "vector_vy"], "camara": "corte_detalle", "estilo": "tinta_notas",
+      "pausa": { "pregunta": "¿Cuál es su velocidad hacia adelante?", "opciones": ["12 m/s", "16 m/s", "20 m/s"], "correcta": 1, "pista": "vx = v · cos 37° = 20 · 0.8" } },
+    { "id": 7, "voz": "Dieciséis hacia adelante y doce hacia arriba. Con treinta y siete grados, usa cero punto ocho y cero punto seis.", "caption": "usa 0.8 y 0.6", "palabra": "0.8 y 0.6", "tipo": "solucion", "accion": "se escriben a mano vx = 16 y vy = 12 junto a cada flecha; nota '37° → 0.8 / 0.6'", "piezas": ["vector_vx", "vector_vy", "nota_truco"], "camara": "corte_detalle", "estilo": "tinta_notas" },
+    { "id": 8, "voz": "Pero en el camino hay una muralla de seis metros, a dieciséis metros.", "caption": "hay una muralla", "palabra": "muralla", "tipo": "problema",
+      "accion": "crecer: muralla de piedra entre la catapulta y el castillo, con cotas de 6 m de alto y 16 m de distancia", "piezas": ["muralla", "cota_6m", "cota_16m"], "camara": "iso_general", "estilo": "tinta",
+      "pausa": { "pregunta": "¿La piedra pasa la muralla?", "opciones": ["No, choca", "Sí, por 1 m", "Sí, por 7 m"], "correcta": 1, "pista": "llega en t = 16 ÷ 16 = 1 s; y = 12·1 − 5·1²" } },
+    { "id": 9, "voz": "Llega en un segundo, a siete metros de altura: pasa por un metro.", "caption": "pasa por 1 metro", "palabra": "pasa por un metro", "tipo": "solucion", "accion": "la piedra recorre la parábola punteada y pasa rozando sobre la muralla; nota 'y = 7 m'", "piezas": ["piedra", "trayectoria", "muralla", "nota_7m"], "camara": "iso_cerca", "estilo": "tinta_notas" },
+    { "id": 10, "voz": "Pero la puerta del castillo está a cuarenta metros.", "caption": "la puerta está a 40 m", "palabra": "", "tipo": "neutro",
+      "accion": "resaltar la puerta del castillo con cota de 40 m desde la catapulta", "piezas": ["puerta", "cota_40m"], "camara": "iso_general", "estilo": "tinta",
+      "pausa": { "pregunta": "¿A qué distancia cae la piedra?", "opciones": ["24 m", "38.4 m", "40 m"], "correcta": 1, "pista": "en el aire: 2 · 12 ÷ 10 = 2.4 s; d = 16 · 2.4" } },
+    { "id": 11, "voz": "A treinta y ocho punto cuatro metros: se queda corta.", "caption": "se queda corta", "palabra": "se queda corta", "tipo": "problema", "accion": "caer: la piedra cae antes de la puerta con polvo; marca 38.4 m", "piezas": ["piedra", "polvo", "cota_38_4m"], "camara": "iso_cerca", "estilo": "tinta" },
+    { "id": 12, "voz": "Subes el ángulo a cuarenta y cinco grados: el alcance máximo.", "caption": "45° = alcance máximo", "palabra": "alcance máximo", "tipo": "solucion", "accion": "el brazo se ajusta; el arco del ángulo cambia de 37° a 45°; nota 'R = v²/g'", "piezas": ["brazo_largo", "arco_45", "nota_alcance"], "camara": "corte_detalle", "estilo": "tinta_notas" },
+    { "id": 13, "voz": "Ahora cae a cuarenta metros, justo en la puerta.", "caption": "¡justo en la puerta!", "palabra": "", "tipo": "neutro", "accion": "nuevo tiro: la parábola más alta pasa la muralla y la piedra cae en la puerta; bandera del castillo se sacude", "piezas": ["piedra", "trayectoria", "puerta", "bandera"], "camara": "iso_general", "estilo": "tinta" },
+    { "id": 14, "voz": "Esto es un problema de examen: descomponer la velocidad y usar el tiempo.", "caption": "problema de examen", "palabra": "", "tipo": "neutro", "accion": "vista completa; aparecen dos etiquetas dibujadas: 'descomponer v' y 'usar el tiempo'", "piezas": ["escena_completa", "etiqueta_v", "etiqueta_t"], "camara": "iso_general", "estilo": "tinta_notas" },
+    { "id": 15, "voz": "Ángulo, altura y alcance. En Códice Vivo los practicas paso a paso.", "caption": "Códice Vivo", "palabra": "Códice Vivo", "tipo": "neutro", "accion": "cierre con logo (assets/logo.svg, versión clara si el fondo es oscuro)", "piezas": ["logo"], "camara": "iso_general", "estilo": "tinta" }
+  ],
+  "version_tiktok": "cada toma con 'pausa' se convierte en 'pon tu respuesta en comentarios' + cuenta regresiva de 3 s después de la pregunta",
+  "version_interactiva": "en cada 'pausa' el video se detiene con 3 opciones; error → pista y reintento; acierto → sigue"
+}

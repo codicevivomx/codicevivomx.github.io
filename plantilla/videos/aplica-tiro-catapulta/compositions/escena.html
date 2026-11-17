@@ -1,0 +1,736 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; }
+    /* Estilo «tinta»: isométrico dibujado a mano. Contorno de tinta negra con ligero temblor
+       (los trazos se generan con un azar de semilla fija: siempre salen igual), color plano con
+       una sombra simple y papel con textura. Todo es SVG: sin imágenes.
+       Proyección: x (hacia el castillo) sube a la derecha, z (profundidad) baja a la derecha, y es la altura.
+       1 m = 20 px en la vista general; la cámara es el grupo #esc-mundo. */
+    @font-face { font-family: "Caveat"; font-weight: 700; src: url("assets/fonts/caveat-700.woff2") format("woff2"); }
+    #esc-papel { position: absolute; inset: 0; background: #f3ead6; }
+    #esc-grano { position: absolute; inset: 0; width: 1080px; height: 1920px; display: block; }
+    #esc-svg { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; display: block; overflow: hidden; }
+    #esc-svg .ink { stroke: #1d1a16; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+    #esc-svg .fino { stroke-width: 2.6; }
+    #esc-svg .nota { font-family: "Caveat", cursive; font-weight: 700; paint-order: stroke; stroke: #f6efdd; stroke-width: 7px; stroke-linejoin: round; }
+    #esc-svg .hoja .nota { stroke: #fffdf6; }
+    #esc-svg .raya { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+  <div id="root" data-composition-id="escena" data-width="1080" data-height="1920">
+    <div id="esc-papel"></div>
+    <svg id="esc-grano" viewBox="0 0 1080 1920" aria-hidden="true">
+      <filter id="esc-f-papel" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035 0.9" numOctaves="2" seed="7" result="fibra"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="3" result="grano"/>
+        <feMerge><feMergeNode in="fibra"/><feMergeNode in="grano"/></feMerge>
+        <feColorMatrix type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.32  0 0 0 0 0.2  0 0 0 0.55 -0.2"/>
+      </filter>
+      <rect width="1080" height="1920" filter="url(#esc-f-papel)" opacity="0.5"/>
+    </svg>
+    <svg id="esc-svg" viewBox="0 0 1080 1920">
+      <g id="esc-mundo">
+        <g id="esc-suelo"></g>
+        <g id="esc-cotas"></g>
+        <g id="esc-castillo"></g>
+        <g id="esc-muralla"></g>
+        <g id="esc-rastros"></g>
+        <g id="esc-cata"></g>
+        <g id="esc-treb"></g>
+        <g id="esc-vuelo"></g>
+        <g id="esc-notas"></g>
+      </g>
+      <g id="esc-etiquetas"></g>
+      <g id="esc-hoja" class="hoja"></g>
+    </svg>
+  </div>
+  <script>
+    {
+      const tl = gsap.timeline({ paused: true });
+
+      /* Datos del problema (los mismos del campo «datos» de storyboard.json). g = 10. */
+      const DATOS = { g: 10, v: 20, sen37: 0.6, cos37: 0.8, muralla_x: 16, muralla_alto: 6, puerta_x: 40 };
+      const G = DATOS.g, VX = DATOS.v * DATOS.cos37, VY = DATOS.v * DATOS.sen37;   // 16 y 12 m/s
+      const V45 = DATOS.v * Math.SQRT1_2;                                           // 14.14 m/s en cada eje
+      const T37 = 2 * VY / G, T45 = 2 * V45 / G;                                    // 2.4 s y 2.83 s en el aire
+      const T_MURALLA = DATOS.muralla_x / VX;                                       // 1 s
+      const vuelo37 = (t) => [VX * t, VY * t - 0.5 * G * t * t];
+      const vuelo45 = (t) => [V45 * t, V45 * t - 0.5 * G * t * t];
+
+      /* ---------- Dibujo ---------- */
+      const NS = "http://www.w3.org/2000/svg";
+      const $ = (id) => document.getElementById(id);
+      const S = 20, OX = 230, OY = 1290, CX = 0.8660254 * S, CY = 0.5 * S;
+      const P = (x, y = 0, z = 0) => [OX + CX * (x + z), OY - CY * x + CY * z - S * y];
+      const TINTA = "#1d1a16", AZUL = "#1f3fa6", CORAL = "#e4572e", VERDE = "#1f8f5f", SOGA = "#d6b77c", SOGA_O = "#7a5a2c";
+      const el = (tag, at, par) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); if (par) par.appendChild(e); return e; };
+      const n1 = (v) => Math.round(v * 10) / 10, n2 = (v) => Math.round(v * 100) / 100;
+      const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+      const rad = (g) => g * Math.PI / 180;
+      const rng = (semilla) => { let a = semilla >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+      /* Trazo con temblor: cada lado se parte en tramos curvos que se salen un poco de la línea. */
+      function wob(pts, semilla, o = {}) {
+        const amp = o.amp == null ? 1.3 : o.amp, paso = o.paso || 34, cerrado = o.cerrado !== false, r = rng(semilla), j = () => (r() * 2 - 1) * amp;
+        const q = pts.map((p) => [p[0] + j() * 0.5, p[1] + j() * 0.5]);
+        let d = "M" + n2(q[0][0]) + " " + n2(q[0][1]);
+        const n = cerrado ? q.length : q.length - 1;
+        for (let i = 0; i < n; i++) {
+          const a = q[i], b = q[(i + 1) % q.length], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, k = Math.max(1, Math.round(L / paso)), nx = -dy / L, ny = dx / L;
+          for (let s = 1; s <= k; s++) {
+            const tm = (s - 0.5) / k, te = s / k, o1 = j(), o2 = s === k ? 0 : j() * 0.4;
+            d += "Q" + n2(a[0] + dx * tm + nx * o1) + " " + n2(a[1] + dy * tm + ny * o1) + " " + n2(a[0] + dx * te + nx * o2) + " " + n2(a[1] + dy * te + ny * o2);
+          }
+        }
+        return d + (cerrado ? "Z" : "");
+      }
+      const forma = (par, pts, fill, semilla, o = {}) => el("path", { d: wob(pts, semilla, o), fill, class: "ink" + (o.cls ? " " + o.cls : "") }, par);
+      const FINO = { amp: 0.3, paso: 9 };
+      const circulo = (cx, cy, r, n = 12) => Array.from({ length: n }, (_, i) => [cx + r * Math.cos(i / n * 6.2832), cy + r * Math.sin(i / n * 6.2832)]);
+      const redondo = (cx, cy, r) => `M${n2(cx - r)} ${n2(cy)}a${r} ${r} 0 1 0 ${n2(2 * r)} 0a${r} ${r} 0 1 0 ${n2(-2 * r)} 0`;
+
+      /* Detalle fino (vetas, achurado, grietas): su grosor crece con el acercamiento,
+         así de lejos casi no se nota y de cerca se ve dibujado a tinta. */
+      const det = (par, d, w = 0.45, o = {}) => el("path", { d, fill: "none", stroke: o.color || TINTA, "stroke-width": w, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: o.op == null ? 0.7 : o.op }, par);
+      /* Vetas de madera a lo largo de A→B (el lado opuesto es D→C), con un nudo. */
+      function vetas(A, B, C, D, n, semilla, nudo = true) {
+        const r = rng(semilla); let d = "";
+        for (let i = 0; i < n; i++) {
+          const v = (i + 0.5 + (r() - 0.5) * 0.5) / n, a0 = r() * 0.3, a1 = 0.7 + r() * 0.3;
+          d += wob([lerp(lerp(A, D, v), lerp(B, C, v), a0), lerp(lerp(A, D, v), lerp(B, C, v), a1)], semilla * 7 + i, { cerrado: false, amp: 0.3, paso: 7 });
+        }
+        if (nudo) { const v = 0.3 + r() * 0.4, u = 0.2 + r() * 0.6, c = lerp(lerp(A, D, v), lerp(B, C, v), u), rr = 0.7 + r() * 0.5; d += `M${n2(c[0] - rr * 1.7)} ${n2(c[1])}a${n2(rr * 1.7)} ${n2(rr)} 0 1 0 ${n2(rr * 3.4)} 0a${n2(rr * 1.7)} ${n2(rr)} 0 1 0 ${n2(-rr * 3.4)} 0M${n2(c[0] - rr * 0.6)} ${n2(c[1])}h${n2(rr * 1.2)}`; }
+        return d;
+      }
+      /* Achurado: rayas diagonales dentro del cuadro A-B-C-D (sombra de tinta). */
+      function achura(A, B, C, D, paso, sh = 0.55) {
+        const L = Math.hypot(B[0] - A[0], B[1] - A[1]), n = Math.max(2, Math.round(L / paso)); let d = "";
+        for (let i = -Math.ceil(n * sh); i < n; i++) {
+          const u = (i + 0.5) / n, t0 = Math.max(0, -u / sh), t1 = Math.min(1, (1 - u) / sh);
+          if (t1 - t0 < 0.1) continue;
+          const p = lerp(lerp(A, B, u + sh * t0), lerp(D, C, u + sh * t0), t0), q = lerp(lerp(A, B, u + sh * t1), lerp(D, C, u + sh * t1), t1);
+          d += `M${n2(p[0])} ${n2(p[1])}L${n2(q[0])} ${n2(q[1])}`;
+        }
+        return d;
+      }
+      /* Caja isométrica: cara izquierda (base), cara derecha (sombra, con achurado) y tapa (luz).
+         o.veta = "x" | "y": vetas de madera a lo largo de ese eje. o.achura = separación del achurado. */
+      function caja(par, x0, y0, z0, x1, y1, z1, c, semilla, o = {}) {
+        const g = el("g", {}, par);
+        const I = [P(x0, y0, z0), P(x0, y0, z1), P(x0, y1, z1), P(x0, y1, z0)], Dr = [P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)], T = [P(x0, y1, z0), P(x1, y1, z0), P(x1, y1, z1), P(x0, y1, z1)];
+        forma(g, I, c.i, semilla, o); forma(g, Dr, c.d, semilla + 1, o); forma(g, T, c.t, semilla + 2, o);
+        if (o.achura) det(g, achura(Dr[0], Dr[1], Dr[2], Dr[3], o.achura), 0.4, { op: 0.5 });
+        if (o.veta === "x") { det(g, vetas(T[0], T[1], T[2], T[3], 3, semilla + 3) + vetas(Dr[0], Dr[1], Dr[2], Dr[3], 2, semilla + 4, false)); const m = lerp(I[0], I[2], 0.5); det(g, [0.55, 0.3].map((f, i) => wob(I.map((p) => lerp(m, p, f)), semilla + 5 + i, { amp: 0.25, paso: 6 })).join("")); }
+        if (o.veta === "y") { det(g, vetas(I[0], I[3], I[2], I[1], 3, semilla + 3) + vetas(Dr[0], Dr[3], Dr[2], Dr[1], 2, semilla + 4, false)); }
+        return g;
+      }
+      /* Viga: rectángulo alrededor de un segmento (a y b en metros), con grosor en px. */
+      function vigaPts(a, b, th) {
+        const A = P(a[0], a[1], a[2] || 0), B = P(b[0], b[1], b[2] || 0), dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L * th, ny = dx / L * th;
+        return [[A[0] + nx, A[1] + ny], [B[0] + nx, B[1] + ny], [B[0] - nx, B[1] - ny], [A[0] - nx, A[1] - ny]];
+      }
+      const viga = (par, a, b, th, fill, semilla, veta = true) => { const q = vigaPts(a, b, th), f = forma(par, q, fill, semilla, FINO); if (veta) det(par, vetas(q[0], q[1], q[2], q[3], 2, semilla + 1)); return f; };
+      /* Amarre de cuerda: banda clara con trenzado. */
+      const amarre = (par, q, semilla) => { forma(par, q, SOGA, semilla, FINO); det(par, achura(q[0], q[1], q[2], q[3], 1.5, 0.9), 0.55, { color: SOGA_O, op: 0.95 }); };
+      /* Sillares: hiladas, juntas alternadas, bloques con otro tono y grietas.
+         m(y, a) da el punto de la cara: sirve para caras x = constante o z = constante. */
+      function sillaresM(par, m, y0, y1, a0, a1, alto, ancho, semilla) {
+        const r = rng(semilla), filas = Math.round((y1 - y0) / alto); let lineas = "", claros = "", oscuros = "", grietas = "";
+        for (let c = 0; c < filas; c++) {
+          const ya = y0 + c * alto, yb = ya + alto;
+          if (c) lineas += wob([m(ya, a0), m(ya, a1)], semilla + c, { cerrado: false, amp: 0.7 });
+          let zs = [a0]; for (let z = a0 + (c % 2 ? ancho : ancho / 2); z < a1 - 0.2; z += ancho) zs.push(z); zs.push(a1);
+          for (let i = 0; i < zs.length - 1; i++) {
+            if (i) { const a = m(ya, zs[i]), b = m(yb, zs[i]); lineas += "M" + n2(a[0]) + " " + n2(a[1]) + "L" + n2(b[0] + r() - 0.5) + " " + n2(b[1]); }
+            const q = "M" + [m(ya, zs[i]), m(ya, zs[i + 1]), m(yb, zs[i + 1]), m(yb, zs[i])].map((p) => n2(p[0]) + " " + n2(p[1])).join("L") + "Z", azar = r();
+            if (azar < 0.22) oscuros += q; else if (azar > 0.8) claros += q;
+            if (r() < 0.45) { const p = m(ya + alto * (0.25 + r() * 0.5), zs[i] + (zs[i + 1] - zs[i]) * (0.2 + r() * 0.6)); grietas += `M${n2(p[0])} ${n2(p[1])}l${n2(1.5 + r() * 2)} ${n2(1 + r())}l${n2(0.5 + r())} ${n2(-1.4 + r())}`; }
+            if (r() < 0.5) { const p = m(ya + alto * (0.2 + r() * 0.6), zs[i] + (zs[i + 1] - zs[i]) * (0.2 + r() * 0.6)); grietas += `M${n2(p[0])} ${n2(p[1])}h0.6M${n2(p[0] + 1.6)} ${n2(p[1] + 1.1)}h0.6`; }
+          }
+        }
+        el("path", { d: oscuros, fill: "rgba(70,45,30,.14)" }, par); el("path", { d: claros, fill: "rgba(255,255,255,.3)" }, par);
+        el("path", { d: lineas, fill: "none", class: "ink fino", opacity: 0.8 }, par);
+        det(par, grietas, 0.5, { op: 0.75 });
+      }
+      const sillares = (par, x, y0, y1, z0, z1, alto, ancho, semilla) => sillaresM(par, (y, z) => P(x, y, z), y0, y1, z0, z1, alto, ancho, semilla);
+      /* Musgo: manchitas verdes con contorno, pegadas a la base de una cara. */
+      function musgo(par, m, a0, a1, semilla, n = 6) {
+        const r = rng(semilla); let d = "", puntos = "";
+        for (let i = 0; i < n; i++) {
+          const c = m(r() < 0.75 ? 0.15 + r() * 0.5 : 1.5 + r() * 3, a0 + (a1 - a0) * r()), rx = 3 + r() * 5, ry = 1.6 + r() * 2;
+          d += wob(Array.from({ length: 8 }, (_, k) => [c[0] + rx * Math.cos(k * 0.7854), c[1] + ry * Math.sin(k * 0.7854)]), semilla + i, { amp: 0.5, paso: 4 });
+          puntos += `M${n2(c[0] - rx * 0.4)} ${n2(c[1])}h0.5M${n2(c[0] + rx * 0.3)} ${n2(c[1] - ry * 0.3)}h0.5`;
+        }
+        el("path", { d, fill: "#86b35c", stroke: TINTA, "stroke-width": 0.5 }, par); det(par, puntos, 0.5, { color: "#3f6b2a", op: 0.9 });
+      }
+      /* Viga con volumen: de a = [x, y] a b = [x, y] en el plano z = zc. ha y hb = medio grosor en cada extremo (m),
+         w = medio ancho en z. Da el cuadro de la cara lateral que se ve y el de la cara de enfrente. */
+      function viga3Pts(a, b, zc, ha, hb, w) {
+        const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L, s = (-nx + ny) > 0 ? 1 : -1;
+        const A1 = [a[0] + nx * ha * s, a[1] + ny * ha * s], B1 = [b[0] + nx * hb * s, b[1] + ny * hb * s], A2 = [a[0] - nx * ha * s, a[1] - ny * ha * s], B2 = [b[0] - nx * hb * s, b[1] - ny * hb * s];
+        return { lat: [P(A1[0], A1[1], zc - w), P(B1[0], B1[1], zc - w), P(B1[0], B1[1], zc + w), P(A1[0], A1[1], zc + w)], fr: [P(A1[0], A1[1], zc + w), P(B1[0], B1[1], zc + w), P(B2[0], B2[1], zc + w), P(A2[0], A2[1], zc + w)], luz: s * ny > 0.55 };
+      }
+      /* Viga de madera de sección cuadrada: cara lateral (luz o medio), cara de enfrente (sombra con achurado), vetas y nudos. */
+      function viga3(par, a, b, zc, h, w, c, semilla, liso) {
+        const q = viga3Pts(a, b, zc, h, h, w), g = el("g", {}, par);
+        forma(g, q.lat, q.luz ? c.t : c.i, semilla, FINO); forma(g, q.fr, c.d, semilla + 1, FINO);
+        det(g, achura(q.fr[0], q.fr[1], q.fr[2], q.fr[3], 2.2), 0.4, { op: 0.5 });
+        if (!liso) det(g, vetas(q.lat[0], q.lat[1], q.lat[2], q.lat[3], 2, semilla + 2) + vetas(q.fr[0], q.fr[1], q.fr[2], q.fr[3], 2, semilla + 3, false));
+        return g;
+      }
+      /* Amarre de cuerda trenzada que abraza una viga3, entre las fracciones f0 y f1 de su largo. */
+      const amarre3 = (par, a, b, f0, f1, zc, h, w, semilla) => {
+        const u = (f) => [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], q = viga3Pts(u(f0), u(f1), zc, h + 0.06, h + 0.06, w + 0.06);
+        forma(par, q.lat, SOGA, semilla, FINO); forma(par, q.fr, "#b8955c", semilla + 1, FINO);
+        det(par, achura(q.lat[0], q.lat[1], q.lat[2], q.lat[3], 1.4, 0.9) + achura(q.fr[0], q.fr[1], q.fr[2], q.fr[3], 1.4, 0.9), 0.55, { color: SOGA_O, op: 0.95 });
+      };
+      /* Herrajes: placa de hierro en una cara z = constante, con pernos. */
+      const pernos = (par, pts, r = 0.8) => el("path", { d: pts.map((p) => redondo(p[0], p[1], r)).join(""), fill: "#c9cbd2", stroke: TINTA, "stroke-width": 0.35 }, par);
+      const herraje = (par, xy, z, semilla, bol) => { forma(par, xy.map((p) => P(p[0], p[1], z)), "#6f7178", semilla, FINO).setAttribute("class", "ink fino"); if (bol) pernos(par, bol.map((p) => P(p[0], p[1], z))); };
+      const disco = (cx, cy, r, z, n = 16) => Array.from({ length: n }, (_, i) => P(cx + r * Math.cos(i / n * 6.2832), cy + r * Math.sin(i / n * 6.2832), z));
+      /* Rueda de madera maciza con canto, rayos y cubo de hierro. */
+      function rueda(par, cx, r, z, semilla) {
+        const g = el("g", {}, par);
+        forma(g, disco(cx, r, r, z - 0.32), "#9a6a30", semilla, FINO);
+        forma(g, disco(cx, r, r, z), "#c98f4a", semilla + 1, FINO);
+        forma(g, disco(cx, r, r * 0.76, z), "#e6b877", semilla + 2, FINO).setAttribute("class", "ink fino");
+        let rayos = ""; for (let i = 0; i < 4; i++) { const an = i * 0.7854 + 0.3, a = P(cx + r * 0.74 * Math.cos(an), r + r * 0.74 * Math.sin(an), z), b = P(cx - r * 0.74 * Math.cos(an), r - r * 0.74 * Math.sin(an), z); rayos += `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; }
+        det(g, rayos, 0.9, { op: 0.85 });
+        const q = disco(cx, r, r, z); det(g, achura(q[9], q[13], q[1], q[5], 2.2, 0.4), 0.4, { op: 0.35 });
+        forma(g, disco(cx, r, r * 0.24, z), "#6f7178", semilla + 3, FINO).setAttribute("class", "ink fino");
+        pernos(g, [P(cx, r, z)], 0.7);
+        return g;
+      }
+      /* Techo cónico de teja (como los del castillo de la portada): mitad en luz, mitad en sombra con achurado. */
+      function cono(par, cx, y0, cz, r, h, semilla) {
+        const g = el("g", {}, par), E = (gr, f = 1, y = y0) => P(cx + r * f * Math.cos(rad(gr)), y, cz + r * f * Math.sin(rad(gr))), ap = P(cx, y0 + h, cz);
+        const arco = (g0, g1, f, y) => { const pts = []; for (let i = 0; i <= 8; i++) pts.push(E(g0 + (g1 - g0) * i / 8, f, y)); return pts; };
+        forma(g, [...arco(225, 45, 1, y0), ap], "#D2634A", semilla, FINO);
+        el("path", { d: "M" + [...arco(135, 45, 1, y0), ap].map((p) => n2(p[0]) + " " + n2(p[1])).join("L") + "Z", fill: "#A5352A" }, g);
+        el("path", { d: "M" + [...arco(225, 190, 1, y0), ap].map((p) => n2(p[0]) + " " + n2(p[1])).join("L") + "Z", fill: "#F4A680", opacity: 0.6 }, g);
+        det(g, achura(E(135), E(45), ap, ap, 2.2, 0.3), 0.4, { op: 0.5 });
+        let tejas = "";
+        [0.26, 0.5, 0.72].forEach((f, k) => { const a = arco(225, 45, 1 - f, y0 + h * f); tejas += wob(a, semilla + 5 + k, { cerrado: false, amp: 0.3, paso: 5 }); a.forEach((p, i) => { if (i % 2 === k % 2 && i < 8) tejas += `M${n2(p[0])} ${n2(p[1])}l${n2((ap[0] - p[0]) * 0.16)} ${n2((ap[1] - p[1]) * 0.16)}`; }); });
+        det(g, tejas, 0.5, { op: 0.8 });
+        el("path", { d: wob([...arco(225, 45, 1, y0), ap], semilla, FINO), fill: "none", class: "ink" }, g);
+        return { g, ap };
+      }
+      /* Nubecita de polvo estilo tinta: contorno de bolitas. */
+      function nube(cx, cy, r, semilla) {
+        const rr = rng(semilla), n = 6, pts = [];
+        for (let i = 0; i < n; i++) { const an = i / n * 6.2832 + rr() * 0.4, q = r * (0.75 + rr() * 0.4); pts.push([cx + q * Math.cos(an) * 1.25, cy + q * Math.sin(an) * 0.85]); }
+        let d = `M${n2(pts[0][0])} ${n2(pts[0][1])}`;
+        for (let i = 1; i <= n; i++) { const p = pts[i % n], q = pts[i - 1], ch = Math.hypot(p[0] - q[0], p[1] - q[1]) * 0.6; d += `A${n2(ch)} ${n2(ch)} 0 0 1 ${n2(p[0])} ${n2(p[1])}`; }
+        return d + "Z";
+      }
+
+      const PIEDRA = { t: "#e6dfd1", i: "#cdc5b6", d: "#a59d8d" }, MADERA = { t: "#e6b877", i: "#c98f4a", d: "#9a6a30" }, HIERRO = { t: "#8d8f96", i: "#6f7178", d: "#52545a" };
+      const MAD = { ...FINO, achura: 2.2 };
+
+      /* --- Suelo: isla de pasto sobre el papel, con matas sueltas y flores --- */
+      const suelo = $("esc-suelo");
+      forma(suelo, [P(-11, 0, -9.6), P(-11, 0, 9), P(-11, -1.3, 9), P(-11, -1.3, -9.6)], "#c79a66", 11);
+      forma(suelo, [P(-11, 0, 9), P(52, 0, 9), P(52, -1.3, 9), P(-11, -1.3, 9)], "#a87c4c", 12);
+      det(suelo, achura(P(-11, 0, 9), P(52, 0, 9), P(52, -1.3, 9), P(-11, -1.3, 9), 4, 0.02), 0.5, { op: 0.4 });
+      forma(suelo, [P(-11, 0, -9.6), P(52, 0, -9.6), P(52, 0, 9), P(-11, 0, 9)], "#a5cf7a", 13);
+      {
+        const r = rng(41);
+        for (let i = 0; i < 12; i++) { const c = P(-9 + r() * 58, 0, -7.5 + r() * 15); el("ellipse", { cx: n1(c[0]), cy: n1(c[1]), rx: n1(26 + r() * 30), ry: n1(9 + r() * 8), fill: "#b6dc8b", transform: `rotate(-30 ${n1(c[0])} ${n1(c[1])})` }, suelo); }
+        /* sombras simples en el piso, con achurado */
+        const sMur = [P(16.5, 0, -4.5), P(19.6, 0, -4.5), P(19.6, 0, 4.5), P(16.5, 0, 4.5)];
+        /* (cada sombra aparece junto con su objeto) */
+        [[sMur, "esc-sombra-muralla"], [[P(45, 0, -5.4), P(51, 0, -5.4), P(51, 0, 5.6), P(41.5, 0, 5.6), P(41.5, 0, 5.4), P(45, 0, 4)], "esc-sombra-castillo"]].forEach(([p, id]) => { const g = el("g", { id, opacity: 0 }, suelo); el("path", { d: "M" + p.map((q) => n1(q[0]) + " " + n1(q[1])).join("L") + "Z", fill: "#8dbb63" }, g); det(g, achura(p[0], p[3], p[2], p[1], 3), 0.5, { color: "#3f6b2a", op: 0.5 }); });
+        const sombraQ = (id, q) => { const g = el("g", { id, opacity: 0 }, suelo); el("path", { d: "M" + q.map((p) => n1(p[0]) + " " + n1(p[1])).join("L") + "Z", fill: "#8dbb63" }, g); det(g, achura(q[0], q[3], q[2], q[1], 3), 0.5, { color: "#3f6b2a", op: 0.5 }); };
+        sombraQ("esc-sombra-cata", [P(-4.3, 0, -0.9), P(3.3, 0, -0.9), P(3.3, 0, 0.9), P(-4.3, 0, 0.9)]);
+        sombraQ("esc-sombra-treb", [P(-6.8, 0, -2.4), P(3.2, 0, -2.4), P(3.2, 0, 2.4), P(-6.8, 0, 2.4)]);
+        /* muro de ladrillo al fondo */
+        const LAD = { t: "#eba283", i: "#b9583c", d: "#d67b5b" };
+        caja(suelo, -11, 0, -9.6, 52, 3.2, -9, LAD, 20);
+        let juntas = "", tonoA = "", tonoB = "";
+        for (let c = 0; c < 4; c++) for (let x = -11 + (c % 2 ? 1 : 0); x < 52; x += 2) {
+          const a = P(x, c * 0.8, -9), b = P(x, (c + 1) * 0.8, -9); juntas += "M" + n1(a[0]) + " " + n1(a[1]) + "L" + n1(b[0] + (r() - 0.5)) + " " + n1(b[1]);
+          const q = "M" + [a, P(x + 2, c * 0.8, -9), P(x + 2, (c + 1) * 0.8, -9), b].map((p) => n1(p[0]) + " " + n1(p[1])).join("L") + "Z", azar = r();
+          if (azar < 0.2) tonoA += q; else if (azar > 0.84) tonoB += q;
+        }
+        el("path", { d: tonoA, fill: "rgba(110,35,15,.2)" }, suelo); el("path", { d: tonoB, fill: "rgba(255,225,190,.28)" }, suelo);
+        el("path", { d: juntas, fill: "none", class: "ink fino", opacity: 0.75 }, suelo);
+        [0.8, 1.6, 2.4].forEach((y, i) => el("path", { d: wob([P(-11, y, -9), P(52, y, -9)], 30 + i, { cerrado: false, amp: 0.9 }), fill: "none", class: "ink fino", opacity: 0.75 }, suelo));
+        /* matas de pasto, piedritas y flores pequeñas */
+        const libre = (x, z) => !(Math.abs(z) < 1.7 || (x < 1.5 && Math.abs(z) < 3) || (x > 38.5 && Math.abs(z) < 6) || (x > 14.5 && x < 20 && Math.abs(z) < 5.2));
+        let matas = "", cuenta = 0;
+        for (let i = 0; i < 900 && cuenta < 130; i++) {
+          const x = -10 + r() * 61, z = -8.3 + r() * 16.6; if (!libre(x, z)) continue;
+          const b = P(x, 0, z), h = 7 + r() * 7, hojas = 3 + Math.floor(r() * 3);
+          for (let k = 0; k < hojas; k++) { const f = (k / (hojas - 1) - 0.5) * 2; matas += `M${n1(b[0] + f * 4)} ${n1(b[1] + Math.abs(f))}Q${n1(b[0] + f * 5)} ${n1(b[1] - h * 0.5)} ${n1(b[0] + f * (8 + r() * 4))} ${n1(b[1] - h * (1 - Math.abs(f) * 0.35))}`; }
+          cuenta++;
+        }
+        el("path", { d: matas, fill: "none", class: "ink fino" }, suelo);
+        let petalosA = "", petalosB = "", centros = "", tallos = "", guijarros = "";
+        for (let i = 0, k = 0; i < 400 && k < 38; i++) {
+          const x = -10 + r() * 61, z = -8.3 + r() * 16.6; if (!libre(x, z)) continue;
+          const b = P(x, 0, z), c = [b[0], b[1] - 5 - r() * 3]; let p = "";
+          for (let j = 0; j < 5; j++) p += redondo(c[0] + 2.1 * Math.cos(j * 1.2566), c[1] + 2.1 * Math.sin(j * 1.2566), 1.5);
+          if (k % 2) petalosA += p; else petalosB += p;
+          centros += redondo(c[0], c[1], 1.1); tallos += `M${n1(b[0])} ${n1(b[1])}L${n1(c[0])} ${n1(c[1] + 2)}`; k++;
+        }
+        for (let i = 0, k = 0; i < 200 && k < 16; i++) { const x = -10 + r() * 61, z = -8.3 + r() * 16.6; if (!libre(x, z)) continue; const b = P(x, 0, z); guijarros += wob(circulo(b[0], b[1], 1.6 + r() * 1.8, 9), 600 + i, { amp: 0.35, paso: 3 }); k++; }
+        det(suelo, tallos, 0.7, { color: "#3f6b2a", op: 1 });
+        el("path", { d: petalosA, fill: "#fffdf6", stroke: TINTA, "stroke-width": 0.35 }, suelo); el("path", { d: petalosB, fill: "#ffd0e0", stroke: TINTA, "stroke-width": 0.35 }, suelo);
+        el("path", { d: centros, fill: "#f2b632" }, suelo);
+        el("path", { d: guijarros, fill: "#cfc8ba", stroke: TINTA, "stroke-width": 0.6 }, suelo);
+      }
+
+      /* --- Castillo (aparece en la toma 5). Mismos materiales que el de la portada del sitio:
+             piedra arenisca cálida, techos cónicos de teja roja, ventanas con luz y banderas. --- */
+      const cast = $("esc-castillo"), ARENISCA = { t: "#F8D9A0", i: "#E6BE88", d: "#B48A68" }, cTelas = [], cFlamas = [];
+      const banderin = (par, pie, semilla) => { const punta = [pie[0], pie[1] - 34]; el("path", { d: `M${n2(pie[0])} ${n2(pie[1])}L${n2(punta[0])} ${n2(punta[1])}`, fill: "none", class: "ink" }, par); const t = forma(par, [punta, [punta[0] + 20, punta[1] + 3], [punta[0] + 40, punta[1] + 9], [punta[0] + 22, punta[1] + 13], [punta[0], punta[1] + 20]], "#D2634A", semilla, FINO); t.__eje = punta; cTelas.push(t); };
+      const tronera = (par, x, y, z, semilla) => { forma(par, [P(x, y, z - 0.16), P(x, y, z + 0.16), P(x, y + 1.3, z + 0.16), P(x, y + 1.55, z), P(x, y + 1.3, z - 0.16)], "#453848", semilla, FINO).setAttribute("class", "ink fino"); };
+      const ventana = (par, x, y, z, semilla) => { forma(par, [P(x, y, z - 0.5), P(x, y, z + 0.5), P(x, y + 1.1, z + 0.5), P(x, y + 1.6, z), P(x, y + 1.1, z - 0.5)], "#FFD877", semilla, FINO); const a = P(x, y, z), b = P(x, y + 1.55, z), c = P(x, y + 0.8, z - 0.5), d = P(x, y + 0.8, z + 0.5); det(par, `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}M${n2(c[0])} ${n2(c[1])}L${n2(d[0])} ${n2(d[1])}`, 0.6, { op: 0.9 }); forma(par, [P(x, y - 0.18, z - 0.65), P(x, y - 0.18, z + 0.65), P(x, y, z + 0.65), P(x, y, z - 0.65)], ARENISCA.t, semilla + 1, FINO).setAttribute("class", "ink fino"); };
+      const cCuerpo = caja(cast, 40, 0, -4, 45, 8, 4, ARENISCA, 50, { achura: 3 });
+      sillares(cCuerpo, 40, 0, 8, -4, 4, 1, 1.25, 51);
+      sillaresM(cCuerpo, (y, x) => P(x, y, 4), 0, 8, 40, 45, 1, 1.25, 52);
+      ventana(cCuerpo, 40, 5.2, -2.3, 53); ventana(cCuerpo, 40, 5.2, 2.3, 55); tronera(cCuerpo, 40, 5.3, 0, 57);
+      musgo(cCuerpo, (y, z) => P(40, y, z), -3.2, 3.2, 58, 7);
+      const cAlmenas = el("g", {}, cast);
+      [-3.1, -1.7, -0.45, 0.8, 2.2].forEach((z, i) => caja(cAlmenas, 40, 8, z, 40.9, 8.9, z + 0.85, ARENISCA, 60 + i * 3, { ...FINO, achura: 2.2 }));
+      const torre = (z0, semilla) => {
+        const g = el("g", {}, cast), z1 = z0 + 2.2, zc = z0 + 1.1;
+        caja(g, 39.3, 0, z0, 41.5, 12, z1, ARENISCA, semilla, { achura: 2.6 });
+        sillares(g, 39.3, 0, 12, z0, z1, 1, 0.75, semilla + 3);
+        sillaresM(g, (y, x) => P(x, y, z1), 0, 12, 39.3, 41.5, 1, 0.75, semilla + 4);
+        tronera(g, 39.3, 4.4, zc, semilla + 5); tronera(g, 39.3, 8.6, zc, semilla + 6);
+        musgo(g, (y, z) => P(39.3, y, z), z0, z1, semilla + 7, 3);
+        caja(g, 39.1, 12, z0 - 0.2, 41.7, 12.7, z1 + 0.2, ARENISCA, semilla + 8, { ...FINO, achura: 2 });
+        const c = cono(g, 40.4, 12.7, zc, 1.75, 4.3, semilla + 12);
+        banderin(g, c.ap, semilla + 30);
+        return g;
+      };
+      const cTorreA = torre(-5.4, 80);
+      /* portón de madera con herrajes y remaches, y antorchas a los lados */
+      const cPuerta = el("g", {}, cast);
+      const arcoPuerta = (m, alto) => [P(40, 0, -m), P(40, alto - 1.1, -m), P(40, alto - 0.35, -m * 0.62), P(40, alto, 0), P(40, alto - 0.35, m * 0.62), P(40, alto - 1.1, m), P(40, 0, m)];
+      const ptsPuerta = arcoPuerta(1.45, 3.9);
+      forma(cPuerta, arcoPuerta(1.85, 4.4), "#DDB07A", 69, FINO);
+      { let dov = ""; arcoPuerta(1.85, 4.4).forEach((p, i) => { const q = ptsPuerta[i]; dov += `M${n2(p[0])} ${n2(p[1])}L${n2(q[0])} ${n2(q[1])}`; }); [1, 2].forEach((y) => [-1, 1].forEach((s) => { const a = P(40, y, 1.45 * s), b = P(40, y, 1.85 * s); dov += `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; })); det(cPuerta, dov, 0.6, { op: 0.85 }); }
+      forma(cPuerta, ptsPuerta, "#8a5a34", 70, FINO);
+      el("path", { d: [-0.95, -0.47, 0, 0.47, 0.95].map((z) => { const a = P(40, 0.05, z), b = P(40, 3.85 - Math.abs(z) * 0.75, z); return "M" + n2(a[0]) + " " + n2(a[1]) + "L" + n2(b[0]) + " " + n2(b[1]); }).join(""), fill: "none", class: "ink fino", opacity: 0.85 }, cPuerta);
+      det(cPuerta, vetas(P(40, 0.1, -1.4), P(40, 2.7, -1.4), P(40, 2.7, -0.5), P(40, 0.1, -0.5), 3, 73) + vetas(P(40, 0.1, 0.5), P(40, 2.7, 0.5), P(40, 2.7, 1.4), P(40, 0.1, 1.4), 3, 74), 0.45);
+      [0.75, 2.35].forEach((y, i) => { forma(cPuerta, [P(40, y, -1.42), P(40, y, 1.42), P(40, y + 0.34, 1.42), P(40, y + 0.34, -1.42)], "#5d5f66", 71 + i, FINO).setAttribute("class", "ink fino"); pernos(cPuerta, [-1.15, -0.7, -0.24, 0.24, 0.7, 1.15].map((z) => P(40, y + 0.17, z)), 0.75); });
+      el("path", { d: redondo(P(40, 1.65, 0.3)[0], P(40, 1.65, 0.3)[1], 1.5), fill: "none", stroke: TINTA, "stroke-width": 0.7 }, cPuerta);
+      const cBrillo = el("path", { d: wob(ptsPuerta, 70, FINO), fill: "none", stroke: "#ffcf33", "stroke-width": 11, "stroke-linejoin": "round", "vector-effect": "non-scaling-stroke", opacity: 0 }, cPuerta);
+      [-2.45, 2.45].forEach((z, i) => {
+        const a = P(40, 2.9, z), b = P(39.72, 3.75, z), g = el("g", {}, cPuerta);
+        el("path", { d: `M${n2(P(40, 3.1, z)[0])} ${n2(P(40, 3.1, z)[1])}L${n2((a[0] + b[0]) / 2)} ${n2((a[1] + b[1]) / 2)}`, fill: "none", stroke: TINTA, "stroke-width": 0.9 }, g);
+        el("path", { d: `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`, fill: "none", stroke: TINTA, "stroke-width": 2.6, "stroke-linecap": "round" }, g);
+        el("path", { d: `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`, fill: "none", stroke: "#9a6a30", "stroke-width": 1.5, "stroke-linecap": "round" }, g);
+        const f = el("g", {}, g); f.__eje = b;
+        el("path", { d: `M${n2(b[0])} ${n2(b[1] + 1)}c-5.5 -3 -4 -8 -0.5 -12.5c0.6 3 4.4 4 4 8.5c-0.2 2.2 -1.6 3.4 -3.5 4z`, fill: "#f08a24", stroke: TINTA, "stroke-width": 0.7, "stroke-linejoin": "round" }, f);
+        el("path", { d: `M${n2(b[0])} ${n2(b[1])}c-2.4 -1.6 -1.8 -4 -0.2 -6.2c0.4 1.8 2.2 2.2 1.8 4.4c-0.2 1 -0.8 1.5 -1.6 1.8z`, fill: "#ffe27a" }, f);
+        cFlamas.push(f);
+      });
+      const cTorreB = torre(3.2, 90);
+
+      /* --- Muralla (aparece en la toma 8): 6 m hasta lo alto de las almenas, a 16 m --- */
+      const mur = $("esc-muralla"), GRIS = { t: "#ddd6c8", i: "#bdb5a6", d: "#8f8778" }, ALTO_M = DATOS.muralla_alto;
+      const mCaja = caja(mur, 15.5, 0, -4.5, 16.5, ALTO_M - 0.8, 4.5, GRIS, 100, { achura: 2.6 });
+      sillares(mCaja, 15.5, 0, ALTO_M - 0.8, -4.5, 4.5, 1.3, 1.5, 104);
+      sillaresM(mCaja, (y, x) => P(x, y, 4.5), 0, ALTO_M - 0.8, 15.5, 16.5, 1.3, 0.5, 105);
+      musgo(mCaja, (y, z) => P(15.5, y, z), -4.3, 4.3, 106, 8);
+      [-4.5, -2.5, -0.5, 1.5, 3.5].forEach((z, i) => { const g = caja(mur, 15.5, ALTO_M - 0.8, z, 16.5, ALTO_M, z + 1, GRIS, 110 + i * 3, { ...FINO, achura: 2.2 }); const a = P(15.5, ALTO_M - 0.4, z), b = P(15.5, ALTO_M - 0.4, z + 1); det(g, `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}M${n2(a[0] + 3)} ${n2(a[1] + 4)}h0.6M${n2(b[0] - 4)} ${n2(b[1] - 3)}h0.6`, 0.5, { op: 0.7 }); });
+
+      /* --- Catapulta sencilla (tomas 1 y 2) --- */
+      const cata = $("esc-cata");
+      const kTronco = caja(cata, -4.2, 0, -0.8, 1.4, 1, 0.8, MADERA, 120, { ...MAD, veta: "x" });
+      [-3.3, 0.9].forEach((x, i) => { amarre(kTronco, [P(x, 1, -0.8), P(x + 0.35, 1, -0.8), P(x + 0.35, 1, 0.8), P(x, 1, 0.8)], 124 + i * 2); amarre(kTronco, [P(x, 0, 0.8), P(x + 0.35, 0, 0.8), P(x + 0.35, 1, 0.8), P(x, 1, 0.8)], 125 + i * 2); });
+      const kSoporte = caja(cata, -0.5, 1, -0.5, 0.5, 3.6, 0.5, MADERA, 130, { ...MAD, veta: "y" });
+      amarre(kSoporte, [P(-0.5, 2.85, -0.5), P(-0.5, 2.85, 0.5), P(-0.5, 3.2, 0.5), P(-0.5, 3.2, -0.5)], 134); amarre(kSoporte, [P(-0.5, 2.85, 0.5), P(0.5, 2.85, 0.5), P(0.5, 3.2, 0.5), P(-0.5, 3.2, 0.5)], 135);
+      const kBrazoG = el("g", {}, cata), kBrazo = el("path", { fill: MADERA.t, class: "ink" }, kBrazoG), kBrazoV = det(kBrazoG, ""), kAmarre = el("path", { fill: SOGA, class: "ink" }, kBrazoG), kAmarreL = det(kBrazoG, "", 0.55, { color: SOGA_O, op: 0.95 });
+      const kCanastaG = el("g", {}, cata), kCanastaT = el("g", {}, kCanastaG);
+      forma(kCanastaT, [[-13, -5], [13, -5], [9, 8], [-9, 8]], "#8a5a2c", 140, FINO);
+      det(kCanastaT, "M-12 -1H12M-10.5 3.5H10.5" + [-8, -4, 0, 4, 8].map((x) => `M${x} -5L${x * 0.72} 8`).join(""), 0.5, { op: 0.8 });
+      el("path", { d: "M-13.5 -5.2H13.5", fill: "none", stroke: SOGA, "stroke-width": 1.8, "stroke-linecap": "round" }, kCanastaT); det(kCanastaT, "M-13.5 -5.2H13.5", 1.8, { color: SOGA_O, op: 0.9 }).setAttribute("stroke-dasharray", "0.7 1.5");
+      const PIV1 = [0, 3.6], L1 = 4.4;
+
+      /* --- Trabuquete (toma 3 en adelante): vigas de sección cuadrada, herrajes, ruedas y contrapeso de tablones --- */
+      const treb = $("esc-treb"), PIV2 = [-3, 6.6], L2 = 7, C2 = 2.4, ZL = 1.5, PIE_A = [-5.6, 1.2], PIE_B = [-0.4, 1.2];
+      const lado = (z, semilla) => {
+        const g = el("g", {}, treb), zf = z + 0.33;
+        if (z < 0) { rueda(g, -5.2, 0.85, z - 0.45, semilla + 40); rueda(g, -0.8, 0.85, z - 0.45, semilla + 45); }
+        caja(g, -6.5, 0.5, z - 0.35, 0.5, 1.2, z + 0.35, MADERA, semilla, { ...MAD, veta: "x" });
+        pernos(g, [-6.1, -5.1, -0.9, 0.1].map((x) => P(x, 0.85, z + 0.35)), 0.8);
+        viga3(g, PIE_A, PIV2, z, 0.3, 0.3, MADERA, semilla + 4); viga3(g, PIE_B, PIV2, z, 0.3, 0.3, MADERA, semilla + 8);
+        viga3(g, [-4.75, 3], [-1.25, 3], z, 0.2, 0.26, MADERA, semilla + 12);
+        amarre3(g, PIE_A, PIV2, 0.29, 0.37, z, 0.3, 0.3, semilla + 16); amarre3(g, PIE_B, PIV2, 0.29, 0.37, z, 0.3, 0.3, semilla + 18);
+        amarre3(g, PIE_A, PIV2, 0.8, 0.86, z, 0.3, 0.3, semilla + 20); amarre3(g, PIE_B, PIV2, 0.8, 0.86, z, 0.3, 0.3, semilla + 22);
+        /* escuadras de hierro en los pies y placa con buje en el eje */
+        herraje(g, [[-6.15, 1.22], [-5.05, 1.22], [-4.9, 1.95], [-5.6, 1.95]], zf, semilla + 24, [[-5.85, 1.45], [-5.3, 1.45], [-5.25, 1.8]]);
+        herraje(g, [[0.15, 1.22], [-0.95, 1.22], [-1.1, 1.95], [-0.4, 1.95]], zf, semilla + 25, [[-0.15, 1.45], [-0.7, 1.45], [-0.75, 1.8]]);
+        herraje(g, [[-3.65, 5.65], [-2.35, 5.65], [-2.62, 6.95], [-3.38, 6.95]], zf, semilla + 26, [[-3.4, 5.85], [-2.6, 5.85]]);
+        forma(g, disco(PIV2[0], PIV2[1], 0.5, zf + 0.02), "#8d8f96", semilla + 27, FINO).setAttribute("class", "ink fino");
+        forma(g, disco(PIV2[0], PIV2[1], 0.22, zf + 0.02, 10), "#3a3b40", semilla + 28, FINO).setAttribute("class", "ink fino");
+        if (z > 0) { rueda(g, -5.2, 0.85, z + 0.78, semilla + 40); rueda(g, -0.8, 0.85, z + 0.78, semilla + 45); }
+        return g;
+      };
+      const tLejos = lado(-ZL, 150);
+      /* travesaños que unen los dos lados */
+      const tCruz = el("g", {}, treb);
+      caja(tCruz, -6.3, 0.55, -ZL, -5.75, 1.15, ZL, MADERA, 200, { ...MAD });
+      caja(tCruz, -0.25, 0.55, -ZL, 0.3, 1.15, ZL, MADERA, 205, { ...MAD });
+      const tBrazoG = el("g", {}, treb);
+      { const q = vigaPts([PIV2[0], PIV2[1], -ZL], [PIV2[0], PIV2[1], ZL], 3.6); forma(tBrazoG, q, "#6f7178", 160, FINO); det(tBrazoG, achura(q[0], q[1], q[2], q[3], 1.8, 0.5), 0.4, { op: 0.5 }); }
+      const tHonda = [el("path", { fill: "none", stroke: TINTA, "stroke-width": 2.6, "stroke-linecap": "round" }, tBrazoG), el("path", { fill: "none", stroke: SOGA, "stroke-width": 1.5, "stroke-linecap": "round" }, tBrazoG), el("path", { fill: "none", stroke: SOGA_O, "stroke-width": 1.5, "stroke-dasharray": "0.8 1.6", opacity: 0.9 }, tBrazoG)];
+      /* bolsa de cuero de la honda */
+      const tBolsaT = el("g", {}, tBrazoG);
+      forma(tBolsaT, [[-17, -4], [-16, 8], [-8, 15], [0, 17], [8, 15], [16, 8], [17, -4], [9, 5], [0, 7], [-9, 5]], "#8a5a34", 166, FINO);
+      det(tBolsaT, "M-14 2l1.5 1.2M-11 8l1.5 1M-5 12.5l1.2 0.6M5 12.5l-1.2 0.6M11 8l-1.5 1M14 2l-1.5 1.2M-13 6q13 9 26 0", 0.5, { op: 0.8 });
+      pernos(tBolsaT, [[-16.5, -3], [16.5, -3]], 1.3);
+      const tBrazoL = el("path", { fill: MADERA.i, class: "ink" }, tBrazoG), tBrazo = el("path", { fill: MADERA.d, class: "ink" }, tBrazoG), tBrazoV = det(tBrazoG, ""), tBrazoA = det(tBrazoG, "", 0.4, { op: 0.5 });
+      const tAmarre = el("path", { fill: SOGA, class: "ink" }, tBrazoG), tAmarreL = det(tBrazoG, "", 0.55, { color: SOGA_O, op: 0.95 });
+      /* buje de hierro del eje, sobre el brazo */
+      forma(tBrazoG, disco(PIV2[0], PIV2[1], 0.5, 0.27), "#8d8f96", 167, FINO).setAttribute("class", "ink fino");
+      forma(tBrazoG, disco(PIV2[0], PIV2[1], 0.2, 0.27, 10), "#3a3b40", 168, FINO).setAttribute("class", "ink fino");
+      pernos(tBrazoG, [0, 1, 2, 3].map((i) => P(PIV2[0] + 0.36 * Math.cos(i * 1.5708 + 0.5), PIV2[1] + 0.36 * Math.sin(i * 1.5708 + 0.5), 0.27)), 0.55);
+      /* contrapeso: caja de tablones con bandas de hierro y piedras asomando, colgada de una cadena gruesa */
+      const tPesoG = el("g", {}, treb), tCadena = el("path", { fill: "none", stroke: TINTA, "stroke-width": 2 }, tPesoG), tCadena2 = el("path", { fill: "none", stroke: "#a3a5ac", "stroke-width": 0.85 }, tPesoG), tPesoT = el("g", {}, tPesoG);
+      {
+        const X0 = -1.15, X1 = 1.15, Z0 = -1.05, Z1 = 1.05, Y0 = -3.2, Y1 = -0.9, r = rng(171);
+        /* piedras del fondo (se ven por encima del borde) */
+        const roca = (x, y, z, rr, semilla) => { const c = P(x, y, z); forma(tPesoT, circulo(c[0], c[1], rr, 9), ["#aaa59b", "#bdb8ad", "#948f85"][semilla % 3], semilla, { amp: 0.7, paso: 5 }).setAttribute("class", "ink fino"); det(tPesoT, `M${n2(c[0] - rr * 0.5)} ${n2(c[1] - rr * 0.2)}l${n2(rr * 0.4)} ${n2(rr * 0.3)}M${n2(c[0] + rr * 0.1)} ${n2(c[1] + rr * 0.3)}l${n2(rr * 0.4)} ${n2(-rr * 0.2)}` + achura([c[0] - rr * 0.8, c[1] + rr * 0.3], [c[0] + rr * 0.6, c[1] + rr * 0.6], [c[0] + rr * 0.5, c[1] + rr * 0.9], [c[0] - rr * 0.5, c[1] + rr * 0.7], 1.6, 0.4), 0.45, { op: 0.7 }); };
+        [[0.5, -0.4], [-0.5, -0.6], [0.1, 0.5]].forEach((p, i) => roca(p[0], Y1 + 0.35, p[1], 9 + r() * 3, 172 + i));
+        caja(tPesoT, X0, Y0, Z0, X1, Y1, Z1, MADERA, 170, { ...FINO, achura: 2 });
+        let tablas = "";
+        [-0.35, 0.35].forEach((z) => { const a = P(X0, Y0, z), b = P(X0, Y1, z); tablas += `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; });
+        [-0.4, 0.4].forEach((x) => { const a = P(x, Y0, Z1), b = P(x, Y1, Z1); tablas += `M${n2(a[0])} ${n2(a[1])}L${n2(b[0])} ${n2(b[1])}`; });
+        el("path", { d: tablas, fill: "none", class: "ink fino", opacity: 0.85 }, tPesoT);
+        det(tPesoT, vetas(P(X0, Y0, Z0), P(X0, Y1, Z0), P(X0, Y1, Z1), P(X0, Y0, Z1), 5, 176) + vetas(P(X0, Y0, Z1), P(X0, Y1, Z1), P(X1, Y1, Z1), P(X1, Y0, Z1), 4, 177));
+        /* borde de la caja (hueco) y piedras de enfrente */
+        forma(tPesoT, [P(X0 + 0.2, Y1, Z0 + 0.2), P(X1 - 0.2, Y1, Z0 + 0.2), P(X1 - 0.2, Y1, Z1 - 0.2), P(X0 + 0.2, Y1, Z1 - 0.2)], "#5e4326", 178, FINO).setAttribute("class", "ink fino");
+        [[-0.55, 0.45], [0.45, 0.35], [-0.1, -0.2], [0.55, -0.5], [-0.6, -0.55]].forEach((p, i) => roca(p[0], Y1 + 0.18, p[1], 7.5 + r() * 3, 180 + i));
+        /* bandas de hierro con remaches */
+        [-1.5, -2.85].forEach((y, i) => {
+          forma(tPesoT, [P(X0, y, Z0), P(X0, y, Z1), P(X0, y + 0.3, Z1), P(X0, y + 0.3, Z0)], "#6f7178", 186 + i * 2, FINO).setAttribute("class", "ink fino");
+          forma(tPesoT, [P(X0, y, Z1), P(X1, y, Z1), P(X1, y + 0.3, Z1), P(X0, y + 0.3, Z1)], "#52545a", 187 + i * 2, FINO).setAttribute("class", "ink fino");
+          pernos(tPesoT, [-0.75, -0.1, 0.6].map((z) => P(X0, y + 0.15, z)).concat([-0.7, 0, 0.7].map((x) => P(x, y + 0.15, Z1))), 0.75);
+        });
+        /* asa de hierro donde engancha la cadena */
+        const a = P(0, Y1 + 0.75, 0); el("path", { d: `M${n2(a[0] - 4.5)} ${n2(a[1] + 9)}Q${n2(a[0] - 5)} ${n2(a[1] - 3)} ${n2(a[0])} ${n2(a[1] - 3)}Q${n2(a[0] + 5)} ${n2(a[1] - 3)} ${n2(a[0] + 4.5)} ${n2(a[1] + 9)}`, fill: "none", stroke: TINTA, "stroke-width": 2.2, "stroke-linecap": "round" }, tPesoT);
+        el("path", { d: `M${n2(a[0] - 4.5)} ${n2(a[1] + 9)}Q${n2(a[0] - 5)} ${n2(a[1] - 3)} ${n2(a[0])} ${n2(a[1] - 3)}Q${n2(a[0] + 5)} ${n2(a[1] - 3)} ${n2(a[0] + 4.5)} ${n2(a[1] + 9)}`, fill: "none", stroke: "#a3a5ac", "stroke-width": 1 }, tPesoT);
+      }
+      const tCerca = lado(ZL, 180);
+
+      /* --- Rastros (parábolas punteadas), piedra y su sombra --- */
+      const rastro37 = el("path", { fill: "none", stroke: TINTA, "stroke-width": 5, "stroke-linecap": "round", "stroke-dasharray": "0.1 13" }, $("esc-rastros"));
+      const rastro45 = el("path", { fill: "none", stroke: CORAL, "stroke-width": 6.5, "stroke-linecap": "round", "stroke-dasharray": "0.1 12" }, $("esc-rastros"));
+      const vuelo = $("esc-vuelo");
+      const sombra = el("ellipse", { rx: 13, ry: 6, fill: "rgba(29,26,22,.22)" }, vuelo);
+      const piedraT = el("g", {}, vuelo), piedra = el("g", {}, piedraT);
+      forma(piedra, circulo(0, 0, 13.5), "#aaa59b", 190, FINO);
+      el("path", { d: "M-10 2Q-3 13 10 4Q4 9 -10 2Z", fill: "#7f7a70" }, piedra);
+      el("path", { d: "M-7 -8Q-1 -12 5 -9Q0 -9.5 -7 -8Z", fill: "#c9c4ba" }, piedra);
+      det(piedra, "M-6 -3l3 2l-1 3M4 -5l2 3l3 0M-2 5l3 1M7 2l1.5 2M-9 -1h1M1 -1h0.8" + achura([-11, 3], [9, 9], [8, 12], [-8, 9], 2, 0.4), 0.5, { op: 0.75 });
+
+      /* Estado que se anima: cada cambio vuelve a dibujar las piezas móviles. */
+      const e = { a1: 205, a2: 220, peso: 1.3, sx: -3.99, sy: 5.5, enc: 0, honda: 0, r37: 0, r45: 0 };
+      /* Cámara: zoom k y foco (fx, fy) en px de la vista general; sig = 1 sigue a la piedra;
+         tb/amp = temblor (tb va de 0 a 1 y el temblor se apaga solo). */
+      const c0 = P(-2.6, 0.9), cm = { k: 11, fx: c0[0], fy: c0[1], sig: 0, tb: 1, amp: 0 };
+      const st = {}, camSt = {}, mundo = $("esc-mundo");
+      const camino = (f, hasta) => { if (hasta <= 0) return ""; let d = ""; for (let t = 0; ; t += 0.04) { const tt = Math.min(t, hasta), w = f(tt), p = P(w[0], w[1] + 0.5); d += (d ? "L" : "M") + n1(p[0]) + " " + n1(p[1]); if (tt >= hasta) break; } return d; };
+      function encuadra() {
+        const s = P(e.sx, e.sy + 0.5), fx = cm.fx + (s[0] - cm.fx) * cm.sig, fy = cm.fy + (s[1] - cm.fy) * cm.sig, q = cm.amp * (1 - cm.tb);
+        mundo.setAttribute("transform", `matrix(${n2(cm.k * 100) / 100} 0 0 ${n2(cm.k * 100) / 100} ${n2(540 - cm.k * fx + q * Math.sin(cm.tb * 41))} ${n2(1010 - cm.k * fy + q * Math.cos(cm.tb * 33))})`);
+      }
+      function dibuja() {
+        const a = rad(e.a1), ca = Math.cos(a), sa = Math.sin(a), p1 = [PIV1[0] + L1 * ca, PIV1[1] + L1 * sa], en1 = (f) => [PIV1[0] + L1 * f * ca, PIV1[1] + L1 * f * sa];
+        const q1 = vigaPts(p1, en1(-0.2), 3);
+        kBrazo.setAttribute("d", wob(q1, 141, FINO)); kBrazoV.setAttribute("d", vetas(q1[0], q1[1], q1[2], q1[3], 2, 142));
+        const m1 = vigaPts(en1(0.86), en1(0.93), 3.9); kAmarre.setAttribute("d", wob(m1, 143, FINO)); kAmarreL.setAttribute("d", achura(m1[0], m1[1], m1[2], m1[3], 1.4, 0.9));
+        const c = P(p1[0], p1[1]); kCanastaT.setAttribute("transform", `translate(${n1(c[0])} ${n1(c[1])})`);
+        if (e.enc > 0.5) { e.sx = p1[0]; e.sy = p1[1] + 0.05; }
+        /* brazo del trabuquete: grueso en el contrapeso y delgado en la punta */
+        const b = rad(e.a2), cb = Math.cos(b), sb = Math.sin(b), en2 = (f) => [PIV2[0] + L2 * f * cb, PIV2[1] + L2 * f * sb], p2 = en2(1), q2 = [PIV2[0] - C2 * cb, PIV2[1] - C2 * sb];
+        const qb = viga3Pts(q2, p2, 0, 0.4, 0.15, 0.24);
+        tBrazoL.setAttribute("d", wob(qb.lat, 161, FINO)); tBrazoL.setAttribute("fill", qb.luz ? MADERA.t : MADERA.i);
+        tBrazo.setAttribute("d", wob(qb.fr, 162, FINO));
+        tBrazoV.setAttribute("d", vetas(qb.lat[0], qb.lat[1], qb.lat[2], qb.lat[3], 2, 163) + vetas(qb.fr[0], qb.fr[1], qb.fr[2], qb.fr[3], 3, 164));
+        tBrazoA.setAttribute("d", achura(qb.fr[0], qb.fr[1], qb.fr[2], qb.fr[3], 2.2));
+        const m2 = viga3Pts(en2(0.9), en2(0.95), 0, 0.22, 0.2, 0.29), m3 = viga3Pts(en2(-0.26), en2(-0.31), 0, 0.44, 0.45, 0.29);
+        tAmarre.setAttribute("d", wob(m2.lat, 165, FINO) + wob(m2.fr, 166, FINO) + wob(m3.lat, 167, FINO) + wob(m3.fr, 168, FINO));
+        tAmarreL.setAttribute("d", [m2.lat, m2.fr, m3.lat, m3.fr].map((q) => achura(q[0], q[1], q[2], q[3], 1.4, 0.9)).join(""));
+        /* cadena gruesa del contrapeso: eslabones alternados (de frente y de canto) */
+        const h0 = P(q2[0], q2[1], 0.1), h1 = P(q2[0] + e.peso * 0.5, q2[1] - 1.05, 0.1), o = P(0, 0), ux = h1[0] - h0[0], uy = h1[1] - h0[1], lc = Math.hypot(ux, uy) || 1, ang = n1(Math.atan2(uy, ux) * 57.2958), N = 5, ra = lc / N * 0.78;
+        let cad = "";
+        for (let i = 0; i < N; i++) { const m = lerp(h0, h1, (i + 0.5) / N), rb = i % 2 ? 0.7 : 2.1, x0 = n2(m[0] - ux / lc * ra), y0 = n2(m[1] - uy / lc * ra), x1 = n2(m[0] + ux / lc * ra), y1 = n2(m[1] + uy / lc * ra); cad += `M${x0} ${y0}A${n2(ra)} ${rb} ${ang} 1 0 ${x1} ${y1}A${n2(ra)} ${rb} ${ang} 1 0 ${x0} ${y0}`; }
+        tCadena.setAttribute("d", cad); tCadena2.setAttribute("d", cad);
+        tPesoT.setAttribute("transform", `translate(${n1(h1[0] - o[0])} ${n1(h1[1] - o[1])})`);
+        /* honda: dos cuerdas trenzadas y una bolsa de cuero. Cargada, abraza la piedra; al soltarla, cuelga de la punta */
+        const s = P(e.sx, e.sy + 0.5), s0 = P(e.sx, 0), t2 = P(p2[0], p2[1]), suelta = e.honda <= 0.5;
+        const bolsa = suelta ? [t2[0] - cb * 6, t2[1] + 34] : s;
+        const cuerda = (dx) => `M${n1(t2[0])} ${n1(t2[1])}Q${n1((t2[0] + bolsa[0] + dx) / 2 + (suelta ? dx * 0.2 : 0))} ${n1((t2[1] + bolsa[1]) / 2 + (suelta ? 0 : 7))} ${n1(bolsa[0] + dx)} ${n1(bolsa[1] - 3)}`;
+        const dh = cuerda(-16.5) + cuerda(16.5);
+        tHonda.forEach((p) => p.setAttribute("d", dh));
+        tBolsaT.setAttribute("transform", `translate(${n1(bolsa[0])} ${n1(bolsa[1])})` + (suelta ? " scale(0.8 1)" : ""));
+        piedraT.setAttribute("transform", `translate(${n1(s[0])} ${n1(s[1])})`);
+        sombra.setAttribute("cx", n1(s0[0])); sombra.setAttribute("cy", n1(s0[1] + 3)); sombra.setAttribute("opacity", e.sy > 0.35 ? 1 : 0);
+        rastro37.setAttribute("d", camino(vuelo37, e.r37)); rastro45.setAttribute("d", camino(vuelo45, e.r45));
+        encuadra();
+      }
+      Object.keys(e).forEach((k) => Object.defineProperty(st, k, { get: () => e[k], set: (v) => { e[k] = v; dibuja(); } }));
+      Object.keys(cm).forEach((k) => Object.defineProperty(camSt, k, { get: () => cm[k], set: (v) => { cm[k] = v; encuadra(); } }));
+      /* f37 y f45: tiempo de vuelo (s). La piedra va por la parábola real y deja su rastro. */
+      let f37 = 0, f45 = 0;
+      Object.defineProperty(st, "f37", { get: () => f37, set: (t) => { f37 = t; const w = vuelo37(t); e.sx = w[0]; e.sy = w[1]; e.r37 = t; dibuja(); } });
+      Object.defineProperty(st, "f45", { get: () => f45, set: (t) => { f45 = t; const w = vuelo45(t); e.sx = w[0]; e.sy = w[1]; e.r45 = t; dibuja(); } });
+      dibuja();
+
+      /* ---------- Movimiento ---------- */
+      const GENERAL = [540, 1010];
+      /* cam: mueve la cámara a un zoom y un foco. sigue: persigue a la piedra. vuelve: suelta a la piedra y va a un foco. */
+      const cam = (t, k, f, dur = 0.9, ease = "power2.inOut") => tl.to(camSt, { k, fx: f[0], fy: f[1], duration: dur, ease }, t);
+      const sigue = (t, k, dur = 0.4, ease = "power2.out") => tl.to(camSt, { k, sig: 1, duration: dur, ease }, t);
+      const vuelve = (t, k, f, dur = 0.9, ease = "power2.inOut") => { tl.set(camSt, { fx: f[0], fy: f[1] }, t - 0.002); tl.to(camSt, { k, sig: 0, duration: dur, ease }, t); };
+      const tiembla = (t, amp, dur = 0.5) => tl.fromTo(camSt, { tb: 0, amp }, { tb: 1, amp, duration: dur, ease: "none", immediateRender: false }, t);
+      const pop = (g, t, o, ir = true) => tl.fromTo(g, { scale: 0, opacity: 0, svgOrigin: n1(o[0]) + " " + n1(o[1]) }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2.2)", immediateRender: ir }, t);
+      const quita = (g, t) => tl.to(g, { scale: 0, opacity: 0, duration: 0.25, ease: "back.in(2)" }, t);
+      /* Notas a mano: las rayas se dibujan solas y el texto aparece como si se escribiera. */
+      const raya = (par, d, color = AZUL, w = 3.4, extra = {}) => el("path", { d, class: "raya", stroke: color, "stroke-width": w, pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1, opacity: 0, ...extra }, par);
+      const traza = (p, t, dur = 0.5) => { tl.set(p, { opacity: 1 }, t); tl.to(p, { strokeDashoffset: 0, duration: dur, ease: "power1.inOut" }, t); };
+      const texto = (par, x, y, str, size, o = {}) => { const g = el("g", o.rot ? { transform: `rotate(${o.rot} ${n1(x)} ${n1(y)})` } : {}, par); const t = el("text", { x: n1(x), y: n1(y), "font-size": size, "text-anchor": o.anc || "start", class: "nota", fill: o.fill || AZUL, style: "clip-path: inset(-30% 105% -30% -5%)" + (o.halo ? ";stroke-width:" + o.halo + "px" : "") }, g); t.textContent = str; return t; };
+      const escribe = (t, cuando, dur = 0.5) => tl.to(t, { clipPath: "inset(-30% -5% -30% -5%)", duration: dur, ease: "none" }, cuando);
+      const borra = (cosas, t) => tl.to(cosas, { opacity: 0, duration: 0.25 }, t);
+      const flecha = (par, a, b, color, w) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, h = w * 3.4; const linea = raya(par, `M${n1(a[0])} ${n1(a[1])}L${n1(b[0] - ux * h * 0.6)} ${n1(b[1] - uy * h * 0.6)}`, color, w); const punta = el("path", { d: `M${n1(b[0])} ${n1(b[1])}L${n1(b[0] - ux * h - uy * h * 0.55)} ${n1(b[1] - uy * h + ux * h * 0.55)}L${n1(b[0] - ux * h + uy * h * 0.55)} ${n1(b[1] - uy * h - ux * h * 0.55)}Z`, fill: color }, par); return { linea, punta, b }; };
+      const lanza = (f, t, dur = 0.45) => { traza(f.linea, t, dur); pop(f.punta, t + dur - 0.12, f.b); };
+      /* Cota: raya con topes en los extremos. */
+      const cota = (par, a, b, color = AZUL, w = 3.4) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), nx = -dy / L * w * 2.3, ny = dx / L * w * 2.3; return raya(par, `M${n1(a[0] + nx)} ${n1(a[1] + ny)}L${n1(a[0] - nx)} ${n1(a[1] - ny)}M${n1(a[0])} ${n1(a[1])}L${n1(b[0])} ${n1(b[1])}M${n1(b[0] + nx)} ${n1(b[1] + ny)}L${n1(b[0] - nx)} ${n1(b[1] - ny)}`, color, w); };
+      /* Polvo estilo tinta: nubecitas con contorno que salen a los lados y se encogen,
+         trazos de movimiento alrededor del golpe y piedritas que saltan. */
+      const polvo = (t, x, fuerza = 1, z = 0) => {
+        const r = rng(Math.round(t * 100)), o = P(x, 0.2, z);
+        for (let i = 0; i < 6; i++) {
+          const ld = i % 2 ? 1 : -1, dx = ld * (0.5 + (i >> 1) * 0.75) * fuerza, c = P(x + dx, 0.3 + r() * 0.3, z + (r() - 0.5) * 1.2), g = el("g", {}, vuelo), rr = (5 + r() * 4.5) * fuerza;
+          el("path", { d: nube(c[0], c[1], rr, 700 + i + Math.round(t)), fill: "#f6efdd", class: "ink fino" }, g);
+          det(g, `M${n2(c[0] - rr * 0.45)} ${n2(c[1] + rr * 0.1)}q${n2(rr * 0.25)} ${n2(-rr * 0.5)} ${n2(rr * 0.5)} ${n2(-rr * 0.1)}M${n2(c[0] + rr * 0.1)} ${n2(c[1] + rr * 0.35)}q${n2(rr * 0.3)} ${n2(rr * 0.2)} ${n2(rr * 0.5)} ${n2(-rr * 0.1)}`, 0.55, { op: 0.8 });
+          tl.fromTo(g, { scale: 0, opacity: 0, x: 0, y: 0, svgOrigin: n1(c[0]) + " " + n1(c[1] + rr) }, { scale: 1, opacity: 1, duration: 0.22, ease: "back.out(2.5)" }, t + i * 0.03);
+          tl.to(g, { x: ld * (10 + r() * 12) * fuerza, y: -(4 + r() * 9) * fuerza, duration: 0.75, ease: "power2.out" }, t + i * 0.03);
+          tl.to(g, { scale: 0.25, opacity: 0, duration: 0.3, ease: "power1.in" }, t + 0.62 + i * 0.04);
+        }
+        const g = el("g", {}, vuelo); let d = "";
+        for (let i = 0; i < 7; i++) { const an = rad(200 + i * 23 + (r() - 0.5) * 10), r1 = (13 + r() * 4) * fuerza, r2 = r1 + (7 + r() * 8) * fuerza; d += `M${n2(o[0] + r1 * Math.cos(an) * 1.3)} ${n2(o[1] + r1 * Math.sin(an) * 0.8)}L${n2(o[0] + r2 * Math.cos(an) * 1.3)} ${n2(o[1] + r2 * Math.sin(an) * 0.8)}`; }
+        el("path", { d, fill: "none", stroke: TINTA, "stroke-width": 1.3, "stroke-linecap": "round" }, g);
+        tl.fromTo(g, { scale: 0.3, opacity: 0, svgOrigin: n1(o[0]) + " " + n1(o[1]) }, { scale: 1, opacity: 1, duration: 0.14, ease: "power2.out" }, t);
+        tl.to(g, { scale: 1.35, opacity: 0, duration: 0.3, ease: "power1.in" }, t + 0.16);
+        for (let i = 0; i < 5; i++) {
+          const c = P(x, 0.3, z), p = el("g", {}, vuelo), dx = (r() - 0.5) * 46 * fuerza, alto = (16 + r() * 22) * fuerza;
+          el("path", { d: wob(circulo(c[0], c[1], 1.6 + r() * 1.4, 7), 340 + i, { amp: 0.3, paso: 3 }), fill: "#8f8a80", stroke: TINTA, "stroke-width": 0.5 }, p);
+          tl.fromTo(p, { opacity: 0, x: 0 }, { opacity: 1, x: dx, duration: 0.55, ease: "none" }, t);
+          tl.fromTo(p, { y: 0 }, { y: -alto, duration: 0.25, ease: "power2.out" }, t); tl.to(p, { y: 4, duration: 0.3, ease: "power2.in" }, t + 0.25);
+          tl.to(p, { opacity: 0, duration: 0.2 }, t + 0.6);
+        }
+      };
+
+      /* Disparo del trabuquete en t: el contrapeso cae, el brazo gira y la honda jala la piedra hasta el origen.
+         Devuelve el instante en que la piedra despega, en (0, 0). */
+      const dispara = (t, dur = 0.4) => {
+        const despega = t + dur * 0.68;
+        tl.to(st, { a2: 226, duration: 0.35, ease: "power1.inOut" }, t - 0.4);
+        tl.to(st, { a2: 75, duration: dur, ease: "power2.in" }, t);
+        tl.to(st, { a2: 83, duration: 0.22, ease: "sine.inOut", yoyo: true, repeat: 1 }, t + dur);
+        tl.set(st, { honda: 0 }, despega - dur * 0.35);
+        tl.to(st, { sx: 0, duration: dur * 0.5, ease: "power2.in" }, despega - dur * 0.5);
+        return despega;
+      };
+      const carga = (t) => tl.set(st, { a2: 220, sx: -7.2, sy: 0, honda: 1 }, t);
+
+      /* Toma 1 (0–5): ya tienes una catapulta. Primer plano de la madera y la cuerda; luego se aleja. */
+      tl.to("#esc-sombra-cata", { opacity: 1, duration: 0.3 }, 0.55); pop(kTronco, 0.5, P(-1.4)); pop(kSoporte, 1.3, P(0, 1)); pop(kBrazoG, 2.3, P(0, 3.6)); pop(kCanastaG, 3.1, P(-4, 1.7));
+      pop(piedra, 3.8, [0, 0]);
+      tl.fromTo(st, { sy: 5.5 }, { sy: 1.79, duration: 0.6, ease: "bounce.out", immediateRender: false }, 3.8);
+      tl.set(st, { enc: 1 }, 4.45);
+      cam(0, 9.5, P(-0.3, 2.3), 1.9, "sine.inOut");
+      cam(1.9, 6.2, P(-1.4, 2.5), 1.3, "power2.inOut");
+      cam(3.2, 7.6, P(-2.8, 2.1), 1.8, "sine.inOut");
+      /* Toma 2 (5–9.4): la jalas, la sueltas… y cae a tus pies */
+      cam(5, 9.6, P(-3.8, 2), 0.7, "power2.inOut");
+      tl.to(st, { a1: 213, duration: 0.5, ease: "power1.inOut" }, 5.6);
+      tl.to(st, { a1: 150, duration: 0.16, ease: "power2.in" }, 6.2);
+      tl.to(st, { a1: 159, duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 6.36);
+      tl.set(st, { enc: 0 }, 6.36);
+      tl.fromTo(st, { sx: -3.8 }, { sx: 2.6, duration: 0.7, ease: "none", immediateRender: false }, 6.36);
+      tl.fromTo(st, { sy: 5.8 }, { sy: 7, duration: 0.2, ease: "power1.out", immediateRender: false }, 6.36);
+      tl.to(st, { sy: 0, duration: 0.5, ease: "power2.in" }, 6.56);
+      cam(6.12, 4.4, P(0.2, 3.3), 0.6, "power3.out");
+      polvo(7.06, 2.6, 0.8); tiembla(7.06, 14, 0.35);
+      tl.to(st, { sx: 3.4, duration: 0.4, ease: "none" }, 7.06);
+      tl.to(st, { sy: 0.7, duration: 0.2, ease: "power1.out", yoyo: true, repeat: 1 }, 7.06);
+      tl.to(cata, { rotation: -1.5, svgOrigin: P(-1.4).join(" "), duration: 0.09, yoyo: true, repeat: 3, ease: "sine.inOut" }, 6.36);
+      cam(7.3, 8.4, P(3.1, 0.9), 0.8, "power2.inOut");
+      cam(8.1, 9.2, P(3.3, 0.8), 1.3, "sine.inOut");
+      /* Toma 3 (9.4–13.8): ahora es un trabuquete. General de la máquina, primer plano del contrapeso y de la honda. */
+      cam(9.4, 3.3, P(-3.4, 4.6), 0.9);
+      [kCanastaG, kBrazoG, kSoporte, kTronco].forEach((g, i) => quita(g, 9.5 + i * 0.07)); quita(piedra, 9.5); tl.to("#esc-sombra-cata", { opacity: 0, duration: 0.2 }, 9.55); tl.to("#esc-sombra-treb", { opacity: 1, duration: 0.3 }, 10.1);
+      tl.set(st, { sx: -7.2, sy: 0 }, 9.9);
+      pop(tLejos, 10, P(-3, 0, -ZL)); pop(tCruz, 10.15, P(-3, 0.8, 0)); pop(tCerca, 10.3, P(-3, 0, ZL)); pop(tBrazoG, 10.7, P(PIV2[0], PIV2[1])); pop(tPesoG, 11.2, P(-1.2, 8.1));
+      tl.to(st, { peso: 0, duration: 2.1, ease: "elastic.out(1.3, 0.22)" }, 11.25);
+      pop(piedra, 12.1, [0, 0], false); tl.set(st, { honda: 1 }, 12.1);
+      cam(10.8, 6.8, P(-1.1, 6.6), 0.9);
+      cam(11.8, 6.2, P(-7, 1.5), 0.9);
+      cam(12.8, 4.8, P(-2.2, 5.7), 1.4, "sine.inOut");
+      /* Toma 4 (13.8–19.2): 20 m/s a 37°. Primer plano del contrapeso que cae y el brazo que gira;
+         la cámara persigue a la piedra un tramo y abre a plano medio. */
+      cam(14.2, 5.2, P(-2.3, 5.4), 0.6, "sine.inOut");
+      const despegue4 = dispara(14.8, 0.55);
+      sigue(despegue4 - 0.1, 3.8, 0.35);
+      tl.fromTo(st, { f37: 0 }, { f37: 0.55, duration: 0.6, ease: "power2.out", immediateRender: false }, despegue4);
+      vuelve(15.8, 2.5, P(3.4, 3.7), 1.1, "power2.inOut");
+      cam(16.9, 2.7, P(3.8, 3.8), 2.3, "sine.inOut");
+      const notas = $("esc-notas"), nV = el("g", {}, notas), o0 = P(0, 0.5);
+      const nPiso = raya(nV, `M${n1(o0[0])} ${n1(o0[1])}L${n1(P(7, 0.5)[0])} ${n1(P(7, 0.5)[1])}`, AZUL, 2.4);
+      const nFlecha = flecha(nV, o0, P(6, 5), AZUL, 4.2);
+      let dArco = ""; for (let g = 0; g <= 37; g += 3.7) { const p = P(3.2 * Math.cos(rad(g)), 0.5 + 3.2 * Math.sin(rad(g))); dArco += (dArco ? "L" : "M") + n1(p[0]) + " " + n1(p[1]); }
+      const nArco = raya(nV, dArco, AZUL, 2.6);
+      const nVel = texto(nV, P(2.4, 3.7)[0] - 12, P(2.4, 3.7)[1], "20 m/s", 30, { anc: "end" });
+      const nAng = texto(nV, P(4.2, 1.35)[0], P(4.2, 1.35)[1] + 6, "37°", 25);
+      lanza(nFlecha, 15.85); escribe(nVel, 16.15, 0.4); traza(nPiso, 17, 0.3); traza(nArco, 17.3, 0.3); escribe(nAng, 17.6, 0.4);
+      /* Toma 5 (19.2–23.2): ¿qué tan rápido avanza? Alejamiento que revela el castillo, y un empuje lento hacia él */
+      cam(19.2, 1.08, [575, 1005], 1.8, "power2.inOut");
+      tl.to("#esc-sombra-castillo", { opacity: 1, duration: 0.4 }, 20.5); pop(cCuerpo, 20.4, P(42.5, 0, 0)); pop(cAlmenas, 20.6, P(40.4, 8, 0)); pop(cTorreA, 20.7, P(40.4, 0, -4.3)); pop(cPuerta, 20.85, P(40, 0, 0)); pop(cTorreB, 21, P(40.4, 0, 4.3));
+      /* banderas que ondean y antorchas que parpadean hasta el final */
+      cTelas.forEach((t, i) => tl.fromTo(t, { rotation: 5, skewY: 0, svgOrigin: n1(t.__eje[0]) + " " + n1(t.__eje[1]) }, { rotation: -9, skewY: 7, duration: 0.42 + i * 0.05, yoyo: true, repeat: Math.floor(66 / (0.42 + i * 0.05)), ease: "sine.inOut", immediateRender: false }, 21.4));
+      cFlamas.forEach((f, i) => tl.fromTo(f, { scaleY: 0.85, scaleX: 1.08, svgOrigin: n1(f.__eje[0]) + " " + n1(f.__eje[1]) }, { scaleY: 1.3, scaleX: 0.86, duration: 0.15 + i * 0.03, yoyo: true, repeat: Math.floor(66 / (0.15 + i * 0.03)), ease: "sine.inOut", immediateRender: false }, 21.4));
+
+      cam(21, 1.38, [712, 915], 2.2, "sine.inOut");
+      /* Tomas 6 y 7 (23.2–28, 33.4–41.2): la hoja de cálculos — sepárala en dos; usa 0.8 y 0.6 */
+      const hoja = $("esc-hoja"), CENTRO_HOJA = "540 990";
+      el("path", { d: wob([[104, 574], [1002, 574], [1002, 1434], [104, 1434]], 400, { amp: 2 }), fill: "rgba(29,26,22,.28)" }, hoja);
+      forma(hoja, [[90, 560], [990, 560], [990, 1420], [90, 1420]], "#fffdf6", 401, { amp: 2 });
+      el("path", { d: [680, 780, 880, 980, 1080, 1180, 1280, 1380].map((y) => `M110 ${y}L970 ${y}`).join(""), fill: "none", stroke: "#b9cdea", "stroke-width": 2.5 }, hoja);
+      forma(hoja, [[450, 536], [630, 530], [634, 584], [454, 590]], "#f2d98a", 402, FINO).setAttribute("opacity", 0.92);
+      const entraHoja = (t, ir) => { tl.fromTo(hoja, { y: 1500, rotation: 7, scale: 1, svgOrigin: CENTRO_HOJA }, { y: 0, rotation: -1.5, duration: 0.55, ease: "back.out(1.1)", immediateRender: ir }, t); };
+      /* la hoja también respira: se acerca despacio mientras se escribe */
+      const acercaHoja = (t, dur) => tl.fromTo(hoja, { scale: 1 }, { scale: 1.05, duration: dur, ease: "sine.inOut", immediateRender: false }, t);
+      const saleHoja = (t) => tl.to(hoja, { y: 1500, rotation: 6, duration: 0.42, ease: "power2.in" }, t);
+      const hA = el("g", {}, hoja), O = [300, 1010], K = 20.8, tip = [O[0] + VX * K, O[1] - VY * K];
+      const aBase = raya(hA, `M${O[0]} ${O[1]}L790 ${O[1]}`, "#8a8f9c", 3, { "stroke-dasharray": "0.02 0.02" });
+      const aV = flecha(hA, O, tip, AZUL, 9), aVx = flecha(hA, O, [tip[0], O[1]], CORAL, 9), aVy = flecha(hA, O, [O[0], tip[1]], VERDE, 9);
+      const aArco = raya(hA, `M${O[0] + 120} ${O[1]}A120 120 0 0 0 ${n1(O[0] + 120 * 0.8)} ${n1(O[1] - 120 * 0.6)}`, AZUL, 5);
+      const aGuia = raya(hA, `M${tip[0]} ${O[1]}L${tip[0]} ${tip[1]}L${O[0]} ${tip[1]}`, "#8a8f9c", 3.5, { "stroke-dasharray": "0.02 0.02" });
+      const aVel = texto(hA, 452, 852, "v = 20 m/s", 62, { anc: "middle", rot: -37 });
+      const aAng = texto(hA, 432, 992, "37°", 50);
+      const aVxQ = texto(hA, 470, 1082, "adelante = ?", 58, { anc: "middle", fill: CORAL });
+      const aVyQ = texto(hA, 272, 800, "arriba", 56, { anc: "end", fill: VERDE }), aVyQ2 = texto(hA, 272, 860, "= ?", 56, { anc: "end", fill: VERDE });
+      const aVxT = texto(hA, 540, 1098, "vx = 20 · 0.8 = 16 m/s", 64, { anc: "middle", fill: CORAL });
+      const aVyT = texto(hA, 540, 1192, "vy = 20 · 0.6 = 12 m/s", 64, { anc: "middle", fill: VERDE });
+      const aTruco = el("g", {}, hA);
+      forma(aTruco, [[236, 1246], [846, 1240], [850, 1370], [240, 1376]], "#ffe680", 403, { amp: 1.6 });
+      const aTrucoT = el("text", { x: 542, y: 1332, "font-size": 74, "text-anchor": "middle", class: "nota", fill: TINTA, style: "stroke:none;clip-path: inset(-30% 105% -30% -5%)" }, aTruco); aTrucoT.textContent = "con 37°: usa 0.8 y 0.6";
+      entraHoja(23.2, true); acercaHoja(23.8, 17.3);
+      traza(aBase, 23.8, 0.3); lanza(aV, 23.9, 0.5); escribe(aVel, 24.3, 0.45); traza(aArco, 24.7, 0.25); escribe(aAng, 24.85, 0.25);
+      lanza(aVx, 26.1); escribe(aVxQ, 26.4, 0.4); lanza(aVy, 26.9); escribe(aVyQ, 27.2, 0.25); escribe(aVyQ2, 27.4, 0.2); traza(aGuia, 27.3, 0.4);
+      borra([aVxQ, aVyQ, aVyQ2], 33.6);
+      escribe(aVxT, 33.9, 1.4); escribe(aVyT, 35.5, 1.3); pop(aTruco, 37.2, [542, 1308]); escribe(aTrucoT, 37.7, 2.8);
+      /* (debajo de la hoja) se borran las notas del tiro, se vuelve a cargar el trabuquete y la cámara queda en general */
+      tl.set(nV, { opacity: 0 }, 36.4); tl.set(st, { r37: 0 }, 36.4); carga(36.45);
+      tl.set(camSt, { k: 1.05, fx: GENERAL[0], fy: GENERAL[1], sig: 0 }, 36.5);
+      /* Toma 8 (41.2–45.9): hay una muralla. Cae del cielo con polvo; acercamiento y luego plano medio con las cotas */
+      saleHoja(41.2);
+      cam(41.3, 2.3, P(15, 3.2), 0.9);
+      gsap.set(mur, { opacity: 0 }); tl.set(mur, { opacity: 1 }, 42);
+      tl.fromTo(mur, { y: -760 }, { y: 0, duration: 0.45, ease: "power3.in", immediateRender: false }, 42);
+      tl.fromTo(mur, { scaleY: 1, svgOrigin: P(16, 0, 0).join(" ") }, { scaleY: 0.93, duration: 0.09, yoyo: true, repeat: 1, ease: "sine.out", immediateRender: false }, 42.45);
+      tl.to("#esc-sombra-muralla", { opacity: 1, duration: 0.15 }, 42.35); polvo(42.45, 15, 1.4, -3); polvo(42.46, 15, 1.2, 0); polvo(42.47, 15, 1.4, 3); tiembla(42.45, 22, 0.6);
+      const nM = el("g", {}, $("esc-cotas")), nM2 = el("g", {}, notas);
+      const cot16 = cota(nM, P(0, 0, 5.6), P(15.5, 0, 5.6)), t16 = texto(nM, P(7.7, 0, 3.9)[0], P(7.7, 0, 3.9)[1], "16 m", 40, { anc: "middle", rot: -30 });
+      const cot6 = cota(nM2, P(15.5, 0, 5.3), P(15.5, 6, 5.3)), t6 = texto(nM2, P(15.5, 3, 5.3)[0] + 14, P(15.5, 3, 5.3)[1] + 12, "6 m", 38);
+      traza(cot6, 43.2, 0.5); escribe(t6, 43.5, 0.3);
+      cam(43.7, 1.55, P(8, 2.6), 1, "power2.inOut");
+      traza(cot16, 44.1, 0.6); escribe(t16, 44.45, 0.3);
+      cam(44.9, 1.68, P(8.6, 2.8), 1, "sine.inOut");
+      /* Toma 9 (50.9–55.8): pasa por 1 metro. Plano medio del disparo, la cámara persigue a la piedra
+         y se acerca a la muralla en cámara lenta cuando pasa rozando */
+      cam(50.9, 2.8, P(-2.4, 4.4), 0.6);
+      const despegue9 = dispara(51.6);
+      sigue(despegue9 - 0.08, 2.4, 0.4);
+      tl.fromTo(st, { f37: 0 }, { f37: 0.7, duration: 0.95, ease: "none", immediateRender: false }, despegue9);
+      tl.fromTo(st, { f37: 0.7 }, { f37: T_MURALLA, duration: 1.1, ease: "power1.out", immediateRender: false }, despegue9 + 0.95);
+      tl.to(camSt, { k: 3.4, duration: 0.9, ease: "power2.inOut" }, 52.5);
+      tl.to(camSt, { k: 3.65, duration: 2.3, ease: "sine.inOut" }, 53.45);
+      const nP = el("g", {}, notas), sobre = P(16, 7.5), tope = P(16, 6), bajo = P(16, 6.85);
+      const hueco = raya(nP, `M${n1(tope[0] - 5)} ${n1(tope[1])}L${n1(tope[0] + 5)} ${n1(tope[1])}M${n1(tope[0])} ${n1(tope[1])}L${n1(bajo[0])} ${n1(bajo[1])}`, CORAL, 2.2);
+      const tT = texto(nP, sobre[0] - 22, sobre[1] - 22, "t = 1 s", 22, { anc: "end", halo: 5 }), tY = texto(nP, sobre[0] + 20, sobre[1] - 10, "y = 7 m", 25, { halo: 5 }), tH = texto(nP, tope[0] + 9, tope[1] - 3, "1 m", 18, { fill: CORAL, halo: 4 });
+      escribe(tT, 53.9, 0.25); escribe(tY, 54.1, 0.3); traza(hueco, 54.3, 0.2); escribe(tH, 54.4, 0.2);
+      /* Toma 10 (55.8–59.8): la puerta está a 40 m. Vuelve a general, recorre la cota hasta la puerta y abre */
+      vuelve(55.8, 1.05, GENERAL, 0.9);
+      borra([nM, nM2], 55.9);
+      cam(56.7, 1.6, P(9, 1.5, 2), 0.6, "power2.inOut");
+      cam(57.3, 1.7, P(31, 5.5, 2), 1.2, "sine.inOut");
+      const nD = el("g", {}, $("esc-cotas"));
+      const cot40 = cota(nD, P(0, 0, 6.6), P(40, 0, 6.6)), t40G = el("g", {}, nD), t40 = texto(t40G, P(21, 0, 4.4)[0], P(21, 0, 4.4)[1], "40 m", 54, { anc: "middle", rot: -30 });
+      traza(cot40, 57.35, 1); escribe(t40, 57.85, 0.35);
+      tl.to(cBrillo, { opacity: 1, duration: 0.22, yoyo: true, repeat: 2, ease: "sine.inOut" }, 58.5);
+      tl.to(cPuerta, { scale: 1.15, svgOrigin: P(40, 0, 0).join(" "), duration: 0.22, yoyo: true, repeat: 1, ease: "sine.inOut" }, 58.5);
+      cam(58.7, 1.2, [610, 950], 1.1, "sine.inOut");
+      /* Toma 11 (64.8–68.8): se queda corta. La cámara persigue a la piedra y se acerca a la puerta en el impacto */
+      sigue(64.8, 2.1, 0.5, "power2.inOut");
+      borra(nP, 64.8);
+      tl.fromTo(st, { f37: T_MURALLA }, { f37: T37, duration: 1.8, ease: "none", immediateRender: false }, 65.3);
+      vuelve(66.3, 3.1, P(38.7, 3.4), 0.8, "power2.inOut");
+      polvo(67.1, VX * T37, 1.2); tiembla(67.1, 9, 0.4);
+      const nC = el("g", {}, notas), cae = P(VX * T37, 0);
+      const tache = raya(nC, `M${n1(cae[0] - 7)} ${n1(cae[1] + 10)}L${n1(cae[0] + 7)} ${n1(cae[1] + 21)}M${n1(cae[0] + 7)} ${n1(cae[1] + 9)}L${n1(cae[0] - 7)} ${n1(cae[1] + 22)}`, CORAL, 2.6);
+      const tC = texto(nC, cae[0] - 3, cae[1] + 46, "38.4 m", 22, { anc: "middle", fill: CORAL, halo: 5 });
+      traza(tache, 67.45, 0.3); escribe(tC, 67.7, 0.35);
+      cam(67.9, 2.8, P(38.2, 3.4), 0.9, "sine.inOut");
+      /* Toma 12 (68.8–73.2): 45° = alcance máximo (segunda hoja) */
+      const hB = el("g", { opacity: 0 }, hoja), O2 = [250, 1030], LB = 440, tip2 = [O2[0] + LB * 0.8, O2[1] - LB * 0.6];
+      tl.set(hA, { opacity: 0 }, 42.2); tl.set(hB, { opacity: 1 }, 42.2);
+      const bBase = raya(hB, `M${O2[0]} ${O2[1]}L800 ${O2[1]}`, "#8a8f9c", 3, { "stroke-dasharray": "0.02 0.02" });
+      const bFantasma = raya(hB, `M${O2[0]} ${O2[1]}L${tip2[0]} ${tip2[1]}`, "#8a8f9c", 4, { "stroke-dasharray": "0.03 0.03" });
+      const bGiro = el("g", {}, hB), bV = flecha(bGiro, O2, tip2, AZUL, 9);
+      const b37 = texto(hB, O2[0] + 150, O2[1] - 28, "37°", 56, { fill: "#8a8f9c" });
+      const b45G = el("g", {}, hB), b45 = el("text", { x: 650, y: 880, "font-size": 96, "text-anchor": "middle", class: "nota", fill: CORAL }, b45G); b45.textContent = "45°";
+      const bR = texto(hB, 540, 1160, "alcance = v² / g", 70, { anc: "middle" });
+      const bR2 = texto(hB, 540, 1262, "= 20² / 10 = 40 m", 74, { anc: "middle", fill: CORAL });
+      const bSub = raya(hB, wob([[580, 1284], [800, 1278]], 404, { cerrado: false, amp: 3 }), CORAL, 6);
+      entraHoja(68.8, false); acercaHoja(69.4, 3.7);
+      traza(bBase, 69.3, 0.3); lanza(bV, 69.3, 0.4); escribe(b37, 69.6, 0.25);
+      tl.set(bFantasma, { opacity: 1, strokeDashoffset: 0 }, 70);
+      tl.to(bGiro, { rotation: -8, svgOrigin: O2.join(" "), duration: 0.7, ease: "back.out(2)" }, 70);
+      pop(b45G, 70.6, [650, 850]);
+      escribe(bR, 71.4, 0.6); escribe(bR2, 72.1, 0.6); traza(bSub, 72.7, 0.25);
+      /* (debajo de la hoja) vista general, rastro del primer tiro tenue como referencia y trabuquete cargado */
+      tl.set(camSt, { k: 1.05, fx: GENERAL[0], fy: GENERAL[1], sig: 0 }, 70.3); tl.set(nC, { opacity: 0 }, 70.3); tl.set(rastro37, { opacity: 0.42 }, 70.3); carga(70.3);
+      /* Toma 13 (73.2–77.2): ¡justo en la puerta! La cámara persigue a la piedra por el arco alto
+         (el de 37° queda tenue debajo) y se acerca a la puerta: polvo y temblor en el acierto */
+      saleHoja(73.2);
+      cam(73.25, 1.5, P(3, 4.2), 0.6, "power2.inOut");
+      const despegue13 = dispara(73.9);
+      sigue(despegue13 - 0.05, 1.75, 0.5, "power2.inOut");
+      tl.fromTo(st, { f45: 0 }, { f45: T45, duration: 2.15, ease: "none", immediateRender: false }, despegue13);
+      const golpe = despegue13 + 2.15, pie = P(40, 1.4, 0);
+      /* alturas máximas: 7.2 m (37°) y 10 m (45°) */
+      const nA = el("g", {}, notas), ap45 = vuelo45(T45 / 2), ap37 = vuelo37(T37 / 2);
+      const poste = raya(nA, `M${n1(P(ap45[0], 0)[0])} ${n1(P(ap45[0], 0)[1])}L${n1(P(ap45[0], ap45[1] + 0.5)[0])} ${n1(P(ap45[0], ap45[1] + 0.5)[1])}`, "#5b6070", 2, { "stroke-dasharray": "0.025 0.025" });
+      const tA45 = texto(nA, P(ap45[0], ap45[1] + 0.5)[0] + 4, P(ap45[0], ap45[1] + 0.5)[1] - 34, "45°: sube 10 m", 30, { anc: "middle", fill: CORAL, halo: 6 });
+      const tA37 = texto(nA, P(ap37[0], ap37[1] + 0.5)[0] + 4, P(ap37[0], ap37[1] + 0.5)[1] + 34, "37°: 7.2 m", 25, { anc: "middle", fill: "#5b6070", halo: 5 });
+      tl.set(poste, { opacity: 1, strokeDashoffset: 0 }, despegue13 + 0.95); escribe(tA45, despegue13 + 1, 0.3); escribe(tA37, despegue13 + 1.2, 0.25);
+      vuelve(golpe - 0.85, 3.1, P(39.3, 3.6), 0.8, "power2.inOut");
+      polvo(golpe, 39.4, 1.4); tiembla(golpe, 22, 0.65);
+      const chispas = el("g", {}, notas);
+      el("path", { d: [0, 1, 2, 3, 4, 5, 6].map((i) => { const a = rad(-150 + i * 40); return `M${n1(pie[0] + 20 * Math.cos(a))} ${n1(pie[1] + 20 * Math.sin(a))}L${n1(pie[0] + 36 * Math.cos(a))} ${n1(pie[1] + 36 * Math.sin(a))}`; }).join(""), fill: "none", stroke: "#ffcf33", "stroke-width": 4, "stroke-linecap": "round" }, chispas);
+      pop(chispas, golpe, pie); borra(chispas, golpe + 0.6);
+      tl.to(cast, { y: -5, duration: 0.09, yoyo: true, repeat: 3, ease: "sine.inOut" }, golpe);
+      tl.to(cPuerta, { scale: 0.9, duration: 0.1, yoyo: true, repeat: 3, ease: "sine.inOut" }, golpe);
+      tl.to(cTelas, { scaleX: 1.3, duration: 0.1, yoyo: true, repeat: 5, ease: "sine.inOut" }, golpe);
+      tl.to(cBrillo, { opacity: 1, duration: 0.2 }, golpe);
+      cam(golpe + 0.2, 2.85, P(39.6, 3.9), 0.65, "sine.inOut");
+      /* Toma 14 (77.2–82.3): problema de examen — vuelve a general con los dos arcos y dos etiquetas */
+      cam(77.2, 1, GENERAL, 1.2, "power2.inOut");
+      const etiqueta = (y, x, num, str, color, semilla) => { const g = el("g", {}, $("esc-etiquetas")); forma(g, [[x + 8, y + 10], [x + 478, y + 10], [x + 478, y + 112], [x + 8, y + 112]], TINTA, semilla + 1, { amp: 1.6 }); forma(g, [[x, y], [x + 470, y], [x + 470, y + 102], [x, y + 102]], "#fffdf6", semilla, { amp: 1.6 }); forma(g, circulo(x + 52, y + 51, 30, 10), color, semilla + 2, FINO); const n = el("text", { x: x + 52, y: y + 70, "font-size": 54, "text-anchor": "middle", class: "nota", fill: "#fffdf6", style: "stroke:none" }, g); n.textContent = num; const t = el("text", { x: x + 100, y: y + 70, "font-size": 58, class: "nota", fill: TINTA, style: "stroke:none" }, g); t.textContent = str; return g; };
+      pop(etiqueta(1300, 520, "1", "descomponer v", AZUL, 500), 79.5, [755, 1350]);
+      pop(etiqueta(1428, 560, "2", "usar el tiempo", CORAL, 510), 80.8, [795, 1480]);
+      tl.to(t40G, { scale: 1.3, svgOrigin: P(21, 0, 4.4).join(" "), duration: 0.22, yoyo: true, repeat: 1, ease: "sine.inOut" }, 78.1);
+
+      cam(78.4, 1.07, [548, 1000], 9.6, "sine.inOut");
+
+      window.__timelines["escena"] = tl;
+    }
+  </script>
+</template>

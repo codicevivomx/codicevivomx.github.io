@@ -1,0 +1,37 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; }
+    /* Texto de la voz, pequeño (la frase grande de arriba es la que manda) */
+    .sub { position: absolute; left: 110px; right: 110px; top: 1575px; text-align: center; }
+    .sub-caja {
+      display: inline-block; padding: 14px 26px; border-radius: 18px;
+      background: rgba(29,26,22,.82); color: #fffdf6;
+      font: 700 34px/1.25 "Inter", sans-serif;
+    }
+  </style>
+  <div id="root" data-composition-id="subtitulos" data-width="1080" data-height="1920">
+    <div id="sub-1" class="sub clip" data-start="0" data-duration="5" data-track-index="0"><span class="sub-caja">Ya tienes una catapulta: un tronco, un brazo y una canasta.</span></div>
+    <div id="sub-2" class="sub clip" data-start="5" data-duration="4.4" data-track-index="0"><span class="sub-caja">La jalas, la sueltas… y la piedra cae a tus pies.</span></div>
+    <div id="sub-3" class="sub clip" data-start="9.4" data-duration="4.4" data-track-index="0"><span class="sub-caja">Le cuelgas un contrapeso enorme: ahora es un trabuquete.</span></div>
+    <div id="sub-4" class="sub clip" data-start="13.8" data-duration="5.4" data-track-index="0"><span class="sub-caja">La piedra sale a veinte metros por segundo, inclinada a treinta y siete grados.</span></div>
+    <div id="sub-5" class="sub clip" data-start="19.2" data-duration="4" data-track-index="0"><span class="sub-caja">Pero, ¿qué tan rápido avanza hacia el castillo?</span></div>
+    <div id="sub-6" class="sub clip" data-start="23.2" data-duration="4.8" data-track-index="0"><span class="sub-caja">Truco del tiro parabólico: separa la velocidad en adelante y arriba.</span></div>
+    <div id="sub-7" class="sub clip" data-start="33.4" data-duration="7.8" data-track-index="0"><span class="sub-caja">Dieciséis hacia adelante y doce hacia arriba. Con treinta y siete grados, usa cero punto ocho y cero punto seis.</span></div>
+    <div id="sub-8" class="sub clip" data-start="41.2" data-duration="4.7" data-track-index="0"><span class="sub-caja">Pero en el camino hay una muralla de seis metros, a dieciséis metros.</span></div>
+    <div id="sub-9" class="sub clip" data-start="50.9" data-duration="4.9" data-track-index="0"><span class="sub-caja">Llega en un segundo, a siete metros de altura: pasa por un metro.</span></div>
+    <div id="sub-10" class="sub clip" data-start="55.8" data-duration="4" data-track-index="0"><span class="sub-caja">Pero la puerta del castillo está a cuarenta metros.</span></div>
+    <div id="sub-11" class="sub clip" data-start="64.8" data-duration="4" data-track-index="0"><span class="sub-caja">A treinta y ocho punto cuatro metros: se queda corta.</span></div>
+    <div id="sub-12" class="sub clip" data-start="68.8" data-duration="4.4" data-track-index="0"><span class="sub-caja">Subes el ángulo a cuarenta y cinco grados: el alcance máximo.</span></div>
+    <div id="sub-13" class="sub clip" data-start="73.2" data-duration="4" data-track-index="0"><span class="sub-caja">Ahora cae a cuarenta metros, justo en la puerta.</span></div>
+    <div id="sub-14" class="sub clip" data-start="77.2" data-duration="5.1" data-track-index="0"><span class="sub-caja">Esto es un problema de examen: descomponer la velocidad y usar el tiempo.</span></div>
+  </div>
+  <script>
+    {
+      const tl = gsap.timeline({ paused: true });
+      [0, 5, 9.4, 13.8, 19.2, 23.2, 33.4, 41.2, 50.9, 55.8, 64.8, 68.8, 73.2, 77.2].forEach((t, i) => {
+        tl.fromTo("#sub-" + (i + 1) + " .sub-caja", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, t + 0.15);
+      });
+      window.__timelines["subtitulos"] = tl;
+    }
+  </script>
+</template>

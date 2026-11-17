@@ -145,3 +145,20 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   Carga (16-nov-2026): Fraunces y la itálica de EB Garamond ya no van en el CSS; las registra `assets/js/sitio.js`
   cuando la página terminó de cargar (respaldo `<noscript>` en el `<head>`), y cada página solo baja la que usa.
   La profundidad y el reflejo al pasar el cursor también están en `libros/fisica-unam/` (tarjetas, ventajas y «En camino»).
+- [x] Reto «Aplica lo aprendido» de la catapulta (16-nov-2026): video `plantilla/videos/aplica-tiro-catapulta/`
+  en estilo «tinta» (72 s, sin voz, 3 pausas de 4 s; falta el OK de la vista previa para renderizar el MP4) y
+  reproductor de retos reutilizable `retos/reproductor.js` + `retos/reproductor.css`, usado en `retos/catapulta/`
+  y `retos/esquiador/`. Sección «Retos» en `libros/fisica-unam/` y esquiador «listo» en `LO_QUE_VIENE`.
+  `.waveform-cache/` fuera del índice de git. Pendiente: voz de la catapulta (`voz/NN.mp3` y `voz/pN.mp3`).
+  Ronda 1 (16-nov-2026): cámara con movimiento (seguimiento de la piedra, acercamientos, temblor en los impactos),
+  más detalle de tinta (vetas, amarres, cadena, achurado, sillares, flores, polvo), arco de 45° contra el de 37° tenue
+  y captions con líneas equilibradas. Sigue pendiente el OK de la vista previa para renderizar.
+  Ronda 2 (16-nov-2026): trabuquete con volumen (vigas de 3 caras, herrajes, ruedas, contrapeso de tablones con piedras,
+  honda con bolsa de cuero), castillo como el de la portada (arenisca, techos cónicos de teja, antorchas, banderas),
+  muralla con almenas que cae sólida, polvo de tinta y sombras achuradas. Falta: OK de la vista previa para renderizar
+  y volver a probar retos/catapulta/ en el navegador con la escena nueva.
+  Voz (16-nov-2026): terminado. Voz en `voz/01–15.mp3` y `voz/p1–p3.mp3`; cada toma = su audio + 0.6 s (mínimo 4 s),
+  pausas = pregunta + 0.3 s + cuenta de 3 s; total 88 s. Animaciones y cámara ajustadas (en la toma 7 las notas se
+  escriben mientras habla). Mezcla: SFX a `data-volume="0.55"` cuando coinciden con la voz. `retos/catapulta/` y
+  `retos/esquiador/` probados en navegador (3 pausas, pista, acierto, pregunta grabada, silenciar). MP4 fuera del repo:
+  `C:\Users\Gato\Videos\codice-vivo\aplica-tiro-catapulta-voz.mp4` (alta) y `-tiktok.mp4` (39 MB).

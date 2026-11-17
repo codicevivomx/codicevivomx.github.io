@@ -11,7 +11,7 @@ var ENLACES = {
 /* LO QUE VIENE (portada): para sumar algo, agrega una línea.
    estado: 'listo' o 'en camino'. «enlace» es opcional (si lo pones, el título se vuelve liga). */
 var LO_QUE_VIENE = [
-  { tipo: 'Retos «Aplica lo aprendido»', titulo: '¿Con qué velocidad llega el esquiador?', corto: 'Retos «Aplica lo aprendido»', nota: 'El primer reto: un problema completo para usar lo que ya sabes.', estado: 'en camino' },
+  { tipo: 'Retos «Aplica lo aprendido»', titulo: '¿Con qué velocidad llega el esquiador?', corto: 'Retos «Aplica lo aprendido»', nota: 'El primer reto: un problema completo para usar lo que ya sabes.', estado: 'listo', enlace: 'retos/esquiador/' },
   { tipo: 'Para repasar', titulo: 'PDF con marca de agua', nota: 'Cada lámina en una hoja, para imprimir o estudiar sin conexión.', estado: 'en camino' },
   { tipo: 'Nuevo libro', titulo: 'Matemáticas', nota: 'Con el mismo formato de láminas interactivas.', estado: 'en camino' },
   { tipo: 'Nuevo libro', titulo: 'Historia', nota: 'Con el mismo formato de láminas interactivas.', estado: 'en camino' }
