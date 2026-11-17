@@ -10,6 +10,9 @@
   box-shadow:0 3px 0 var(--borde-fuerte),0 22px 30px -22px rgba(var(--sombra),.5);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .rp__lienzo{position:absolute;left:0;top:0;width:1080px;height:1920px;border:0;transform-origin:0 0;pointer-events:none}
 
+/* celular: MP4 ligero en lugar de la composición (ver reproductor.js) */
+.rp__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#f3ead6;pointer-events:none}
+
 .rp__portada,.rp__pregunta,.rp__fin{position:absolute;inset:0;display:grid;padding:14px;cursor:default}
 .rp__portada[hidden],.rp__pregunta[hidden],.rp__fin[hidden]{display:none}
 .rp__portada{place-content:center;justify-items:center;gap:14px;background:var(--sup);
@@ -17,6 +20,10 @@
 .rp__nota{max-width:24ch;color:var(--suave);font-size:.9rem}
 .rp__pregunta{align-content:end;background:linear-gradient(transparent 20%,rgba(29,26,22,.45))}
 .rp__fin{place-content:center;background:rgba(29,26,22,.55)}
+/* Modo MP4: el video trae dibujada su propia tarjeta (pregunta, opciones y cuenta regresiva) entre el 22 % y el
+   78 % del alto; la tarjeta interactiva se pone encima y la tapa completa. */
+.rp__pregunta--video{padding:0;background:rgba(29,26,22,.3)}
+.rp__pregunta--video .rp__tarjeta{position:absolute;left:4%;right:4%;top:19%;min-height:62%;align-content:start;animation:none}
 
 .rp__tarjeta{display:grid;gap:8px;padding:14px;text-align:left;background:var(--sup);color:var(--texto);border:1px solid var(--borde-fuerte);border-radius:16px;
   box-shadow:0 3px 0 var(--borde-fuerte),0 16px 24px -14px rgba(0,0,0,.5);animation:rp-sube .28s cubic-bezier(.2,1.3,.4,1) both}

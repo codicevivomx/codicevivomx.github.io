@@ -11,6 +11,17 @@
      salen las opciones; al acertar, el video salta al final de ese clip.
    · storyboard.json: las tomas con «pausa» (pregunta, opciones, correcta, pista), en el mismo orden.
    · La pregunta grabada de la pausa N es el <audio id="voz-pN"> (si no existe, no suena nada).
+   · En PC, los mosaicos con filtro SVG se convierten a imagen una vez (horneaTexturas).
+
+   En celular NO se usa la composición en vivo (sus capas agotan la memoria gráfica y la página parpadea,
+   sobre todo en los navegadores internos de Instagram y TikTok). Ahí se reproduce un MP4 ligero:
+     <div data-reto="…" data-video="../../assets/video/<id>">   →   <id>.mp4 (720p, faststart) y <id>.json
+   <id>.json = { duracion, pausas: [{ t0, tq, t1 }] } lo escribe retos/video-ligero.mjs a partir de la composición.
+   En cada pausa (t0) salen las mismas preguntas y pistas, tapando la tarjeta que el video trae dibujada; el video
+   sigue hasta tq (fin de la pregunta grabada, que así la dice el propio video: un audio aparte lo bloquean los
+   celulares por no venir de un toque) y ahí se detiene. Al acertar salta a t1 (se brinca la cuenta regresiva).
+   Se usa en pantallas táctiles o chicas y en navegadores internos; ?video=mp4 o ?video=vivo lo fuerza para probar.
+   Si el MP4 no carga, se intenta la composición en vivo.
    Nada se descarga hasta tocar «Empezar». */
 (function () {
   'use strict';
@@ -28,9 +39,20 @@
     otra: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.6 4.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M3.5 4.5l2 5.6 5.5-2.2z"/></svg>'
   };
 
+  /* Celular: puntero táctil, pantalla chica o navegador interno de una app. */
+  function esCelular() {
+    var toque = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    var chica = Math.min(screen.width || 9999, screen.height || 9999) <= 600;   // lado corto de la pantalla (una laptop mide 768 o más)
+    var interno = /Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|Bytedance|Snapchat|Line\//i.test(navigator.userAgent);
+    return toque || chica || interno;
+  }
+
   function monta(caja) {
     var base = new URL(caja.getAttribute('data-reto'), location.href).href.replace(/\/?$/, '/');
     var volver = caja.getAttribute('data-volver');
+    var rutaVideo = caja.getAttribute('data-video'), forzado = /[?&]video=(mp4|vivo)\b/.exec(location.search);
+    var ligero = !!rutaVideo && (forzado ? forzado[1] === 'mp4' : esCelular());
+    if (rutaVideo) rutaVideo = new URL(rutaVideo, location.href).href;
 
     /* ---------- Interfaz ---------- */
     caja.textContent = '';
@@ -61,6 +83,7 @@
     var t = 0, andando = false, enPausa = null, terminado = false, listo = false;
     var mudo = false, ctx = null, salida = null, sonando = [], bufers = {};
     var reloj0 = 0, t0 = 0, aciertos = 0;
+    var vid = null;   // modo MP4: el <video>
 
     function pintaBotones() {
       bPlay.innerHTML = andando ? ICONOS.pausa : ICONOS.play;
@@ -164,8 +187,45 @@
             return { el: e, t: parseFloat(e.getAttribute('data-start')), dur: parseFloat(e.getAttribute('data-duration')), visto: null };
           });
         });
+        return Promise.race([horneaTexturas(doc), new Promise(function (ok) { setTimeout(ok, 4000); })]);
+      }).then(function () {
         return doc.fonts && doc.fonts.ready ? Promise.race([doc.fonts.ready, new Promise(function (ok) { setTimeout(ok, 2500); })]) : null;
       });
+    }
+    /* Texturas: un <pattern> cuyo mosaico lleva un filtro SVG (feTurbulence: grano, vetas, ruido) obliga al
+       navegador a recalcular el ruido cada vez que repinta, y en celular el dibujo parpadea porque no alcanza
+       a rasterizar. Aquí cada mosaico se dibuja una sola vez a una imagen (al doble, para los acercamientos) y
+       el patrón queda usando esa imagen. Si algo falla, el mosaico se queda con su filtro, como en el video. */
+    function horneaTexturas(doc) {
+      var tareas = [];
+      [].forEach.call(doc.querySelectorAll('pattern'), function (pat) {
+        var pieza = pat.querySelector('[filter]');
+        var ref = pieza && /url\(["']?#([^"')]+)/.exec(pieza.getAttribute('filter'));
+        var filtro = ref && doc.getElementById(ref[1]);
+        var w = parseFloat(pat.getAttribute('width')), h = parseFloat(pat.getAttribute('height'));
+        if (!filtro || !(w > 0) || !(h > 0) || pat.children.length !== 1) return;
+        var serie = new XMLSerializer(), K = 2;
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w * K + '" height="' + h * K + '" viewBox="0 0 ' + w + ' ' + h + '"><defs>' +
+          serie.serializeToString(filtro) + '</defs>' + serie.serializeToString(pieza) + '</svg>';
+        tareas.push(new Promise(function (ok) {
+          var img = new Image();
+          img.onload = function () {
+            try {
+              var lienzo = document.createElement('canvas'); lienzo.width = w * K; lienzo.height = h * K;
+              lienzo.getContext('2d').drawImage(img, 0, 0, w * K, h * K);
+              var imagen = doc.createElementNS('http://www.w3.org/2000/svg', 'image');
+              imagen.setAttribute('width', w); imagen.setAttribute('height', h);
+              imagen.setAttribute('preserveAspectRatio', 'none');
+              imagen.setAttribute('href', lienzo.toDataURL('image/png'));
+              pat.replaceChild(imagen, pieza);
+            } catch (e) { /* se queda el filtro */ }
+            ok();
+          };
+          img.onerror = function () { ok(); };
+          img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        }));
+      });
+      return Promise.all(tareas);
     }
     function preparaPausas(guion) {
       var capa = capas.filter(function (c) { return c.id === 'pausas'; })[0];
@@ -196,9 +256,28 @@
           if (vk !== k.visto) { k.el.style.visibility = vk ? 'inherit' : 'hidden'; k.visto = vk; }
         }
       }
+      avanza();
+    }
+    function avanza() {
       var pct = Math.min(100, t / total * 100);
       relleno.style.width = pct + '%';
       avance.setAttribute('aria-valuenow', String(Math.round(pct)));
+    }
+    /* Modo MP4: el reloj es el del video. En t0 salen las opciones y el video sigue diciendo la pregunta;
+       en tq (fin de la pregunta grabada) se detiene hasta que respondan. */
+    function cuadroVideo() {
+      if (!andando || !vid) return;
+      t = vid.currentTime;
+      for (var i = 0; i < pausas.length; i++) {
+        var p = pausas[i];
+        if (p.hecha || t < p.t0) continue;
+        if (enPausa !== p) abrePausa(p, true);
+        if (t >= p.tq) { vid.pause(); andando = false; pintaBotones(); avanza(); return; }
+        break;
+      }
+      if (vid.ended || t >= total - 0.05) { vid.pause(); t = total; avanza(); acaba(); return; }
+      avanza();
+      requestAnimationFrame(cuadroVideo);
     }
     function cuadro() {
       if (!andando) return;
@@ -213,6 +292,13 @@
     }
     function sigue() {
       if (!listo || andando || enPausa || terminado) return;
+      if (vid) {
+        andando = true; pintaBotones();
+        var q = vid.play();
+        if (q && q.catch) q.catch(function () { andando = false; pintaBotones(); });
+        requestAnimationFrame(cuadroVideo);
+        return;
+      }
       var arranca = function () {
         conCtx = !!ctx && ctx.state === 'running';
         andando = true; t0 = t; reloj0 = ahora();
@@ -222,13 +308,15 @@
     }
     function detiene() {
       if (!andando) return;
-      andando = false; callar(); pintaBotones();
+      andando = false; if (vid) vid.pause(); callar(); pintaBotones();
     }
 
     /* ---------- Pausas: 3 opciones; error → pista y reintento; acierto → sigue ---------- */
-    function abrePausa(p) {
-      andando = false; enPausa = p; callar(); pintaBotones(); bPlay.disabled = true;
+    /* sigueSonando (modo MP4): el video continúa mientras dice la pregunta */
+    function abrePausa(p, sigueSonando) {
+      andando = !!sigueSonando; enPausa = p; if (!sigueSonando) callar(); pintaBotones(); bPlay.disabled = true;
       pregunta.textContent = '';
+      pregunta.classList.toggle('rp__pregunta--video', !!vid);
       var tarjeta = crea('div', 'rp__tarjeta');
       tarjeta.appendChild(crea('p', 'rp__turno', 'Tu turno'));
       var q = crea('p', 'rp__q', p.datos.pregunta); q.id = 'rp-q-' + pausas.indexOf(p);
@@ -255,12 +343,22 @@
       });
       tarjeta.appendChild(grupo); tarjeta.appendChild(aviso);
       pregunta.appendChild(tarjeta); pregunta.hidden = false;
-      if (p.voz && ctx && ctx.state === 'running') toca(p.voz, ctx.currentTime + 0.05, 0);   // la pregunta grabada
+      /* En vivo, la pregunta grabada suena aparte (en el MP4 ya viene en el video). Si el navegador durmió
+         el audio, se despierta antes de tocarla. */
+      if (!vid && p.voz && ctx) {
+        var suena = function () { if (enPausa === p && ctx.state === 'running') toca(p.voz, ctx.currentTime + 0.05, 0); };
+        if (ctx.state === 'running') suena(); else ctx.resume().then(suena, function () { /* sin permiso de audio */ });
+      }
     }
     function cierraPausa(p) {
       if (enPausa !== p) return;
       enPausa = null; pregunta.hidden = true; bPlay.disabled = false;
-      callar(); t = p.t1; sigue();
+      callar(); t = p.t1;
+      if (vid) {
+        vid.currentTime = p.t1;
+        if (andando) return;   // respondió antes de que terminara la pregunta: el video ya va andando
+      }
+      sigue();
     }
 
     function acaba() {
@@ -281,18 +379,69 @@
       enPausa = null; terminado = false; aciertos = 0; t = 0;
       pausas.forEach(function (p) { p.hecha = false; p.fallos = 0; });
       pregunta.hidden = true; fin.hidden = true; bPlay.disabled = false;
-      pinta(); sigue();
+      if (vid) { vid.pause(); vid.currentTime = 0; avanza(); } else pinta();
+      sigue();
+    }
+
+    /* ---------- Arranque en celular: MP4 ligero + pausas por tiempo ---------- */
+    function empiezaVideo() {
+      empezar.disabled = true;
+      if (caja.scrollIntoView) caja.scrollIntoView({ block: 'center', behavior: 'auto' });
+      nota.textContent = 'Cargando…';
+      var v = crea('video', 'rp__video'), fallo = false;
+      v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', ''); v.playsInline = true;
+      v.setAttribute('aria-hidden', 'true'); v.tabIndex = -1; v.preload = 'auto'; v.muted = mudo;
+      v.disablePictureInPicture = true; v.setAttribute('controlslist', 'nodownload nofullscreen noremoteplayback');
+      var aVivo = function () {   // sin MP4: se intenta la composición
+        if (fallo) return; fallo = true;
+        try { v.pause(); v.removeAttribute('src'); v.load(); } catch (e) { /* nada que soltar */ }
+        if (v.parentNode) v.parentNode.removeChild(v);
+        vid = null; ligero = false; listo = false; andando = false; pausas = [];
+        [].forEach.call(avance.querySelectorAll('.rp__marca'), function (m) { m.parentNode.removeChild(m); });
+        empieza();
+      };
+      v.addEventListener('error', aVivo);
+      v.src = rutaVideo + '.mp4';
+      escenario.insertBefore(v, portada);
+      vid = v;
+      /* play() va dentro del toque para que el navegador deje sonar el video */
+      var arranque = v.play();
+      if (arranque && arranque.catch) arranque.catch(function () { /* se reintenta al estar todo listo */ });
+      Promise.all([
+        fetch(rutaVideo + '.json').then(function (r) { if (!r.ok) throw 0; return r.json(); }),
+        fetch(base + 'storyboard.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      ]).then(function (datos) {
+        if (fallo) return;
+        var mapa = datos[0], conPausa = (datos[1].tomas || []).filter(function (x) { return x.pausa; });
+        total = mapa.duracion;
+        mapa.pausas.forEach(function (m, i) {
+          if (!conPausa[i]) return;
+          var p = { t0: m.t0, tq: m.tq > m.t0 ? Math.min(m.tq, m.t1) : m.t0, t1: m.t1, datos: conPausa[i].pausa, hecha: false, fallos: 0 };
+          pausas.push(p);
+          var marca = crea('span', 'rp__marca'); marca.style.left = (p.t0 / total * 100) + '%'; avance.appendChild(marca);
+        });
+        var listoYa = function () {
+          if (fallo || listo) return;
+          listo = true; portada.hidden = true; bPlay.disabled = false; bOtra.disabled = false;
+          andando = !v.paused; pintaBotones();
+          if (andando) requestAnimationFrame(cuadroVideo); else sigue();
+        };
+        if (v.readyState >= 2) listoYa(); else { v.addEventListener('loadeddata', listoYa, { once: true }); v.addEventListener('playing', listoYa, { once: true }); }
+      }).catch(aVivo);
     }
 
     /* ---------- Arranque (al tocar «Empezar») ---------- */
     function empieza() {
+      if (ligero) { empiezaVideo(); return; }
       empezar.disabled = true;
       if (caja.scrollIntoView) caja.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
       var aviso = function (texto) { nota.textContent = texto; };
       aviso('Cargando…');
       var AC = window.AudioContext || window.webkitAudioContext;
       if (AC) {
-        try { ctx = new AC(); salida = ctx.createGain(); salida.gain.value = mudo ? 0 : 1; salida.connect(ctx.destination); if (ctx.state === 'suspended') ctx.resume(); }
+        try { ctx = new AC(); salida = ctx.createGain(); salida.gain.value = mudo ? 0 : 1; salida.connect(ctx.destination); if (ctx.state === 'suspended') ctx.resume();
+          /* desbloqueo: un sonido mudo dentro del toque, para que el navegador deje sonar después las preguntas */
+          var mudito = ctx.createBufferSource(); mudito.buffer = ctx.createBuffer(1, 1, 22050); mudito.connect(ctx.destination); mudito.start(0); }
         catch (e) { ctx = null; }
       }
       marco = crea('iframe', 'rp__lienzo');
@@ -324,6 +473,7 @@
     bSonido.addEventListener('click', function () {
       mudo = !mudo;
       if (salida) salida.gain.value = mudo ? 0 : 1;
+      if (vid) vid.muted = mudo;
       pintaBotones();
     });
     bOtra.addEventListener('click', reinicia);

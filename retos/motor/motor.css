@@ -1,0 +1,86 @@
+/* Códice Vivo · motor de retos (complementa a assets/css/sitio.css y usa sus variables).
+   Celular primero: escena arriba, panel abajo, controles de 44 px o más. */
+.mr{display:grid;gap:12px;width:100%;max-width:980px;text-align:left}
+
+/* niveles */
+.mr__niveles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mr__nivel{display:grid;justify-items:center;align-content:start;gap:2px;min-height:56px;padding:6px 4px;font:600 .72rem/1.15 var(--sans);color:var(--suave);
+  background:var(--sup);border:1.5px solid var(--borde-fuerte);border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mr__nivel[aria-current]{color:var(--texto);border-color:var(--acento);box-shadow:inset 0 0 0 1px var(--acento);background:color-mix(in srgb,var(--acento) 9%,var(--sup))}
+.mr__num{font:700 1.05rem/1 var(--sans);color:var(--rubrica)}
+.mr__nombre{text-align:center;text-wrap:balance}
+.mr__estrellas{color:var(--borde-fuerte);font-size:.8rem;letter-spacing:1px;line-height:1}
+.mr__estrellas .es-llena{color:var(--dorado)}
+.mr__estrellas--grande{font-size:2rem;letter-spacing:4px}
+
+/* escena: papel claro también en modo oscuro, como el video */
+.mr__escena{position:relative;aspect-ratio:5/4;overflow:hidden;border-radius:18px;background:#f3ead6;border:1px solid var(--borde-fuerte);
+  box-shadow:0 3px 0 var(--borde-fuerte),0 22px 30px -22px rgba(var(--sombra),.5)}
+
+/* panel */
+.mr__panel{display:grid;gap:10px;align-content:start;padding:14px;background:var(--sup);border:1px solid var(--borde-fuerte);border-radius:16px}
+.mr__cab{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:700 .72rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--rubrica)}
+.mr__enunciado{font-size:1.08rem;line-height:1.4}
+.mr__paso{display:grid;gap:10px}
+.mr__q{font:600 1.05rem/1.25 var(--sans);letter-spacing:-.01em}
+.mr__q:focus{outline:none}
+.mr__ok{width:100%;min-height:52px}
+
+.mr__campos{display:grid;gap:10px}
+.mr__campo{display:flex;align-items:center;gap:10px;font:600 1.1rem/1 var(--sans)}
+.mr__campo .mr__rotulo{min-width:3.2em;text-align:right}
+.mr__entrada{flex:1;min-width:0;max-width:9em;min-height:52px;padding:8px 12px;font:600 1.25rem/1 var(--sans);color:var(--texto);background:var(--bg);
+  border:1.5px solid var(--borde-fuerte);border-radius:12px}
+.mr__entrada.es-mal{border-color:var(--mal)}
+.mr__entrada.es-bien{border-color:var(--bien)}
+.mr__unidad{color:var(--suave);font-weight:500}
+
+.mr__opciones{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mr__opcion{min-height:52px;padding:8px 12px;font:600 1.05rem/1.2 var(--sans);color:var(--texto);background:var(--bg);
+  border:1.5px solid var(--borde-fuerte);border-radius:12px;cursor:pointer;transition:background .15s,border-color .15s,transform .1s}
+.mr__opcion:hover:not(:disabled){border-color:var(--acento)}
+.mr__opcion:active:not(:disabled){transform:translateY(1px)}
+.mr__opcion:disabled{cursor:default;opacity:.6}
+.mr__opcion.es-mal{border-color:var(--mal);color:var(--mal);text-decoration:line-through}
+.mr__opcion.es-bien{opacity:1;border-color:var(--bien);background:var(--bien);color:var(--sobre-acento);cursor:default}
+
+.mr__controles{display:grid;gap:12px}
+.mr__control-cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font:600 .95rem/1.2 var(--sans)}
+.mr__valor{font:700 1.2rem/1 var(--sans);color:var(--acento);white-space:nowrap}
+.mr__control-linea{display:flex;align-items:center;gap:8px}
+.mr__desliza{flex:1;min-width:0;height:44px;margin:0;accent-color:var(--acento);cursor:pointer}
+.mr__paso-b{flex:none;width:44px;height:44px;padding:0;font:600 1.4rem/1 var(--sans);color:var(--texto);background:var(--bg);
+  border:1.5px solid var(--borde-fuerte);border-radius:50%;cursor:pointer}
+.mr__paso-b:disabled,.mr__desliza:disabled{opacity:.5;cursor:default}
+.mr__lanzar{display:grid;gap:6px}
+.mr__tiros{font:600 .85rem/1.2 var(--sans);color:var(--suave);text-align:center}
+
+.mr__aviso{min-height:1.4em;font-size:1rem;line-height:1.4;color:var(--suave)}
+.mr__aviso--bien{font-weight:600;color:var(--bien)}
+.mr__aviso--mal{color:var(--mal)}
+.mr__pistas{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.mr__pistas:empty{display:none}
+.mr__pista{padding:10px 12px;font-size:.98rem;line-height:1.4;background:color-mix(in srgb,var(--dorado) 12%,var(--sup));border-left:3px solid var(--dorado);border-radius:0 10px 10px 0}
+.mr__pista strong{font:700 .68rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--rubrica)}
+.mr__acciones{display:flex;flex-wrap:wrap;gap:8px}
+.mr__menor{min-height:44px;padding:8px 14px;font:600 .9rem/1.2 var(--sans);color:var(--acento);background:transparent;border:1.5px solid var(--borde-fuerte);border-radius:999px;cursor:pointer}
+.mr__logro{display:grid;gap:10px;justify-items:center;text-align:center}
+.mr__resumen-t{font:700 .72rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--rubrica)}
+.mr__resumen{display:grid;gap:6px;margin:0;padding-left:1.2em;text-align:left;line-height:1.4}
+
+.mr button:focus-visible,.mr input:focus-visible,.mr a:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
+
+/* «Ver el video del reto»: el reproductor queda plegado debajo del juego */
+.reto__video{width:100%;max-width:980px;border:1px solid var(--borde-fuerte);border-radius:16px;background:var(--sup)}
+.reto__video>summary{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 16px;cursor:pointer;list-style:none;font:600 1rem/1.2 var(--sans);text-align:left}
+.reto__video>summary::-webkit-details-marker{display:none}
+.reto__video>summary::after{content:"";flex:none;width:10px;height:10px;margin:-4px 4px 0 auto;border-right:2px solid var(--rubrica);border-bottom:2px solid var(--rubrica);transform:rotate(45deg)}
+.reto__video[open]>summary::after{transform:rotate(-135deg);margin-top:6px}
+.reto__video-dentro{display:grid;gap:14px;justify-items:center;padding:6px 14px 18px}
+
+@media (min-width:900px){
+  .mr{grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr);align-items:start}
+  .mr__niveles{grid-column:1/-1}
+  .mr__nivel{grid-auto-flow:column;justify-content:center;align-items:center;gap:8px;font-size:.85rem}
+}
+@media (prefers-reduced-motion:reduce){.mr__opcion{transition:none}}

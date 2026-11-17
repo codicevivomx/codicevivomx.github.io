@@ -162,3 +162,38 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   escriben mientras habla). Mezcla: SFX a `data-volume="0.55"` cuando coinciden con la voz. `retos/catapulta/` y
   `retos/esquiador/` probados en navegador (3 pausas, pista, acierto, pregunta grabada, silenciar). MP4 fuera del repo:
   `C:\Users\Gato\Videos\codice-vivo\aplica-tiro-catapulta-voz.mp4` (alta) y `-tiktok.mp4` (39 MB).
+- [x] Parpadeo de los retos en celular (16-nov-2026, sin commit). El primer intento (`will-change` en la capa del mundo
+  de 2600×3200) lo empeoró en celular real e Instagram: reservaba demasiada memoria gráfica; quitado.
+  Solución: en celular el reproductor NO usa la composición en vivo sino un MP4 ligero con pausas por tiempo.
+  · `retos/reproductor.js`: con `data-video="../../assets/video/<id>"` usa `<id>.mp4` + `<id>.json` si el puntero es táctil,
+    el lado corto de la pantalla mide ≤ 600 px o es navegador interno (Instagram, Facebook, TikTok…). Mismas preguntas y
+    pistas de `storyboard.json`; se detiene en t0 y al acertar salta a t1. `?video=mp4` / `?video=vivo` lo fuerza.
+    Si el MP4 no carga, cae a la composición. En PC sigue la composición en vivo.
+  · `retos/video-ligero.mjs <id> <mp4 de origen> [MB]`: genera `assets/video/<id>.mp4` (720×1280, faststart, cuadro clave
+    al final de cada pausa) y `<id>.json` (tiempos leídos de la composición). Hechos: esquiador 8.4 MB, catapulta 8.5 MB,
+    desde los `-voz.mp4` de `C:UsersGatoVideoscodice-vivo`. Si cambia un video, hay que volver a correrlo.
+  · `.gitignore`: excepción `!assets/video/*.mp4` (los demás MP4 siguen fuera del repo).
+  · Se quedan de la ronda anterior: nieve del esquiador con transform y `horneaTexturas` (solo cuentan en PC).
+  Memoria del sitio en celular: el paisaje de la portada suelta sus capas al salir de la vista (`.mundo.es-fuera`) y ya no
+  usa translate3d/will-change en táctil; en la tienda three.js solo se pide al tocar («Toca para ver en 3D») y se libera
+  (contexto WebGL incluido) al salir de la vista; con mouse se pide al entrar a la vista. En táctil, tarjetas sin 3D y
+  barras sin desenfoque de fondo. Memoria gráfica medida (Chrome emulado 390 px, volcado memory-infra, mosaicos + texturas):
+  esquiador 57+60 MB → 4+26 MB (+12 de video); tienda abajo 19+38 → 10+12; portada abajo 28+34 → 20+26; juego 4+6.
+  Falta: confirmar en celular real y en Instagram/TikTok. Scripts de medición no guardados en el repo.
+  Pausas del modo MP4 (16-nov-2026): el audio aparte de la pregunta lo bloqueaban los celulares y el video se detenía
+  antes de la pregunta grabada. Ahora en t0 sale la tarjeta interactiva (tapa la que el video trae dibujada) y el video
+  sigue hasta `tq` = fin de la pregunta grabada (+0.3 s, sin pisar el primer tic de la cuenta); al acertar salta a t1.
+  `<id>.json` lleva `{ t0, tq, t1 }`; se regenera sin recodificar con `node retos/video-ligero.mjs <id> --mapa`.
+  En vivo (PC) el audio se desbloquea con un sonido mudo dentro del toque de «Empezar». Probado: las 6 pausas en
+  celular emulado (se detiene en tq ± 0.01 s, salta a t1, 0 audios pedidos aparte) y la pregunta sonando en PC.
+- [x] Reto interactivo de la catapulta + motor de retos (16-nov-2026, sin commit). Especificación: `docs/diseno-retos.md`.
+  Motor reutilizable `retos/motor/motor.js` + `motor.css` (niveles, azar con semilla, tolerancia, pistas en 3 escalones,
+  estrellas, progreso en localStorage `cv-reto-<id>`, «menos movimiento»; pasos tipo numeros / opciones / tiros / accion).
+  Reto `retos/catapulta/reto.js` (física y los 4 niveles), `escena.js` (dibujo copiado de la composición del video y
+  parametrizado; el video no se tocó: un retoque al dibujo hay que traerlo a mano) y `estilos.css`.
+  `retos/catapulta/index.html`: el juego es lo principal y el reproductor queda plegado en «Ver el video del reto».
+  Prueba: `node retos/catapulta/prueba.mjs` (20 semillas por nivel + barrido; 0 fallas). Probado en Chrome sin ventana a
+  390 px, 1200 px y con «menos movimiento». Sin probar en celular real.
+  Decisiones: nivel 2 con altura en opción múltiple (3 distractores con su explicación) y muralla de altura entera a
+  1-3 m de la altura real; nivel 4 con 5 tiros (3★ en 1-2, 2★ en 3-4, 1★ en el 5.º); niveles 2-4 abiertos con etiqueta
+  «En el libro». Pendiente: `libros/fisica-unam/` todavía describe el reto como «una puerta a 40 metros».

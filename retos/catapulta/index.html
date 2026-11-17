@@ -12,6 +12,8 @@
 <link rel="preload" href="../../plantilla/codice/fuentes/eb-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../assets/css/sitio.css">
 <link rel="stylesheet" href="../reproductor.css">
+<link rel="stylesheet" href="../motor/motor.css">
+<link rel="stylesheet" href="estilos.css">
 </head>
 <body>
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -26,16 +28,25 @@
   <nav aria-label="Principal"><a class="enlace" href="../../biblioteca/">Biblioteca</a></nav>
 </header>
 <main id="contenido">
-<!-- sección: reto (el reproductor reproduce plantilla/videos/aplica-tiro-catapulta/ y se detiene en cada pausa; ver retos/reproductor.js) -->
+<!-- sección: reto. El juego (retos/motor/ + reto.js) es lo principal; el video de TikTok queda plegado abajo
+     (retos/reproductor.js reproduce plantilla/videos/aplica-tiro-catapulta/ y no descarga nada hasta «Empezar»). -->
 <section class="seccion reto" aria-labelledby="reto-t">
   <nav class="migas" aria-label="Ruta"><a href="../../biblioteca/">Biblioteca</a><span aria-hidden="true">›</span><a href="../../libros/fisica-unam/#sec-retos">Física UNAM</a><span aria-hidden="true">›</span><span aria-current="page">Reto</span></nav>
   <p class="antetitulo">Aplica lo aprendido · Tiro parabólico</p>
   <h1 id="reto-t">¿Le das a la puerta del castillo?</h1>
-  <p class="subtitulo">Un trabuquete, una muralla y una puerta a 40 metros.</p>
-  <div data-reto="../../plantilla/videos/aplica-tiro-catapulta/" data-volver="../../libros/fisica-unam/#sec-retos">
-    <noscript><p>Este reto necesita JavaScript para reproducirse.</p></noscript>
+  <p class="subtitulo">Un trabuquete, una muralla y la puerta de un castillo. Cuatro niveles con números que cambian en cada intento.</p>
+  <div data-juego="catapulta">
+    <noscript><p>Este reto necesita JavaScript para funcionar.</p></noscript>
   </div>
-  <p class="reto__ayuda">El video se detiene tres veces para que respondas. Si fallas, te damos una pista y lo intentas de nuevo.</p>
+  <details class="reto__video">
+    <summary>Ver el video del reto</summary>
+    <div class="reto__video-dentro">
+      <div data-reto="../../plantilla/videos/aplica-tiro-catapulta/" data-video="../../assets/video/aplica-tiro-catapulta" data-volver="../../libros/fisica-unam/#sec-retos">
+        <noscript><p>Este video necesita JavaScript para reproducirse.</p></noscript>
+      </div>
+      <p class="reto__ayuda">El video se detiene tres veces para que respondas. Si fallas, te damos una pista y lo intentas de nuevo.</p>
+    </div>
+  </details>
 </section>
 </main>
 <!-- sección: pie (banda oscura; «Próximamente» sale de LO_QUE_VIENE y «Comunidad» de ENLACES, en assets/js/sitio.js) -->
@@ -83,5 +94,8 @@
 </footer>
 <script src="../../assets/js/sitio.js" defer></script>
 <script src="../reproductor.js" defer></script>
+<script src="../motor/motor.js" defer></script>
+<script src="escena.js" defer></script>
+<script src="reto.js" defer></script>
 </body>
 </html>

@@ -12,6 +12,8 @@ node_modules/
 # Videos renderizados (pesados; se suben a TikTok, no al repo)
 *.mp4
 *.mov
+# Excepción: los MP4 ligeros (720p, ~9 MB) que el reproductor de retos usa en celular
+!assets/video/*.mp4
 
 # Configuración local de Claude Code
 .claude/settings.local.json

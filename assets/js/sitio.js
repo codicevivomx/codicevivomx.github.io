@@ -245,9 +245,39 @@ else window.addEventListener('load', function () { setTimeout(fuentesDeAbajo, 0)
   var escena = document.querySelector('[data-escena]');
   if (escena && !quieto) {
     var hayWebGL = (function () { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } })();
-    if (hayWebGL) {
-      var carga = function () { import('./escena-libro.js').then(function (m) { return m.monta(escena); }).catch(function () { /* queda la imagen fija */ }); };
-      if (document.readyState === 'complete') setTimeout(carga, 60); else window.addEventListener('load', function () { setTimeout(carga, 60); });
+    if (hayWebGL && 'IntersectionObserver' in window) {
+      /* Memoria gráfica: el 3D nunca se carga si no se ve.
+         · Con mouse: se pide cuando la escena entra a la pantalla.
+         · En celular: solo al tocar la imagen fija, y se suelta (contexto WebGL incluido) al salir de la pantalla. */
+      var pista = escena.querySelector('.producto__pista'), textoPista = pista ? pista.textContent : '', cargando = false;
+      var carga = function () {
+        if (cargando || escena.__escena) return Promise.resolve();
+        cargando = true;
+        return import('./escena-libro.js').then(function (m) { return m.monta(escena); }).catch(function () { /* queda la imagen fija */ }).then(function () { cargando = false; });
+      };
+      if (conMouse) {
+        var alVer = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { alVer.disconnect(); carga(); } }, { rootMargin: '200px 0px' });
+        alVer.observe(escena);
+      } else {
+        var invita = function () {
+          escena.classList.add('es-toca'); escena.setAttribute('role', 'button'); escena.tabIndex = 0;
+          escena.setAttribute('aria-label', 'Ver el libro en 3D');
+          if (pista) pista.textContent = 'Toca para ver en 3D';
+        };
+        var abre = function () {
+          if (!escena.classList.contains('es-toca')) return;
+          escena.classList.remove('es-toca'); escena.removeAttribute('role'); escena.removeAttribute('tabindex'); escena.removeAttribute('aria-label');
+          if (pista) pista.textContent = textoPista;
+          carga();
+        };
+        escena.addEventListener('click', abre);
+        escena.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abre(); } });
+        new IntersectionObserver(function (e) {
+          if (e[0].isIntersecting || !escena.__escena) return;
+          escena.__escena.suelta(); invita();
+        }).observe(escena);
+        invita();
+      }
     }
   }
 

@@ -162,11 +162,13 @@ export async function monta(cont) {
   lz.addEventListener('pointermove', e => { if (!arrastra) return; yaw = THREE.MathUtils.clamp(yaw0 + (e.clientX - x0) * 0.009, -LIM, LIM); inc = THREE.MathUtils.clamp(inc0 + (e.clientY - y0) * 0.004, -INC * 0.4, INC); });
   const suelta = () => { if (!arrastra) return; arrastra = false; suelto = performance.now(); cont.classList.remove('es-arrastre'); };
   lz.addEventListener('pointerup', suelta); lz.addEventListener('pointercancel', suelta);
-  if ('IntersectionObserver' in window) new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(cont);
-  if ('ResizeObserver' in window) new ResizeObserver(() => { rd.setSize(ancho(), alto(), false); encuadra(); }).observe(cont);
+  const ojos = [];
+  if ('IntersectionObserver' in window) { const o = new IntersectionObserver(e => { visible = e[0].isIntersecting; }); o.observe(cont); ojos.push(o); }
+  if ('ResizeObserver' in window) { const o = new ResizeObserver(() => { rd.setSize(ancho(), alto(), false); encuadra(); }); o.observe(cont); ojos.push(o); }
 
-  let listo = false;
+  let listo = false, soltado = false;
   const cuadro = t => {
+    if (soltado) return;
     requestAnimationFrame(cuadro);
     if (!visible || document.hidden) return;
     const s = t / 1000;
@@ -181,5 +183,17 @@ export async function monta(cont) {
   };
   requestAnimationFrame(cuadro);
   // gancho para sacar la imagen fija de respaldo (no se usa en la página)
-  cont.__escena = { fija: v => { fijo = v; }, foto: q => { giro.rotation.y = fijo === null ? yaw : fijo; rd.render(escena, cam); return lz.toDataURL('image/webp', q); } };
+  // suelta(): libera la memoria gráfica (texturas, geometrías y el contexto WebGL) y vuelve a la imagen fija.
+  // sitio.js lo llama en celular cuando la escena sale de la pantalla.
+  const libera = () => {
+    if (soltado) return;
+    soltado = true; ojos.forEach(o => o.disconnect());
+    escena.traverse(o => {
+      if (o.geometry) o.geometry.dispose();
+      [].concat(o.material || []).forEach(m => { for (const k in m) if (m[k] && m[k].isTexture) m[k].dispose(); m.dispose(); });
+    });
+    rd.dispose(); rd.forceContextLoss();
+    lz.remove(); cont.classList.remove('es-3d', 'es-arrastre'); delete cont.__escena;
+  };
+  cont.__escena = { suelta: libera, fija: v => { fijo = v; }, foto: q => { giro.rotation.y = fijo === null ? yaw : fijo; rd.render(escena, cam); return lz.toDataURL('image/webp', q); } };
 }
