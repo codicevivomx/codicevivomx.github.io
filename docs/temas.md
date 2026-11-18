@@ -197,3 +197,13 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   Decisiones: nivel 2 con altura en opción múltiple (3 distractores con su explicación) y muralla de altura entera a
   1-3 m de la altura real; nivel 4 con 5 tiros (3★ en 1-2, 2★ en 3-4, 1★ en el 5.º); niveles 2-4 abiertos con etiqueta
   «En el libro». Pendiente: `libros/fisica-unam/` todavía describe el reto como «una puerta a 40 metros».
+- [x] Reto interactivo del esquiador (17-nov-2026, sin commit), con el motor de retos. `retos/esquiador/reto.js` (física
+  y 4 niveles: v = √(2gh) con h ∈ {5, 20, 45, 80}; predice la altura en opción múltiple con 3 errores típicos —olvidar
+  el 2, quitar el borde, sin raíz en t o en v— y la pista final «Truco de examen: x = 2√(h·b), no depende de g»; fricción
+  19/36/51 % con control de altura y 3 intentos; reto final con escalón o desnivel de 2-4 m y a veces fricción, 5 intentos).
+  En 2-4, h·c es cuadrado perfecto y x sale entera; h ≤ 60 m. `escena.js`: dibujo copiado de la composición del video
+  (terreno, plataforma, rampa escalada con k = h/20, pinos, rocas, esquiador con sus 4 poses); sin texturas de ruido ni
+  nieve que cae, para el celular. `index.html`: juego arriba y «Ver el video del reto» plegado (MP4 ligero en táctil).
+  Prueba: `node retos/esquiador/prueba.mjs` (20 semillas por nivel + barrido de 2000; 0 fallas). Probado en Chrome sin
+  ventana a 420 px y 1280 px: los 4 niveles completos, pistas, desnivel hacia abajo y choque con la orilla del escalón.
+  Sin probar en celular real ni con «menos movimiento».

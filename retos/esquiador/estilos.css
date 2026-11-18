@@ -1,0 +1,31 @@
+/* Códice Vivo · escena del reto del esquiador: paleta isométrica del video
+   (plantilla/videos/aplica-mecanica-esquiador/compositions/escena.html, variables ISO). Mismos nombres de clase. */
+.esq{position:absolute;inset:0;width:100%;height:100%;display:block;background:linear-gradient(180deg,#8FC1BE 0%,#F6F1E6 62%);
+  --monte-l:#C9D8D2;--monte-l-n:#FFFCF6;--monte-m:#9CBDB8;--monte-m-n:#F6F1E6;
+  --nieve-1:#FFFCF6;--nieve-2:#EFE7D8;--nieve-3:#DCCFB8;--nieve-4:#BBA98C;
+  --tierra-2:#8C7458;--tierra-3:#6E5A44;--tierra-4:#4E3F30;
+  --madera-1:#D4B06A;--madera-2:#B08A3E;--madera-3:#8A6A2C;--madera-4:#5E4719;
+  --roca-1:#D6CEC1;--roca-2:#ABA091;--roca-3:#837867;--roca-4:#5A5146;
+  --pino-1:#4E9090;--pino-2:#2F6F73;--pino-3:#245D60;--pino-4:#173F41;--tronco:#6B523A;
+  --linea:rgba(46,33,23,0.35);--tinta:#2E2117;
+  --chaqueta:#A5352A;--chaqueta-o:#74231A;--pantalon:#2E2117;--bota:#1E1610;--casco:#B08A3E;--piel:#E9C8A6;--goggle:#2E2117;
+  --esquis:#2F6F73;--brillo:#FFFFFF;--baston:#77634F;--rim:#FFF3D6;
+  --zona:rgba(47,125,91,0.30);--zona-b:#2F7D5B;--vel:rgba(119,99,79,0.7)}
+.esq .f-monte-l{fill:var(--monte-l)} .esq .f-monte-l-n{fill:var(--monte-l-n)} .esq .f-monte-m{fill:var(--monte-m)} .esq .f-monte-m-n{fill:var(--monte-m-n)}
+.esq .f-n1{fill:var(--nieve-1)} .esq .f-n2{fill:var(--nieve-2)} .esq .f-n3{fill:var(--nieve-3)} .esq .f-n4{fill:var(--nieve-4)}
+.esq .f-t2{fill:var(--tierra-2)} .esq .f-t3{fill:var(--tierra-3)} .esq .f-t4{fill:var(--tierra-4)}
+.esq .f-m1{fill:var(--madera-1)} .esq .f-m2{fill:var(--madera-2)} .esq .f-m3{fill:var(--madera-3)} .esq .f-m4{fill:var(--madera-4)}
+.esq .f-r1{fill:var(--roca-1)} .esq .f-r2{fill:var(--roca-2)} .esq .f-r3{fill:var(--roca-3)} .esq .f-r4{fill:var(--roca-4)}
+.esq .f-p1{fill:var(--pino-1)} .esq .f-p2{fill:var(--pino-2)} .esq .f-p3{fill:var(--pino-3)} .esq .f-p4{fill:var(--pino-4)} .esq .f-tronco{fill:var(--tronco)}
+.esq .f-piel{fill:var(--piel)} .esq .f-casco{fill:var(--casco)} .esq .f-bota{fill:var(--bota)} .esq .f-goggle{fill:var(--goggle)}
+.esq .f-guante{fill:var(--pantalon)} .esq .f-brillo{fill:var(--brillo)} .esq .f-rim{fill:var(--rim)} .esq .f-chaq{fill:var(--chaqueta)}
+.esq .f-zona{fill:var(--zona);stroke:var(--zona-b);stroke-width:4;stroke-dasharray:14 10}
+.esq .borde{stroke:var(--linea);stroke-width:2;stroke-linejoin:round}
+.esq .k{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.esq .k-chaq{stroke:var(--chaqueta)} .esq .k-chaq-o{stroke:var(--chaqueta-o)} .esq .k-pant{stroke:var(--pantalon)} .esq .k-esquis{stroke:var(--esquis)}
+.esq .k-baston{stroke:var(--baston)} .esq .k-vel{stroke:var(--vel)} .esq .k-rim{stroke:var(--rim)} .esq .k-brillo{stroke:var(--brillo)}
+.esq .k-m1{stroke:var(--madera-1)} .esq .k-m3{stroke:var(--madera-3)} .esq .k-m4{stroke:var(--madera-4)} .esq .k-n2{stroke:var(--nieve-2)} .esq .k-n3{stroke:var(--nieve-3)}
+.esq .k-p1{stroke:var(--pino-1)} .esq .k-p4{stroke:var(--pino-4)} .esq .k-t4{stroke:var(--tierra-4)} .esq .k-r4{stroke:var(--roca-4)}
+.esq .k-linea{stroke:var(--linea)} .esq .k-tinta{stroke:var(--tinta)} .esq .k-goggle{stroke:var(--goggle)}
+.esq .par{stroke:var(--tinta);stroke-linecap:round}
+.esq .esq-nota{font-family:"Inter",system-ui,sans-serif;font-weight:800;paint-order:stroke;stroke:#FFFCF6;stroke-linejoin:round}
