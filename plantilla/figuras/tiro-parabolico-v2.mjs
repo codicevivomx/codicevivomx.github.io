@@ -78,7 +78,7 @@ function reglaAlcance() {
   }
   o.push(L(menor, { tone: "faint" }), L(medio, { tone: "lo" }), L(mayor, { tone: "mid" }));
   for (let m = 0; m <= XM - 5; m += 10) { const p = at([m * M, REGLA.y1, 0]);
-    o.push(`<text class="t-regla${m % 20 ? " impar" : ""}" x="${fx(p[0])}" y="${fx(p[1] + 4)}" dy="0.8em" text-anchor="middle">${m}${m === XM - 5 ? " m" : ""}</text>`); }
+    o.push(`<text class="t-regla l2-etq${m % 20 ? " impar" : ""}" data-prio="4" data-fija="1" x="${fx(p[0])}" y="${fx(p[1] + 4)}" dy="0.8em" text-anchor="middle">${m}${m === XM - 5 ? " m" : ""}</text>`); }
   return o.join("");
 }
 // Banderín de caída (se mueve a lo largo de x; aparece cuando se conoce R).
@@ -105,7 +105,7 @@ function poste() {
   }
   o.push(L(menor, { tone: "faint" }), L(medio, { tone: "lo" }), L(mayor, { tone: "mid" }));
   for (let m = 0; ZB + m * M <= HM * M + 5; m += 10) { const p = at([POSTE - 2.5, 0, ZB + m * M]);
-    o.push(`<text class="t-regla${m % 20 ? " impar" : ""}" x="${fx(p[0])}" y="${fx(p[1])}" dy="0.35em" text-anchor="end">${m}${ZB + (m + 10) * M > HM * M + 5 ? " m" : ""}</text>`); }
+    o.push(`<text class="t-regla l2-etq${m % 20 ? " impar" : ""}" data-prio="4" data-fija="1" x="${fx(p[0])}" y="${fx(p[1])}" dy="0.35em" text-anchor="end">${m}${ZB + (m + 10) * M > HM * M + 5 ? " m" : ""}</text>`); }
   return o.join("");
 }
 // Transportador de pie detrás del balón: marcas cada 5°, mayor cada 15°; 37° y 53° en dorado.
@@ -142,14 +142,14 @@ const figura = k.figureSvg({
   width: W, height: H, label: J.figura.aria,
   body: [
     placa(), reglaAlcance(), poste(), transportador(), base(),
-    `<g id="g-cima" class="oculto"><path id="guia-h" class="guia" d=""/><path id="guia-v" class="guia" d=""/><circle id="cima" class="cima" r="3"/><text id="t-h" class="t-h"></text></g>`,
-    `<path id="parabola" class="parabola solo-revelado" d=""/><path id="ref" class="ref oculto" d=""/><text id="t-ref" class="t-ref oculto"></text>`,
+    `<g id="g-cima" class="oculto"><path id="guia-h" class="guia" d=""/><path id="guia-v" class="guia" d=""/><circle id="cima" class="cima" r="3"/><text id="t-h" class="t-h l2-etq" data-prio="1"></text></g>`,
+    `<path id="parabola" class="parabola solo-revelado" d=""/><path id="ref" class="ref oculto" d=""/><text id="t-ref" class="t-ref l2-etq oculto" data-prio="3"></text>`,
     `<path id="estela" class="estela" d=""/><g id="marcas"></g>`,
-    caida(), `<text id="t-caida" class="t-caida solo-revelado" text-anchor="middle"></text>`,
-    `<g id="fantasma" class="solo-trampa"><path id="fant-v" class="fantasma" d=""/><path id="fant-b" class="fantasma" d="${k.ring(0, 0, RB, 0.1, P, 24)}"/><text id="t-fantasma" class="t-trampa" text-anchor="end"></text></g>`,
+    caida(), `<text id="t-caida" class="t-caida l2-etq solo-revelado" data-prio="1" text-anchor="middle"></text>`,
+    `<g id="fantasma" class="solo-trampa"><path id="fant-v" class="fantasma" d=""/><path id="fant-b" class="fantasma" d="${k.ring(0, 0, RB, 0.1, P, 24)}"/><text id="t-fantasma" class="t-trampa l2-etq" data-prio="2" text-anchor="end"></text></g>`,
     `<path id="sombra" class="sombra" d="${k.ring(0, 0, RB, 0.05, P, 28)}"/>`,
-    `<g><path id="arco" class="arco" d=""/><text id="t-ang" class="t-ang"></text></g>`,
-    `<g id="fl-v0" class="flecha fl-v0"><line/><polygon/><text class="t-vel"></text></g>`,
+    `<g><path id="arco" class="arco" d=""/><text id="t-ang" class="t-ang l2-etq" data-prio="2"></text></g>`,
+    `<g id="fl-v0" class="flecha fl-v0"><line/><polygon/><text class="t-vel l2-etq" data-prio="2"></text></g>`,
     balon(),
     `<g id="mango"><circle class="mango-toque" r="22"/><circle class="mango" r="6"/></g>`,
     `<g id="capa-pred"></g><g id="capa-herr"></g>`,
@@ -158,7 +158,7 @@ const figura = k.figureSvg({
 
 // ---------- Datos para la página: matriz afín de la proyección y medidas ----------
 const o0 = at([0, 0, 0]), dif = (p) => { const q = at(p); return [q[0] - o0[0], q[1] - o0[1]]; };
-const CFG = { A: { o: o0, ex: dif([1, 0, 0]), ey: dif([0, 1, 0]), ez: dif([0, 0, 1]) }, M, RB, ZB, POSTE, XM, HM, W, H };
+const CFG = { A: { o: o0, ex: dif([1, 0, 0]), ey: dif([0, 1, 0]), ez: dif([0, 0, 1]) }, M, RB, ZB, POSTE, XM, HM, W, H, REGLA_Y: REGLA.y1 };
 { // la proyección debe ser afín (la página no lleva el kit)
   const p = [123, -7, 45], q = at(p), A = CFG.A, r = [A.o[0] + p[0] * A.ex[0] + p[1] * A.ey[0] + p[2] * A.ez[0], A.o[1] + p[0] * A.ex[1] + p[1] * A.ey[1] + p[2] * A.ez[1]];
   if (Math.hypot(q[0] - r[0], q[1] - r[1]) > 1e-6) throw new Error("La proyección del kit ya no es afín: revisa CFG.A");
@@ -167,7 +167,7 @@ const CFG = { A: { o: o0, ex: dif([1, 0, 0]), ey: dif([0, 1, 0]), ez: dif([0, 0,
 // ---------- Lógica de la página (se serializa tal cual) ----------
 function pagina(C, piezas) {
 (async () => {
-const { creaTiempo, creaPrediccion, preguntaOpciones, creaCuaderno, creaHerramientas, creaSelector, montaPractica, creaCancha, PROBLEMAS } = piezas;
+const { creaTiempo, creaPrediccion, preguntaOpciones, creaCuaderno, creaHerramientas, creaSelector, montaPractica, creaPantallaCompleta, acomodaEtiquetas, creaCancha, PROBLEMAS } = piezas;
 const $ = (s) => document.querySelector(s);
 const A = C.A;
 const iso = (p) => [A.o[0] + p[0] * A.ex[0] + p[1] * A.ey[0] + p[2] * A.ez[0], A.o[1] + p[0] * A.ex[1] + p[1] * A.ey[1] + p[2] * A.ez[1]];
@@ -233,13 +233,25 @@ function ponFlecha(id, p0, p1, texto, lado = 1){
 }
 const mostrar = (sel, on) => $(sel).classList.toggle("oculto", !on);
 const NS = "http://www.w3.org/2000/svg";
+let vbLab = { x: 0, y: 0, w: C.W, h: C.H };
 const lab = {
-  svg, capaPrediccion: $("#capa-pred"), capaHerramientas: $("#capa-herr"), suelo: -C.ZB / C.M, bandera: 9,
+  svg, capaPrediccion: $("#capa-pred"), capaHerramientas: $("#capa-herr"), suelo: 0,
   aPantalla: (w) => Wp(w[0], w[1]),
   dePantalla: ([sx, sy]) => { const b = iso([0, 0, C.ZB]), dx = sx - b[0], dy = sy - b[1]; return [(dx * A.ez[1] - dy * A.ez[0]) / det / C.M, (A.ex[0] * dy - A.ex[1] * dx) / det / C.M]; },
-  escalaTexto: () => C.W / (svg.clientWidth || C.W),
+  /* unidades del SVG por px (con «meet» manda el lado más justo) */
+  escalaTexto: () => { const w = svg.clientWidth, h = svg.clientHeight; return w && h ? Math.max(vbLab.w / w, vbLab.h / h) : vbLab.w / C.W; },
   pxPorMetro: () => Math.hypot(A.ex[0], A.ex[1]) * C.M,
-  encuadra() {},
+  /* Recorta el dibujo a la trayectoria (x hasta x1 m, alto hasta y1 m), redondeado para no regalar el resultado:
+     sin vacío arriba ni regla de sobra a la derecha. El fondo de la placa siempre se ve. */
+  encuadra(o) {
+    const x1 = Math.min(C.XM - 5, Math.ceil(Math.max(o.x1, 25) / 10) * 10 + 5), y1 = Math.min(C.HM, Math.ceil(Math.max(o.y1, 5) / 5) * 5);
+    const ps = [iso([C.M * x1, C.REGLA_Y + 6, 0]), iso([C.M * x1, 0, C.ZB + C.M * y1]), iso([C.M * x1 + 30, -26, 0])];
+    const der = Math.min(C.W, Math.max(...ps.map((q) => q[0])) + 8);
+    const arriba = Math.max(0, Math.min(iso([C.POSTE, 0, C.ZB + C.M * y1])[1], iso([C.M * x1 * 0.5, 0, C.ZB + C.M * y1])[1]) - 34);
+    const w = Math.max(300, der), h = Math.max(150, C.H - arriba);
+    vbLab = { x: 0, y: C.H - h, w, h };
+    svg.setAttribute("viewBox", `0 ${(C.H - h).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
+  },
   pinta(E) {
     const s = E.s, t = E.t, [bx, by] = E.pos, kk = lab.escalaTexto();
     svg.style.setProperty("--k", kk.toFixed(3));
@@ -286,12 +298,14 @@ const lab = {
 // ---------- Escena 2: la situación real (cancha, tinta) ----------
 const SIT = L2.situacion;
 const cancha = creaCancha($("#cancha"), { barrera: SIT.barrera, porteria: SIT.porteria, alRedimensionar: () => { if (esc === cancha) redibuja(); } });
-cancha.suelo = 0; cancha.bandera = 4;
+cancha.suelo = 0;
 cancha.mostrar = ((m) => (si) => { $("#cancha").hidden = !si; m(si); })(cancha.mostrar);
 let esc = lab;
 
 // ---------- Cuaderno ----------
-const cuaderno = creaCuaderno({ boton: $("#b-cuaderno"), titulo: "Cuaderno", secciones: [
+const cuaderno = creaCuaderno({ boton: $("#b-cuaderno"), titulo: "Cuaderno",
+  alAbrir: (lateral) => { if (!lateral && !(pc && pc.activa)) $(".escenario").scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); },
+  secciones: [
   { id: "datos", titulo: "Datos" }, { id: "solucion", titulo: "Paso a paso" }, { id: "prediccion", titulo: "Tu predicción vs resultado" },
   { id: "medidas", titulo: "Medidas" }, { id: "truco", titulo: "Truco de examen" }] });
 cuaderno.escribe("truco", ["El tiempo lo da lo vertical: t = 2 v<sub>0y</sub> ÷ g.", "La distancia, lo horizontal: R = v<sub>x</sub> × t.",
@@ -310,7 +324,13 @@ function escribeSolucion(completa, anima = true){
     `<span class="l2-c-coral">R = v<sub>x</sub> × t<sub>vuelo</sub> = ${n(s.vx)} × ${n(s.tv)} = <b>${n(s.R)} m</b></span>`,
     `<span class="l2-c-verde">H = v<sub>0y</sub>² ÷ (2g) = ${n(s.vy)}² ÷ ${n(2 * g)} = <b>${n(s.H)} m</b></span>`,
     `En la cima: v<sub>y</sub> = 0, pero v = v<sub>x</sub> = ${n(s.vx)} m/s.`);
-  else l.push('<span class="l2-c-gris">Patea para ver el resto.</span>');
+  if (completa && esc === cancha) {
+    const B = SIT.barrera, PO = SIT.porteria, tb = B.x / s.vx, yb = s.vy * tb - g / 2 * tb * tb, tp = PO.x / s.vx, yp = s.vy * tp - g / 2 * tp * tp;
+    l.push(`<b>Barrera</b> (x = ${n(B.x)} m): t = ${n(B.x)} ÷ ${n(s.vx)} = ${n(tb)} s → y = ${n(s.vy)} × ${n(tb)} − 5 × ${n(tb)}² = <b>${n(yb)} m</b> ${yb > B.alto ? '<span class="l2-c-verde">&gt; ' + n(B.alto) + " m: pasa</span>" : '<span class="l2-c-coral">≤ ' + n(B.alto) + " m: choca</span>"}`);
+    if (tp <= s.tv) l.push(`<b>Portería</b> (x = ${n(PO.x)} m): t = ${n(tp)} s → y = <b>${n(yp)} m</b> ${yp <= PO.alto ? '<span class="l2-c-verde">&lt; ' + n(PO.alto) + " m: entra bajo el travesaño</span>" : '<span class="l2-c-coral">&gt; ' + n(PO.alto) + " m: pasa por encima</span>"}`);
+    else l.push(`<b>Portería</b> (x = ${n(PO.x)} m): el balón cae antes, a ${n(s.R)} m.`);
+  }
+  else if (!completa) l.push('<span class="l2-c-gris">Patea para ver el resto.</span>');
   cuaderno.escribe("solucion", l, { anima, cuenta: 1 });
 }
 
@@ -319,36 +339,61 @@ const PR = L2.prediccion;
 let pred = null, fijaSinJugar = false;
 pred = creaPrediccion({
   panel: $("#prediccion"),
-  texto: { titulo: "Predice antes de patear", instruccion: PR.instruccion, fijar: "Fijar predicción y patear", otra: "Predecir otra vez", fijada: "Predicción fijada. Mira el tiro." },
+  texto: { titulo: PR.titulo, fijar: PR.boton, corto: PR.botonCorto, otra: "Predecir otra vez", pide: PR.pide, fijada: "" },
+  alDibujar: () => acomoda(),
   marcadores: [
-    { id: "R", etiqueta: PR.alcance, unidad: "m", min: 0, max: C.XM - 5, paso: 0.5, valor: 30, tol: PR.tolAlcance,
+    { id: "R", etiqueta: PR.alcance, corta: PR.alcanceEscena, unidad: "m", min: 0, max: C.XM - 5, paso: 0.5, espera: 6, tol: PR.tolAlcance,
       /* banderín de ~45 px de alto en pantalla, sea cual sea la escena */
       geo: (v) => { const h = 45 * esc.escalaTexto() / esc.pxPorMetro(); return { asa: [v, esc.suelo], linea: [[v, esc.suelo], [v, esc.suelo + h]], texto: [v + 0.15 * h, esc.suelo + h * 1.12], ancla: "start" }; },
       valorDe: (p) => p[0] },
-    { id: "H", etiqueta: PR.altura, unidad: "m", min: 0, max: C.HM, paso: 0.5, valor: 5, tol: PR.tolAltura,
-      geo: (v) => { const xa = Math.max(3, (pred ? pred.valores().R : 30) / 2), w = 30 * esc.escalaTexto() / esc.pxPorMetro(); return { asa: [xa, v], linea: [[xa - w, v], [xa + w, v]], texto: [xa - w * 1.1, v], ancla: "end" }; },
+    { id: "H", etiqueta: PR.altura, corta: PR.alturaEscena, unidad: "m", min: 0, max: C.HM, paso: 0.5, espera: 3, tol: PR.tolAltura,
+      geo: (v) => { const r = pred ? pred.valores().R : null, xa = Math.max(3, (r == null ? 16 : r) / 2), w = 30 * esc.escalaTexto() / esc.pxPorMetro(); return { asa: [xa, v], linea: [[xa - w, v], [xa + w, v]], texto: [xa + w * 1.15, v], ancla: "start" }; },
       valorDe: (p) => p[1] }
   ],
   alFijar: () => { if (fijaSinJugar || reloj.corriendo) return; if (reloj.t >= T().tv - 1e-9) reloj.pon(0); reloj.juega(); },
-  alReiniciar: () => { reloj.detiene(); revelado = false; cimaVista = false; aterrizado = false; reloj.pon(0); decir(""); }
+  alReiniciar: () => { reloj.detiene(); revelado = false; cimaVista = false; aterrizado = false; reloj.pon(0); decir(""); encuadra(); }
 });
 
 // ---------- Tiempo ----------
 const reloj = creaTiempo($("#tiempo"), {
   duracion: T().tv, paso: L2.marcasCada,
-  antesDeJugar: () => { if (pred.estado === "abierta") { pred.fija(); return false; } return true; },
-  /* mover la línea de tiempo también cuenta como lanzar: la predicción queda fijada tal como está */
-  alCambiar: (t) => { if (t > 0 && pred.estado === "abierta") { fijaSinJugar = true; pred.fija(); fijaSinJugar = false; } render(); if (t >= T().tv - 1e-9) aterriza(); }
+  antesDeJugar: () => { if (pred.estado === "abierta") { if (!pred.fija()) pred.pide(); return false; } return true; },
+  /* mover la línea de tiempo también cuenta como lanzar: sin predicción completa no se puede */
+  alCambiar: (t) => {
+    if (t > 0 && pred.estado === "abierta") {
+      if (!pred.completa()) { pred.pide(); reloj.pon(0); return; }
+      fijaSinJugar = true; pred.fija(); fijaSinJugar = false;
+    }
+    render(); if (t >= T().tv - 1e-9) aterriza();
+  }
 });
 
 // ---------- Herramientas ----------
 const herr = creaHerramientas({
-  barra: $("#herramientas"), reloj: () => reloj.t,
+  barra: $("#herramientas"), lectura: $("#lectura"), reloj: () => reloj.t,
   movil: { pos: (t) => pos(t), vel: (t) => vel(t) },
-  colocaRegla: () => ({ a: [0, esc.suelo], b: [Math.round(T().R / 2), esc.suelo] }),
-  colocaTransportador: () => ({ v: [0, 0], ang: 45 }),
+  suelo: () => 0,
+  /* puntos donde se pega la regla: el balón y lo que ya se vio (cima, caída; en la cancha, barrera y travesaño) */
+  imanes: () => {
+    const s = T(), t = reloj.t, l = [{ p: pos(t), nombre: "el balón" }, { p: [0, 0], nombre: "la salida" }];
+    if (cimaVista || revelado) l.push({ p: [s.vx * s.ts, s.H], nombre: "la cima" });
+    if (revelado) l.push({ p: [s.R, 0], nombre: "donde cae" });
+    if (esc === cancha) l.push({ p: [SIT.barrera.x, SIT.barrera.alto], nombre: "lo alto de la barrera" }, { p: [SIT.porteria.x, SIT.porteria.alto], nombre: "el travesaño" }, { p: [SIT.barrera.x, 0], nombre: "el pie de la barrera" });
+    return l;
+  },
+  /* marcas del rastro (cada 0.5 s) más la salida y la caída */
+  marcas: () => {
+    const s = T(), t = reloj.t, l = [{ t: 0, p: [0, 0] }].concat(reloj.marcas(Math.min(t, s.tv)).filter((m) => m < s.tv - 1e-6).map((m) => ({ t: m, p: pos(m) })));
+    if (t >= s.tv - 1e-9) l.push({ t: s.tv, p: [s.R, 0] });
+    return l;
+  },
+  alDibujar: () => acomoda(),
   anota: (txt) => cuaderno.anota("medidas", txt)
 });
+
+/* Ninguna etiqueta tapa a otra: se acomodan una vez por cuadro */
+let acomodoPendiente = 0;
+function acomoda(){ if (acomodoPendiente) return; acomodoPendiente = requestAnimationFrame(() => { acomodoPendiente = 0; acomodaEtiquetas(esc.svg, { margen: 3 * esc.escalaTexto() }); }); }
 
 // ---------- Dibujo que cambia ----------
 function render(){
@@ -358,6 +403,7 @@ function render(){
     marcas: reloj.marcas(Math.min(t, s.tv)), ref: refOn ? tiro(v0, A1[0]) : null };
   esc.pinta(E);
   herr.vectores(!reloj.corriendo && t > 0 && !enSuelo);
+  acomoda();
   sV0.style.setProperty("--p", (100 * (v0 - RG.v0.min) / (RG.v0.max - RG.v0.min)) + "%");
   sAng.style.setProperty("--p", (100 * (ang - RG.ang.min) / (RG.ang.max - RG.ang.min)) + "%");
   $("#o-v0").textContent = tpl(J.controles.valorV0, {v:num(v0)});
@@ -368,8 +414,10 @@ function render(){
 }
 function redibuja(){ render(); pred.redibuja(); herr.redibuja(); }
 function encuadra(){
-  const s = T(), p = pred ? pred.valores() : { R: 0, H: 0 };
-  cancha.encuadra({ x1: Math.max(s.R, p.R) + 12, y1: Math.max(s.H, p.H) * 1.2 + 3 });
+  const s = T(), p = pred ? pred.valores() : {};
+  const x1 = Math.max(s.R, p.R || 0), y1 = Math.max(s.H, p.H || 0);
+  lab.encuadra({ x1: x1 + 4, y1: y1 * 1.1 + 1 });
+  cancha.encuadra({ x1: x1 + 4, y1: y1 * 1.15 + 1 });
 }
 function aterriza(){
   if (aterrizado) return;
@@ -377,6 +425,7 @@ function aterriza(){
   const s = T();
   let extra = "";
   if (pred.estado === "fijada") {
+    encuadra();
     const res = pred.compara({ R: s.R, H: s.H });
     const r = Object.fromEntries(res.map((x) => [x.id, x]));
     cuaderno.anota("prediccion", `${ang}°, ${num(v0)} m/s → alcance: tú ${num(r.R.pred, 1)} m, real ${num(s.R)} m <span class="${r.R.acierto ? "l2-c-verde" : "l2-c-coral"}">(${r.R.texto.toLowerCase()})</span>`);
@@ -391,7 +440,7 @@ function nuevoTiro(){
   reloj.detiene(); revelado = false; cimaVista = false; aterrizado = false; refOn = false;
   if (trampaOn) ponTrampa(false);
   reloj.duracion(T().tv);
-  if (pred.estado !== "abierta") pred.reinicia(); else reloj.pon(0);
+  pred.reinicia({ vaciar: true });   // tiro nuevo, predicción nueva (vacía)
   escribeDatos(); escribeSolucion(false, false); encuadra(); redibuja();
 }
 function ponAng(a){ a = Math.max(RG.ang.min, Math.min(RG.ang.max, Math.round(a))); if (a === ang) return; ang = a; sAng.value = a; nuevoTiro(); }
@@ -403,24 +452,32 @@ function ponTrampa(si){
 }
 
 // ---------- Escenas ----------
-function usaEscena(id){
-  esc = id === "real" ? cancha : lab;
+const tiroDe = new Map([[lab, { v0: V.v0, ang: V.ang }], [cancha, { v0: SIT.v0, ang: SIT.ang }]]);
+function usaEscena(id, inicio = false){
+  const nueva = id === "real" ? cancha : lab;
+  if (!inicio) tiroDe.set(esc, { v0, ang });
+  esc = nueva;
+  ({ v0, ang } = tiroDe.get(esc)); sV0.value = v0; sAng.value = ang;
   lab.mostrar(esc === lab); cancha.mostrar(esc === cancha);
-  if (esc === cancha) encuadra();
-  pred.usa(esc); herr.usa(esc); redibuja();
+  pred.usa(esc); herr.usa(esc);
+  nuevoTiro();
 }
 const selector = creaSelector($("#escenas"), { etiqueta: "Escena", opciones: [{ id: "lab", etiqueta: L2.escenas.laboratorio }, { id: "real", etiqueta: L2.escenas.real }], clave: "cv-l2-tiro-escena", alCambiar: usaEscena });
 if ("ResizeObserver" in window) new ResizeObserver(() => { if (esc === lab) redibuja(); }).observe(dibLab);
+
+// ---------- Pantalla completa (escena + tiempo + predicción compacta + cuaderno encima) ----------
+const pc = creaPantallaCompleta({ boton: $("#b-pc"), raiz: $(".lab"), dentro: [cuaderno.el],
+  alCambiar: () => { requestAnimationFrame(() => { if (esc === cancha) cancha.ajusta(); redibuja(); }); } });
 
 // ---------- Controles ----------
 sV0.addEventListener("input", () => { v0 = +sV0.value; nuevoTiro(); });
 sAng.addEventListener("input", () => { ponAng(+sAng.value); });
 $("#trampa").addEventListener("click", () => ponTrampa(!trampaOn));
-$("#inicio").addEventListener("click", () => { v0 = V.v0; ang = V.ang; sV0.value = v0; sAng.value = ang; nuevoTiro(); decir("De vuelta al tiro del examen."); });
+$("#inicio").addEventListener("click", () => { const t0 = esc === cancha ? { v0: SIT.v0, ang: SIT.ang } : { v0: V.v0, ang: V.ang }; v0 = t0.v0; ang = t0.ang; sV0.value = v0; sAng.value = ang; nuevoTiro(); decir(esc === cancha ? "De vuelta al tiro libre." : "De vuelta al tiro del examen."); });
 document.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() !== "b" || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.target.closest && e.target.closest("input,textarea,select,[contenteditable]")) return;
-  e.preventDefault(); if (reloj.corriendo) reloj.pausa(); else if (pred.estado === "abierta") pred.fija(); else reloj.juega();
+  e.preventDefault(); if (reloj.corriendo) reloj.pausa(); else if (pred.estado === "abierta") { if (!pred.fija()) pred.pide(); } else reloj.juega();
 });
 const stage = dibLab.querySelector(".iso-stage");
 stage.addEventListener("keydown", (e) => {
@@ -472,10 +529,10 @@ const PASOS = [
   {n:3, titulo:"Ejemplo resuelto", p:[`Componentes: v<sub>x</sub> = ${n.v0} × ${n.cos} = <b>${n.vx} m/s</b>; v<sub>0y</sub> = ${n.v0} × ${n.sen} = <b>${n.vy} m/s</b>.`,
     `Tiempo de subida: ${n.vy} ÷ ${n.g} = ${n.ts} s. Tiempo de vuelo: 2 × ${n.ts} = <b>${n.tv} s</b>.`,
     `Alcance: ${n.vx} × ${n.tv} = <b>${n.R} m</b> → respuesta C.`, `(Altura máxima: ${n.vy}² ÷ (2 × ${n.g}) = ${n.H} m.)`],
-    boton:["Escribirlo en el cuaderno", () => { v0 = V.v0; ang = V.ang; sV0.value = v0; sAng.value = ang; nuevoTiro(); escribeSolucion(true, false); cuaderno.ve("solucion"); }]},
+    boton:["Escribirlo en el cuaderno", () => { if (esc !== lab) selector.pon("lab"); v0 = V.v0; ang = V.ang; sV0.value = v0; sAng.value = ang; nuevoTiro(); escribeSolucion(true, false); cuaderno.ve("solucion"); }]},
   {n:4, titulo:"La trampa", p:[`Usar el tiempo de subida (${n.ts} s) como si fuera el de vuelo da ${n.vx} × ${n.ts} = ${n.Rt} m, la opción A. El balón sube y también baja: el tiempo de vuelo es el doble.`,
     `Las otras también tienen dueño: B (${n.Rvy} m) multiplica por v<sub>0y</sub> en vez de v<sub>x</sub>, y D (${n.R45} m) usa v<sub>0</sub>² ÷ g, que solo vale para 45°.`],
-    boton:["Ver la trampa en la lámina", () => { if (!trampaOn) ponTrampa(true); irLab(); }]},
+    boton:["Ver la trampa en la lámina", () => { if (esc !== lab) selector.pon("lab"); if (!trampaOn) ponTrampa(true); irLab(); }]},
   {n:5, titulo:"Truco de examen", p:['Separa siempre: el tiempo lo da lo vertical <span class="formula">t = 2 v<sub>0y</sub> ÷ g</span> y la distancia, lo horizontal <span class="formula">v<sub>x</sub> × t</span>.',
     `Si te dan ${A1.join("° o ")}°, piensa en el triángulo 3-4-5: las componentes salen exactas.`],
     boton:["Abrir el truco en el cuaderno", () => cuaderno.ve("truco")], complementarios:true},
@@ -493,7 +550,7 @@ PASOS.forEach(p => {
       {t:"Más cerca", e:`Tienta pensar que más ángulo es menos avance: v<sub>x</sub> baja de ${num(a.vx)} a ${num(b.vx)} m/s. Pero el vuelo dura más (${num(a.tv)} → ${num(b.tv)} s) y se compensa: ${num(b.R)} m.`},
       {t:"Igual", ok:true, e:`${aA}° y ${aB}° suman 90°: son complementarios. Sen y cos se intercambian, así que v<sub>x</sub> × t da lo mismo: ${num(b.R)} m.`},
       {t:"Más lejos", e:`Sube más (H = ${num(b.H)} m contra ${num(a.H)} m), pero avanza más lento (v<sub>x</sub> = ${num(b.vx)} m/s). Cae en el mismo lugar: ${num(b.R)} m.`}],
-      alElegir: () => { v0 = V.v0; sV0.value = v0; ang = aB; sAng.value = aB; nuevoTiro(); refOn = true; pred.pon({ R: a.R }); pred.fija(); irLab(); } });
+      alElegir: () => { if (esc !== lab) selector.pon("lab"); v0 = V.v0; sV0.value = v0; ang = aB; sAng.value = aB; nuevoTiro(); refOn = true; pred.pon({ R: a.R, H: a.H }); pred.fija(); irLab(); } });
   }
   if (p.practica){
     s.insertAdjacentHTML("beforeend", `<h3 class="sub-paso">Práctica: 8 problemas</h3><p class="pie">Números nuevos en cada intento. Si fallas, la pista te dice qué error cometiste.</p>`);
@@ -510,9 +567,9 @@ $("#pie").innerHTML = `<i>${tpl(J.figura.pie, {g:num(g)})}</i> Modelo: ${A1.join
  El rastro marca un punto cada ${num(L2.marcasCada)} s. Teclas: B patea o pausa; con el laboratorio enfocado, las flechas cambian el ángulo.`;
 
 escribeDatos(); escribeSolucion(false, false);
-usaEscena(selector.id);
+usaEscena(selector.id, true);
 window.__tiro = { set:(o) => { if ("v0" in o){ v0 = o.v0; sV0.value = v0; } if ("ang" in o){ ang = o.ang; sAng.value = ang; } nuevoTiro(); if ("t" in o) reloj.pon(o.t); },
-  reloj, pred, cuaderno, herr, selector, estado:() => ({ v0, ang, t: reloj.t, revelado, aterrizado, pred: pred.estado }) };
+  reloj, pred, cuaderno, herr, selector, pc, estado:() => ({ v0, ang, t: reloj.t, revelado, aterrizado, pred: pred.estado }) };
 })();
 }
 
@@ -587,6 +644,8 @@ h1{margin:2px 0 4px;font:500 clamp(2.1rem,8vw,3.1rem)/1.02 var(--serif);letter-s
 .lab{padding:10px 10px 16px;border:3px double var(--borde-fuerte);display:grid;gap:12px;justify-items:stretch}
 .predice{background:var(--bg);border-radius:12px;padding:12px 14px;margin-top:6px}
 .lab-barra{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.lab-barra__der{display:flex;gap:6px;align-items:center}
+@media (max-width:400px){.b-cuaderno{padding:0 12px}.b-cuaderno span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 .b-cuaderno{display:inline-flex;align-items:center;gap:8px;font:600 1rem/1 var(--sans,system-ui);min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--texto);background:var(--sup);color:var(--texto);cursor:pointer}
 .b-cuaderno svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .b-cuaderno:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
@@ -594,7 +653,12 @@ h1{margin:2px 0 4px;font:500 clamp(2.1rem,8vw,3.1rem)/1.02 var(--serif);letter-s
 .escenario .iso-figure{margin:0}
 .escenario .iso-svg{display:block;width:100%;height:auto}
 #lab-dibujo[hidden],#cancha[hidden]{display:none}
-#cancha{aspect-ratio:640/340;background:#f3ead6}
+#cancha{aspect-ratio:2;background:#f3ead6}
+/* pantalla completa: la escena llena su hueco */
+.l2-pc .escenario{box-shadow:none;background:transparent;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.l2-pc #lab-dibujo,.l2-pc #lab-dibujo .iso-stage{width:100%;height:100%}
+.l2-pc #lab-dibujo .iso-figure,.l2-pc #lab-dibujo .iso-svg{width:100%;height:100%}
+.l2-pc #cancha{width:100%;height:100%;aspect-ratio:auto!important}
 .iso-stage{touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .controles{display:grid;gap:10px}
 .fila{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:600}
@@ -646,6 +710,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #mango:hover .mango,#mango:active .mango{fill:var(--rubrica)}
 `;
 
+const ICONO_PC = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"/></svg>';
 const ICONO_CUADERNO = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 2.5h10.5a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H4z"/><path d="M4 2.5v15M7.5 6.5h5M7.5 9.5h5M7.5 12.5h3"/></svg>';
 const HTML = `<!doctype html>
 <html lang="es-MX">
@@ -668,16 +733,21 @@ const HTML = `<!doctype html>
   <div class="rejilla">
     <div id="pasos-a" class="pasos"></div>
     <section class="tarjeta lab" aria-label="Laboratorio">
-      <div class="lab-barra">
+      <div class="lab-barra" data-pc="cabeza">
         <div id="escenas"></div>
-        <button type="button" class="b-cuaderno" id="b-cuaderno">${ICONO_CUADERNO}Cuaderno</button>
+        <div class="lab-barra__der">
+          <button type="button" class="b-cuaderno" id="b-cuaderno">${ICONO_CUADERNO}<span>Cuaderno</span></button>
+          <button type="button" id="b-pc" aria-label="Pantalla completa">${ICONO_PC}</button>
+        </div>
       </div>
-      <div id="prediccion"></div>
-      <div class="escenario">
+      <div id="prediccion" data-pc="pred"></div>
+      <div class="escenario" data-pc="escena">
         <div id="lab-dibujo" class="iso"><div class="iso-stage" tabindex="0" role="slider" aria-label="Flecha de lanzamiento: flechas del teclado para cambiar el ángulo" aria-valuemin="${J.rangos.ang.min}" aria-valuemax="${J.rangos.ang.max}" aria-valuenow="${J.valoresIniciales.ang}">${figura}</div></div>
         <div id="cancha" hidden></div>
       </div>
-      <div id="tiempo"></div>
+      <div id="lectura" data-pc="lectura"></div>
+      <div id="tiempo" data-pc="tiempo"></div>
+      <div id="herramientas" data-pc="herr"></div>
       <p class="nota" id="nota" aria-live="polite"></p>
       <div class="controles">
         <div>
@@ -689,10 +759,9 @@ const HTML = `<!doctype html>
           <input type="range" id="s-ang">
         </div>
       </div>
-      <div id="herramientas"></div>
       <div class="botones">
         <button type="button" class="boton sec" id="trampa" aria-pressed="false">¿Y con el tiempo de subida?</button>
-        <button type="button" class="boton sec" id="inicio">Volver al tiro del examen</button>
+        <button type="button" class="boton sec" id="inicio">Volver al tiro inicial</button>
       </div>
       <p class="pie" id="pie"></p>
     </section>
@@ -706,9 +775,11 @@ import { creaCuaderno } from "../../../laminas2/cuaderno.js";
 import { creaHerramientas } from "../../../laminas2/herramientas.js";
 import { creaSelector } from "../../../laminas2/escenas.js";
 import { montaPractica } from "../../../laminas2/practica.js";
+import { creaPantallaCompleta } from "../../../laminas2/pantalla-completa.js";
+import { acomodaEtiquetas } from "../../../laminas2/etiquetas.js";
 import { creaCancha } from "./cancha.js";
 import { PROBLEMAS } from "./practica-tiro.js";
-(${pagina.toString()})(${JSON.stringify(CFG)}, { creaTiempo, creaPrediccion, preguntaOpciones, creaCuaderno, creaHerramientas, creaSelector, montaPractica, creaCancha, PROBLEMAS });
+(${pagina.toString()})(${JSON.stringify(CFG)}, { creaTiempo, creaPrediccion, preguntaOpciones, creaCuaderno, creaHerramientas, creaSelector, montaPractica, creaPantallaCompleta, acomodaEtiquetas, creaCancha, PROBLEMAS });
 </script>
 </body>
 </html>

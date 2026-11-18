@@ -63,13 +63,20 @@
     "escenas": { "laboratorio": "Laboratorio", "real": "Cancha" },
     "situacion": {
       "titulo": "Tiro libre",
+      "v0": 15,
+      "ang": 37,
       "barrera": { "x": 9.15, "alto": 2 },
-      "porteria": { "x": 60, "alto": 2.44 }
+      "porteria": { "x": 20, "alto": 2.44 }
     },
     "prediccion": {
-      "instruccion": "Arrastra el banderín a donde crees que cae y la marca dorada a la altura máxima (o escribe los valores).",
+      "titulo": "Predice antes de patear",
       "alcance": "Dónde cae",
       "altura": "Altura máxima",
+      "alcanceEscena": "¿Dónde cae",
+      "alturaEscena": "¿Qué tan alto",
+      "boton": "Fijar y patear",
+      "botonCorto": "Patear ▶",
+      "pide": "Primero predice: escribe o arrastra dónde cae y qué tan alto sube.",
       "tolAlcance": 2,
       "tolAltura": 1
     },

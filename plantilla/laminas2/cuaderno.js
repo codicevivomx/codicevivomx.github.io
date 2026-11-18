@@ -1,7 +1,9 @@
 /* Códice Vivo · Láminas 2.0 · Cuaderno (ver docs/diseno-laminas-2.md)
    Libreta de papel rayado con cinta (como la hoja de notas del video de la catapulta). Ahí viven los números:
    datos, medidas, fórmulas paso a paso (se escriben a mano con animación), predicción vs resultado y el truco.
-   En escritorio es un panel lateral; en celular, una hoja que sube desde abajo.
+   En escritorio es un panel lateral; en celular, una hoja que sube desde abajo a media altura (se ve la escena
+   a la vez) y se arrastra desde la barra de arriba para agrandarla, achicarla o cerrarla.
+   Dentro de pantalla completa: panel lateral en horizontal y hoja en vertical (lo decide laminas2.css con --l2-modo).
 
    const cuaderno = creaCuaderno({ boton, titulo, secciones: [{ id, titulo }] });
    cuaderno.escribe(id, [lineas], { anima })   → reemplaza el contenido de la sección
@@ -18,6 +20,7 @@ export function creaCuaderno(o) {
   hoja.className = "l2-cuaderno"; hoja.id = id; hoja.setAttribute("aria-label", o.titulo || "Cuaderno"); hoja.hidden = true;
   hoja.innerHTML = `<div class="l2-cuaderno__papel">
       <span class="l2-cuaderno__cinta" aria-hidden="true"></span>
+      <div class="l2-cuaderno__asa" role="separator" aria-orientation="horizontal" aria-label="Arrastra para cambiar el alto del cuaderno" tabindex="0"><span></span></div>
       <div class="l2-cuaderno__cab"><h2 class="l2-cuaderno__t" tabindex="-1">${o.titulo || "Cuaderno"}</h2>
         <button type="button" class="l2-cuaderno__cerrar" aria-label="Cerrar el cuaderno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
       <div class="l2-cuaderno__cuerpo">${o.secciones.map((s) => `<section class="l2-cuaderno__sec" data-sec="${s.id}"><h3>${s.titulo}</h3><div class="l2-cuaderno__lineas"></div></section>`).join("")}</div>
@@ -25,7 +28,25 @@ export function creaCuaderno(o) {
   document.body.appendChild(hoja);
   const tit = hoja.querySelector(".l2-cuaderno__t"), cuerpo = hoja.querySelector(".l2-cuaderno__cuerpo");
   const lineasDe = (s) => hoja.querySelector(`[data-sec="${s}"] .l2-cuaderno__lineas`);
-  let abierto = false, pendientes = 0, cola = Promise.resolve();
+  let abierto = false, pendientes = 0;
+  const lateral = () => getComputedStyle(hoja).getPropertyValue("--l2-modo").trim() === "lateral";
+
+  /* Alto de la hoja (celular): empieza a la mitad; la barra de arriba se arrastra. Abajo de 22 % se cierra. */
+  const ALTOS = [0.5, 0.92];
+  let alto = ALTOS[0];
+  const ponAlto = (f) => { alto = f; hoja.style.setProperty("--alto", (f * 100).toFixed(1) + "dvh"); };
+  ponAlto(alto);
+  const asa = hoja.querySelector(".l2-cuaderno__asa");
+  let arr = null;
+  asa.addEventListener("pointerdown", (e) => { if (lateral()) return; arr = { y: e.clientY, f: alto }; asa.setPointerCapture(e.pointerId); hoja.classList.add("es-arrastre"); e.preventDefault(); });
+  asa.addEventListener("pointermove", (e) => { if (!arr) return; ponAlto(Math.min(0.94, Math.max(0.12, arr.f + (arr.y - e.clientY) / innerHeight))); });
+  const suelta = () => {
+    if (!arr) return; arr = null; hoja.classList.remove("es-arrastre");
+    if (alto < 0.22) { ponAlto(ALTOS[0]); cierra(); return; }
+    ponAlto(ALTOS.reduce((a, b) => (Math.abs(b - alto) < Math.abs(a - alto) ? b : a)));
+  };
+  asa.addEventListener("pointerup", suelta); asa.addEventListener("pointercancel", suelta);
+  asa.addEventListener("keydown", (e) => { if (e.key === "ArrowUp") { e.preventDefault(); ponAlto(ALTOS[1]); } if (e.key === "ArrowDown") { e.preventDefault(); if (alto > ALTOS[0]) ponAlto(ALTOS[0]); else cierra(); } });
 
   boton.setAttribute("aria-controls", id); boton.setAttribute("aria-expanded", "false");
   boton.classList.add("l2-cuaderno-b");
@@ -38,6 +59,7 @@ export function creaCuaderno(o) {
     document.documentElement.classList.add("l2-con-cuaderno");
     boton.setAttribute("aria-expanded", "true"); marcaPendiente(0);
     tit.focus({ preventScroll: true });
+    if (o.alAbrir) o.alAbrir(lateral());
     /* lo que se escribió con el cuaderno cerrado se escribe ahora, a la vista */
     animaRenglones([...hoja.querySelectorAll(".l2-renglon.es-pendiente")], false);
   }
