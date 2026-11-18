@@ -100,6 +100,12 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   controles (ids) van al modo compacto. Aplicarla a prensa y tiro. Idea para vertical: zoom ~2×
   siguiendo la pieza que se mueve.
 - [ ] Menor: salida `.svg` fija en el generador de tiro (6b), como ya la tiene leyes-de-newton-1.
+- [x] Láminas 2.0, piloto tiro parabólico (17-nov-2026, ronda 1, **en espera de OK de Gato**). Diseño: `docs/diseno-laminas-2.md`.
+  Piezas compartidas en `plantilla/laminas2/` (módulos ES + `laminas2.css` + `fuentes/caveat-700.woff2`): `tiempo.js`,
+  `prediccion.js`, `cuaderno.js`, `herramientas.js`, `escenas.js` (selector + ayudantes de tinta), `practica.js` (motor de retos
+  + modo examen). Generador `plantilla/figuras/tiro-parabolico-v2.mjs` → `plantilla/interactivos/tiro-parabolico/v2/`
+  (+ `cancha.js`, `practica-tiro.js`). JSON: bloque nuevo `laminas2` (plus no lo lee). `plus/` intacto.
+  Al aprobar: v2 reemplaza a plus y se borra `tiro-parabolico-2_5d.mjs`. Falta: pantalla completa (pieza compartida pendiente arriba).
 - [x] Sitio (prototipo, 15-nov-2026): `index.html`, `biblioteca/`, `libros/fisica-unam/`, un solo CSS
   `assets/css/sitio.css` y `assets/js/sitio.js` (mini reto). Logo B «Capitular» en `assets/logo/codice-vivo-*.svg`
   (texto en contornos; `-texto.svg` deja «ódice» editable). Mascotas Griseldo y Chikis en SVG + CSS dentro de la portada.

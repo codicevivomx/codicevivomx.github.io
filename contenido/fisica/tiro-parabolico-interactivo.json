@@ -58,5 +58,21 @@
     ],
     "marcaCorrecta": "Correcta",
     "marcaIncorrecta": "Incorrecta"
+  },
+  "laminas2": {
+    "escenas": { "laboratorio": "Laboratorio", "real": "Cancha" },
+    "situacion": {
+      "titulo": "Tiro libre",
+      "barrera": { "x": 9.15, "alto": 2 },
+      "porteria": { "x": 60, "alto": 2.44 }
+    },
+    "prediccion": {
+      "instruccion": "Arrastra el banderín a donde crees que cae y la marca dorada a la altura máxima (o escribe los valores).",
+      "alcance": "Dónde cae",
+      "altura": "Altura máxima",
+      "tolAlcance": 2,
+      "tolAltura": 1
+    },
+    "marcasCada": 0.5
   }
 }
