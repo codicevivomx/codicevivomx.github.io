@@ -4,7 +4,7 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
 |---|---|---|---|---|---|---|---|
 | prensa-hidraulica | física | ✓ | ✓ (2.5D+ Anatomy, plus/) | ✓ | premium-hero (WebGL) | ✓ (28 s) | |
 | principio-de-arquimedes | física | ✓ | ✓ (SVG 2.5D+) | ✓ (2.5D+ · antes v1 2D y v2 2.5D) | — | | |
-| tiro-parabolico | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/) | — | | |
+| tiro-parabolico | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
 | leyes-de-newton-1 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
 | leyes-de-newton-2 | física | ✓ | ✓ (SVG del generador) | ✓ (2.5D+, plus/, pantalla completa) | — | | |
 | leyes-de-newton-3 | física | ✓ | ✓ | ✓ plus | — | pendiente | pendiente |
@@ -49,6 +49,9 @@ Leyenda: ✓ hecho · … en curso · — no aplica · (vacío) pendiente
   37° y 53° usan los valores del examen (campo `aproximaciones`); los demás ángulos, la calculadora.
   El CSS de página va copiado de la prensa dentro del generador (pasará a piezas compartidas).
   Pendiente: salida `.svg` fija (6b).
+  Pantalla completa (17-nov-2026): copiada de leyes-de-newton-1 (lógica, botón y CSS); al modo compacto
+  van Patear, v₀ y t. Arrastrar la flecha del ángulo no mueve la lámina con zoom.
+  Pendiente: probarla en navegador (escritorio y celular); no se pudo desde Claude Code.
 - **leyes-de-newton-1** (primera ley, inercia): 2.5D+ partiendo del generador de tiro, dibujo nuevo.
   Generador `plantilla/figuras/leyes-de-newton-1-2_5d.mjs` → `plantilla/interactivos/leyes-de-newton-1/plus/`
   (151 KB) y `contenido/fisica/img/leyes-de-newton-1.svg` (figura fija, del mismo generador). 2 rondas.

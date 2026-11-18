@@ -568,11 +568,76 @@ opciones($("#otro .opciones"), [
 
 $("#pie").innerHTML = `<i>${tpl(J.figura.pie, {g:num(g)})}</i> Modelo: ${A1.join("° y ")}° usan los valores del examen (sen y cos de 0.6 y 0.8); los demás ángulos, la calculadora.
  La cancha y las dos reglas están en metros a la misma escala, así que la parábola tiene su forma real; el balón y las flechas de velocidad no están a escala (las flechas tienen su propia escala, igual para v<sub>x</sub> y v<sub>y</sub>).
- Si nadie toca, la lámina lanza sola hasta la cima sin mostrar dónde cae. Teclas: B patea o pausa; con la lámina enfocada, las flechas cambian el ángulo de ${RG.ang.paso}° en ${RG.ang.paso}°.`;
+ Si nadie toca, la lámina lanza sola hasta la cima sin mostrar dónde cae. En el celular, «Pantalla completa» la muestra grande (mejor con el teléfono girado) y se acerca con pellizco. Teclas: B patea o pausa; con la lámina enfocada, las flechas cambian el ángulo de ${RG.ang.paso}° en ${RG.ang.paso}°.`;
+
+// ---------- Pantalla completa («modo lámina»), con zoom de pellizco y arrastre ----------
+const pant = $("#pantalla"), bCompleta = $("#completa"), bCerrar = $("#cerrar"), compacto = $("#compacto");
+const MOVIBLES = ["#patear", "#bloque-v0", "#bloque-t"].map(s => $(s));
+let modo = false, huecos = [];
+let zz = 1, tx = 0, ty = 0;
+const ptrs = new Map(); let pinch = null, arrastre = null, movido = false;
+function aplicaZoom(){
+  const w = svg.clientWidth, h = svg.clientHeight;
+  zz = Math.max(1, Math.min(4, zz));
+  tx = Math.min(0, Math.max(w * (1 - zz), tx)); ty = Math.min(0, Math.max(h * (1 - zz), ty));
+  svg.style.transform = zz === 1 ? "" : `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${zz.toFixed(3)})`;
+}
+function zoomA(z2, px, py){ z2 = Math.max(1, Math.min(4, z2)); tx = px - (px - tx) * z2 / zz; ty = py - (py - ty) * z2 / zz; zz = z2; aplicaZoom(); }
+const sinZoom = () => { zz = 1; tx = 0; ty = 0; aplicaZoom(); };
+const local = (x, y) => { const r = stage.getBoundingClientRect(); return [x - r.left, y - r.top]; };
+async function entrar(){
+  if (modo) return; modo = true;
+  huecos = MOVIBLES.map(e => { const c = document.createComment("hueco"); e.before(c); compacto.append(e); return [e, c]; });
+  pant.classList.add("modo-lamina"); document.documentElement.classList.add("sin-scroll");
+  if (document.fullscreenEnabled && pant.requestFullscreen){
+    try { await pant.requestFullscreen({navigationUI:"hide"}); } catch (e) {}
+    try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape"); } catch (e) {}
+  }
+  bCerrar.focus({preventScroll:true}); decir("Pantalla completa: pellizca o usa Ctrl + rueda para acercar; doble toque o Esc para volver.");
+}
+function salir(){
+  if (!modo) return; modo = false; sinZoom();
+  huecos.forEach(([e, c]) => c.replaceWith(e)); huecos = [];
+  pant.classList.remove("modo-lamina"); document.documentElement.classList.remove("sin-scroll");
+  try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  bCompleta.focus({preventScroll:true});
+}
+bCompleta.addEventListener("click", entrar);
+bCerrar.addEventListener("click", salir);
+document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && modo) salir(); });
+document.addEventListener("keydown", (e) => { if (modo && e.key === "Escape"){ e.preventDefault(); if (zz > 1) sinZoom(); else salir(); } });
+addEventListener("resize", () => { if (modo) aplicaZoom(); });
+stage.addEventListener("pointerdown", (e) => {
+  if (!modo || e.target.closest("#mango")) return;   // la flecha del ángulo se arrastra sola, sin mover la lámina
+  ptrs.set(e.pointerId, [e.clientX, e.clientY]); movido = false;
+  if (ptrs.size === 2){ const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, z: zz }; arrastre = null; }
+  else if (ptrs.size === 1 && zz > 1) arrastre = [e.clientX, e.clientY, tx, ty];
+});
+stage.addEventListener("pointermove", (e) => {
+  if (!modo || !ptrs.has(e.pointerId)) return;
+  ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+  if (ptrs.size === 2 && pinch){
+    const [a, b] = [...ptrs.values()], [px, py] = local((a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+    zoomA(pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch.d, px, py); movido = true;
+  } else if (arrastre){
+    const dx = e.clientX - arrastre[0], dy = e.clientY - arrastre[1];
+    if (Math.hypot(dx, dy) > 4) movido = true;
+    tx = arrastre[2] + dx; ty = arrastre[3] + dy; aplicaZoom();
+  }
+});
+const sueltaPtr = (e) => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; if (!ptrs.size) arrastre = null; };
+stage.addEventListener("pointerup", sueltaPtr); stage.addEventListener("pointercancel", sueltaPtr);
+stage.addEventListener("click", (e) => { if (movido){ e.stopPropagation(); e.preventDefault(); movido = false; } }, true);
+stage.addEventListener("wheel", (e) => {
+  if (!modo || !(e.ctrlKey || e.metaKey)) return;
+  e.preventDefault(); const [px, py] = local(e.clientX, e.clientY); zoomA(zz * Math.exp(-e.deltaY * 0.002), px, py);
+}, {passive:false});
+stage.addEventListener("dblclick", () => { if (modo) sinZoom(); });
 
 pintarFicha(); preguntaPredice(); render();
 window.__tiro = { set:(o) => { if ("t" in o) t = o.t; if ("ang" in o) ang = o.ang; if ("v0" in o){ v0 = o.v0; sV0.value = v0; } if ("rev" in o) revelado = o.rev; if ("ref" in o) refOn = o.ref; cimaVista = t >= T().ts; render(); },
-  trampa:() => bTrampa.click(), sel:seleccionar, alto:() => { enRecorrido = false; clearTimeout(tRec); cancelAnimationFrame(anim); fase = "quieto"; render(); } };
+  trampa:() => bTrampa.click(), sel:seleccionar, completa:entrar, salir, alto:() => { enRecorrido = false; clearTimeout(tRec); cancelAnimationFrame(anim); fase = "quieto"; render(); } };
 })();
 }
 
@@ -758,6 +823,32 @@ const CSS_PAGINA = CSS_PRENSA + `
 .trampa-on .fl-vx,.trampa-on .fl-vy,.trampa-on .fl-v{display:none}
 .chips output{font-size:1.25rem}
 .t-regla{font:500 9px var(--anatomy-mono);fill:var(--anatomy-text);font-variant-numeric:tabular-nums}
+/* Pantalla completa («modo lámina»): figura grande, controles compactos, zoom con pellizco */
+.pantalla{display:grid;gap:12px}
+.barra-lamina{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:-4px}
+.boton.completa{padding:6px 14px;font-size:.88rem;white-space:nowrap}
+.cerrar,.gira,.compacto:empty{display:none}
+html.sin-scroll,html.sin-scroll body{overflow:hidden}
+.modo-lamina{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;gap:6px;
+  padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+.modo-lamina .escena{flex:1;min-height:0;display:flex}
+.modo-lamina .iso-figure{flex:1;min-height:0;display:flex}
+.modo-lamina.pantalla .escena .iso-plate{flex:1;min-height:0;display:flex;padding:30px 6px 26px;overflow:hidden}
+.modo-lamina .iso-stage{flex:1;min-height:0;display:flex;overflow:hidden;touch-action:none}
+.modo-lamina .iso-svg{width:100%;height:100%;transform-origin:0 0}
+.modo-lamina .iso-plate-corner[data-corner="hint"]{display:none}
+.modo-lamina .iso-plate-corner[data-corner="title"]{right:64px}
+.modo-lamina .compacto output{white-space:nowrap}
+.modo-lamina .completa,.modo-lamina .barra-lamina{display:none}
+.modo-lamina .cerrar{display:grid;place-items:center;position:absolute;z-index:3;top:max(10px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));
+  width:44px;height:44px;border-radius:50%;border:1.5px solid var(--borde-fuerte);background:var(--sup);color:var(--texto);font:600 1.1rem/1 system-ui,sans-serif;cursor:pointer}
+.cerrar:focus-visible,.completa:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
+.modo-lamina .compacto{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:6px 16px;align-items:center}
+.modo-lamina .compacto .fila{font-size:.82rem;font-weight:600}
+.modo-lamina .compacto input[type=range]{height:30px}
+.modo-lamina .compacto .boton{white-space:nowrap}
+@media (orientation:portrait){.modo-lamina .gira{display:block;margin:0 52px 0 0;font-size:.85rem;color:var(--suave)}
+  .modo-lamina .compacto{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} .modo-lamina .compacto #patear{grid-column:1/-1}}
 `;
 const plate = k.plateHtml({
   fig: "Lámina I",
@@ -789,7 +880,15 @@ const HTML = `<!doctype html>
         <p id="pred-q"></p>
         <div class="opciones" id="pred-ops"></div>
       </div>
-      <div class="iso escena">${plate}</div>
+      <div class="pantalla" id="pantalla" role="group" aria-label="Lámina">
+        <button type="button" class="cerrar" id="cerrar" aria-label="Salir de pantalla completa">✕</button>
+        <p class="gira" aria-hidden="true">Gira el teléfono para verla más grande</p>
+        <div class="iso escena">${plate}</div>
+        <div class="barra-lamina">
+          <button type="button" class="boton sec completa" id="completa">⛶ Pantalla completa</button>
+        </div>
+        <div class="compacto" id="compacto"></div>
+      </div>
       <div class="rotulos" id="rotulos" role="group" aria-label="Partes de la lámina"></div>
       <p class="ficha" id="ficha" aria-live="polite"></p>
       <div class="controles">
@@ -798,11 +897,11 @@ const HTML = `<!doctype html>
           <output id="o-r" class="grande">?</output>
           <p class="cuenta num" id="o-formula"></p>
         </div>
-        <div>
+        <div id="bloque-v0">
           <div class="fila"><label for="s-v0" id="l-v0"></label><output id="o-v0"></output></div>
           <input type="range" id="s-v0">
         </div>
-        <div>
+        <div id="bloque-t">
           <div class="fila"><label for="s-t" id="l-t"></label><output id="o-t"></output></div>
           <input type="range" id="s-t">
         </div>
