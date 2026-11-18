@@ -4,14 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Reto: ¿Con qué velocidad llega el esquiador? · Códice Vivo</title>
-<meta name="description" content="Reto de mecánica: conservación de la energía y tiro parabólico con un esquiador.">
+<title>Reto: ¿Cae el esquiador en la zona? · Códice Vivo</title>
+<meta name="description" content="Reto de mecánica: conservación de la energía, fricción y tiro horizontal con un esquiador que tiene que caer en la zona de aterrizaje.">
 <meta name="theme-color" content="#F6F1E6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#17120D" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="../../assets/logo/codice-vivo-icono.svg" type="image/svg+xml">
 <link rel="preload" href="../../plantilla/codice/fuentes/eb-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../assets/css/sitio.css">
 <link rel="stylesheet" href="../reproductor.css">
+<link rel="stylesheet" href="../motor/motor.css">
+<link rel="stylesheet" href="estilos.css">
 </head>
 <body>
 <a class="saltar" href="#contenido">Ir al contenido</a>
@@ -26,16 +28,25 @@
   <nav aria-label="Principal"><a class="enlace" href="../../biblioteca/">Biblioteca</a></nav>
 </header>
 <main id="contenido">
-<!-- sección: reto (el reproductor reproduce plantilla/videos/aplica-mecanica-esquiador/ y se detiene en cada pausa; ver retos/reproductor.js) -->
+<!-- sección: reto. El juego (retos/motor/ + escena.js + reto.js) es lo principal; el video de TikTok queda plegado abajo
+     (retos/reproductor.js reproduce plantilla/videos/aplica-mecanica-esquiador/ y no descarga nada hasta «Empezar»). -->
 <section class="seccion reto" aria-labelledby="reto-t">
   <nav class="migas" aria-label="Ruta"><a href="../../biblioteca/">Biblioteca</a><span aria-hidden="true">›</span><a href="../../libros/fisica-unam/#sec-retos">Física UNAM</a><span aria-hidden="true">›</span><span aria-current="page">Reto</span></nav>
-  <p class="antetitulo">Aplica lo aprendido · Energía y tiro parabólico</p>
-  <h1 id="reto-t">¿Con qué velocidad llega el esquiador?</h1>
-  <p class="subtitulo">Una rampa de 20 metros, un salto y una zona de aterrizaje.</p>
-  <div data-reto="../../plantilla/videos/aplica-mecanica-esquiador/" data-video="../../assets/video/aplica-mecanica-esquiador" data-volver="../../libros/fisica-unam/#sec-retos">
-    <noscript><p>Este reto necesita JavaScript para reproducirse.</p></noscript>
+  <p class="antetitulo">Aplica lo aprendido · Energía y tiro horizontal</p>
+  <h1 id="reto-t">¿Cae el esquiador en la zona?</h1>
+  <p class="subtitulo">Una rampa, un salto y una zona de aterrizaje. Cuatro niveles con números que cambian en cada intento.</p>
+  <div data-juego="esquiador">
+    <noscript><p>Este reto necesita JavaScript para funcionar.</p></noscript>
   </div>
-  <p class="reto__ayuda">El video se detiene tres veces para que respondas. Si fallas, te damos una pista y lo intentas de nuevo.</p>
+  <details class="reto__video">
+    <summary>Ver el video del reto</summary>
+    <div class="reto__video-dentro">
+      <div data-reto="../../plantilla/videos/aplica-mecanica-esquiador/" data-video="../../assets/video/aplica-mecanica-esquiador" data-volver="../../libros/fisica-unam/#sec-retos">
+        <noscript><p>Este video necesita JavaScript para reproducirse.</p></noscript>
+      </div>
+      <p class="reto__ayuda">El video se detiene tres veces para que respondas. Si fallas, te damos una pista y lo intentas de nuevo.</p>
+    </div>
+  </details>
 </section>
 </main>
 <!-- sección: pie (banda oscura; «Próximamente» sale de LO_QUE_VIENE y «Comunidad» de ENLACES, en assets/js/sitio.js) -->
@@ -83,5 +94,8 @@
 </footer>
 <script src="../../assets/js/sitio.js" defer></script>
 <script src="../reproductor.js" defer></script>
+<script src="../motor/motor.js" defer></script>
+<script src="escena.js" defer></script>
+<script src="reto.js" defer></script>
 </body>
 </html>
