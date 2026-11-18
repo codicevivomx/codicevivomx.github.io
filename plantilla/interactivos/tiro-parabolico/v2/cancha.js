@@ -244,6 +244,7 @@ export function creaCancha(cont, cfg) {
     dePantalla: (p) => [p[0] / S, -p[1] / S],
     escalaTexto: k,
     pxPorMetro: () => S,
+    caja: () => vista,
     encuadra, pinta,
     mostrar(si) { svg.style.display = si ? "" : "none"; if (si) { ponVista(); ultimo = ""; } },
     ajusta() { ponVista(); ultimo = ""; }

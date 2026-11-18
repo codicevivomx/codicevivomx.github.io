@@ -241,6 +241,7 @@ const lab = {
   /* unidades del SVG por px (con «meet» manda el lado más justo) */
   escalaTexto: () => { const w = svg.clientWidth, h = svg.clientHeight; return w && h ? Math.max(vbLab.w / w, vbLab.h / h) : vbLab.w / C.W; },
   pxPorMetro: () => Math.hypot(A.ex[0], A.ex[1]) * C.M,
+  caja: () => vbLab,
   /* Recorta el dibujo a la trayectoria (x hasta x1 m, alto hasta y1 m), redondeado para no regalar el resultado:
      sin vacío arriba ni regla de sobra a la derecha. El fondo de la placa siempre se ve. */
   encuadra(o) {
@@ -347,7 +348,8 @@ pred = creaPrediccion({
       geo: (v) => { const h = 45 * esc.escalaTexto() / esc.pxPorMetro(); return { asa: [v, esc.suelo], linea: [[v, esc.suelo], [v, esc.suelo + h]], texto: [v + 0.15 * h, esc.suelo + h * 1.12], ancla: "start" }; },
       valorDe: (p) => p[0] },
     { id: "H", etiqueta: PR.altura, corta: PR.alturaEscena, unidad: "m", min: 0, max: C.HM, paso: 0.5, espera: 3, tol: PR.tolAltura,
-      geo: (v) => { const r = pred ? pred.valores().R : null, xa = Math.max(3, (r == null ? 16 : r) / 2), w = 30 * esc.escalaTexto() / esc.pxPorMetro(); return { asa: [xa, v], linea: [[xa - w, v], [xa + w, v]], texto: [xa + w * 1.15, v], ancla: "start" }; },
+      /* la marca de altura va a la mitad del alcance más corto (predicho o real), para que siempre quede en cuadro */
+      geo: (v) => { const r = pred ? pred.valores().R : null, xa = Math.max(3, Math.min(r == null ? 16 : r, T().R) / 2), w = 30 * esc.escalaTexto() / esc.pxPorMetro(); return { asa: [xa, v], linea: [[xa - w, v], [xa + w, v]], texto: [xa + w * 1.15, v], ancla: "start" }; },
       valorDe: (p) => p[1] }
   ],
   alFijar: () => { if (fijaSinJugar || reloj.corriendo) return; if (reloj.t >= T().tv - 1e-9) reloj.pon(0); reloj.juega(); },
@@ -413,11 +415,12 @@ function render(){
   if (dibLab.querySelector(".iso-stage")) { const st = dibLab.querySelector(".iso-stage"); st.setAttribute("aria-valuenow", ang); st.setAttribute("aria-valuetext", `${ang}°, v₀ = ${num(v0)} m/s`); }
 }
 function redibuja(){ render(); pred.redibuja(); herr.redibuja(); }
+/* El encuadre sigue a la trayectoria real (en la cancha, también a la portería), nunca a la predicción:
+   si una predicción queda fuera de cuadro, prediccion.js pone una flecha en el borde con su valor. */
 function encuadra(){
-  const s = T(), p = pred ? pred.valores() : {};
-  const x1 = Math.max(s.R, p.R || 0), y1 = Math.max(s.H, p.H || 0);
-  lab.encuadra({ x1: x1 + 4, y1: y1 * 1.1 + 1 });
-  cancha.encuadra({ x1: x1 + 4, y1: y1 * 1.15 + 1 });
+  const s = T();
+  lab.encuadra({ x1: s.R + 4, y1: s.H * 1.1 + 1 });
+  cancha.encuadra({ x1: s.R + 4, y1: s.H * 1.15 + 1 });
 }
 function aterriza(){
   if (aterrizado) return;

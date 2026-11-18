@@ -11,6 +11,8 @@
    pred.compara({ id: real }) → fantasma + «te faltaron / te pasaste»; devuelve [{ id, etiqueta, pred, real, dif, texto, acierto }]
    pred.reinicia({ vaciar })  → vuelve a dejar predecir · pred.estado: "abierta" | "fijada" | "comparada"
    pred.redibuja()            → tras cambiar el encuadre de la escena
+   Si la escena da caja() (el rectángulo visible, en unidades del SVG) y un marcador queda fuera,
+   en su lugar se dibuja en el borde «tu predicción: 88 m →» (la flecha apunta hacia donde quedó).
 
    ESCENA (la misma que usan las herramientas):
      { svg, aPantalla([x, y]) → [sx, sy] (unidades del SVG), dePantalla([sx, sy]) → [x, y], escalaTexto() → unidades del SVG por px }
@@ -80,9 +82,10 @@ export function creaPrediccion(o) {
     const delta = el("path", { class: "l2-pred-delta" }, g);
     const tDelta = el("text", { class: "l2-pred-tdelta l2-etq", "data-prio": 3 }, g);
     const texto = el("text", { class: "l2-pred-texto l2-etq", "data-prio": 2 }, g);
+    const borde = el("text", { class: "l2-pred-texto l2-pred-borde l2-etq", "data-prio": 1, "data-fija": 1 }, g);
     const toque = el("circle", { class: "l2-pred-toque", r: 22 }, g);
     const asa = el("circle", { class: "l2-pred-asa", r: 7 }, g);
-    piezas[m.id] = { g, linea, delta, tDelta, texto, toque, asa };
+    piezas[m.id] = { g, linea, delta, tDelta, texto, borde, toque, asa };
     let arrastra = false;
     const punto = (ev) => { const p = escena.svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; const q = p.matrixTransform(escena.svg.getScreenCTM().inverse()); return [q.x, q.y]; };
     toque.addEventListener("pointerdown", (ev) => { if (estado !== "abierta" || !escena) return; arrastra = true; toque.setPointerCapture(ev.pointerId); ev.preventDefault(); ev.stopPropagation(); g.classList.add("es-arrastre"); });
@@ -117,6 +120,18 @@ export function creaPrediccion(o) {
         q.tDelta.setAttribute("text-anchor", horiz ? "middle" : "start");
         q.tDelta.textContent = Math.abs(reales[m.id] - v) <= (m.tol || 0) ? "✓" : (reales[m.id] > v ? "+" : "−") + num(Math.abs(reales[m.id] - v)) + " " + m.unidad;
       } else { q.delta.setAttribute("d", ""); q.tDelta.textContent = ""; }
+      /* ¿quedó fuera de cuadro? flecha en el borde con su valor */
+      const vb = escena.caja ? escena.caja() : null, mg = 12 * k;
+      const fuera = !!vb && !vacio && (a[0] < vb.x + mg || a[0] > vb.x + vb.w - mg || a[1] < vb.y + mg || a[1] > vb.y + vb.h - mg);
+      [q.linea, q.asa, q.texto, q.delta, q.tDelta, q.toque].forEach((e) => { e.style.visibility = fuera ? "hidden" : ""; });
+      if (fuera) {
+        const der = a[0] > vb.x + vb.w - mg, izq = a[0] < vb.x + mg, arr = a[1] < vb.y + mg;
+        const fl = der ? "→" : izq ? "←" : arr ? "↑" : "↓", val = num(v) + " " + m.unidad;
+        const x = Math.min(vb.x + vb.w - mg, Math.max(vb.x + mg, a[0])), y = Math.min(vb.y + vb.h - mg, Math.max(vb.y + mg + 14 * k, a[1]));
+        q.borde.setAttribute("x", r1(x)); q.borde.setAttribute("y", r1(y));
+        q.borde.setAttribute("text-anchor", der ? "end" : izq ? "start" : "middle");
+        q.borde.textContent = izq ? `${fl} tu predicción: ${val}` : `tu predicción: ${val} ${fl}`;
+      } else q.borde.textContent = "";
     });
     if (o.alDibujar) o.alDibujar();
   }
