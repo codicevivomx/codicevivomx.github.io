@@ -118,7 +118,8 @@ export function creaPrediccion(o) {
         const horiz = Math.abs(b[0] - a[0]) >= Math.abs(b[1] - a[1]);
         q.tDelta.setAttribute("x", r1((a[0] + b[0]) / 2 + (horiz ? 0 : 8 * k))); q.tDelta.setAttribute("y", r1((a[1] + b[1]) / 2 + (horiz ? -8 : 5) * k));
         q.tDelta.setAttribute("text-anchor", horiz ? "middle" : "start");
-        q.tDelta.textContent = Math.abs(reales[m.id] - v) <= (m.tol || 0) ? "✓" : (reales[m.id] > v ? "+" : "−") + num(Math.abs(reales[m.id] - v)) + " " + m.unidad;
+        /* sin signo: «te faltaron X m» / «te pasaste X m» (lo mismo que dice el panel) */
+        q.tDelta.textContent = Math.abs(reales[m.id] - v) <= (m.tol || 0) ? "¡le atinaste!" : (reales[m.id] > v ? "te faltaron " : "te pasaste ") + num(Math.abs(reales[m.id] - v)) + " " + m.unidad;
       } else { q.delta.setAttribute("d", ""); q.tDelta.textContent = ""; }
       /* ¿quedó fuera de cuadro? flecha en el borde con su valor */
       const vb = escena.caja ? escena.caja() : null, mg = 12 * k;
