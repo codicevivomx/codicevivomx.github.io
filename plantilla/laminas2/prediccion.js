@@ -82,7 +82,7 @@ export function creaPrediccion(o) {
     const delta = el("path", { class: "l2-pred-delta" }, g);
     const tDelta = el("text", { class: "l2-pred-tdelta l2-etq", "data-prio": 3 }, g);
     const texto = el("text", { class: "l2-pred-texto l2-etq", "data-prio": 2 }, g);
-    const borde = el("text", { class: "l2-pred-texto l2-pred-borde l2-etq", "data-prio": 1, "data-fija": 1 }, g);
+    const borde = el("text", { class: "l2-pred-texto l2-pred-borde l2-etq", "data-prio": 1, "data-vertical": 1 }, g);
     const toque = el("circle", { class: "l2-pred-toque", r: 22 }, g);
     const asa = el("circle", { class: "l2-pred-asa", r: 7 }, g);
     piezas[m.id] = { g, linea, delta, tDelta, texto, borde, toque, asa };

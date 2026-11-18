@@ -389,7 +389,7 @@ const lab = {
     const x1 = Math.min(C.XM - 5, Math.ceil(Math.max(o.x1, 25) / 10) * 10 + 5), y1 = Math.min(C.HM, Math.ceil(Math.max(o.y1, 5) / 5) * 5);
     const ps = [iso([C.M * x1, C.REGLA_Y + 6, 0]), iso([C.M * x1, 0, C.ZB + C.M * y1]), iso([C.M * x1 + 30, -26, 0])];
     const der = Math.min(C.W, Math.max(...ps.map((q) => q[0])) + 8);
-    const arriba = Math.max(0, Math.min(iso([C.POSTE, 0, C.ZB + C.M * y1])[1], iso([C.M * x1 * 0.5, 0, C.ZB + C.M * y1])[1]) - 34);
+    const arriba = Math.max(0, Math.min(iso([C.POSTE, 0, C.ZB + C.M * y1])[1], iso([C.M * x1 * 0.5, 0, C.ZB + C.M * y1])[1]) - 64);   // margen arriba para las etiquetas
     const w = Math.max(300, der), h = Math.max(150, C.H - arriba);
     vbLab = { x: 0, y: C.H - h, w, h };
     svg.setAttribute("viewBox", `0 ${(C.H - h).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
@@ -536,7 +536,7 @@ const herr = creaHerramientas({
 
 /* Ninguna etiqueta tapa a otra: se acomodan una vez por cuadro */
 let acomodoPendiente = 0;
-function acomoda(){ if (acomodoPendiente) return; acomodoPendiente = requestAnimationFrame(() => { acomodoPendiente = 0; acomodaEtiquetas(esc.svg, { margen: 3 * esc.escalaTexto() }); }); }
+function acomoda(){ if (acomodoPendiente) return; acomodoPendiente = requestAnimationFrame(() => { acomodoPendiente = 0; const c = esc.caja ? esc.caja() : null; acomodaEtiquetas(esc.svg, { margen: 3 * esc.escalaTexto(), obstaculos: esc.obstaculos ? esc.obstaculos() : [], limites: c ? { x: c.x, y: c.y, width: c.w, height: c.h } : null }); }); }
 
 // ---------- Dibujo que cambia ----------
 function render(){

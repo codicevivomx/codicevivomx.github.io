@@ -167,7 +167,9 @@ export function creaCancha(cont, cfg) {
   }
   /* o = { x1, y1 } en metros; se redondea a 5 m para no regalar el resultado antes de patear */
   function encuadra(o) {
-    const x1 = Math.ceil(Math.max(o.x1, PO.x + 6) / 5) * 5, y1 = Math.ceil(Math.max(o.y1, PO.alto + 2.5) / 2.5) * 2.5;
+    /* cielo arriba de la trayectoria para tres renglones de notas (en celular las letras miden varios metros de escena) */
+    const renglon = 26 * k() / S;
+    const x1 = Math.ceil(Math.max(o.x1, PO.x + 6) / 5) * 5, y1 = Math.ceil(Math.max(o.y1 + 3 * renglon, PO.alto + 5) / 2.5) * 2.5;
     caja = { x0: -6, x1, y0: -2.9, y1 };
     ponVista();
   }
@@ -175,7 +177,13 @@ export function creaCancha(cont, cfg) {
 
   /* ---------- Pintar el estado ----------
      E = { s: { vx, vy, ts, tv, R, H, Rtrampa, a, v0 }, t, pos: [x, y], revelado, cimaVista, marcas: [t], trampa, enAire, enSuelo } */
-  let ultimo = "";
+  let ultimo = "", zonaBalon = null;
+  /* Zonas que las etiquetas no deben tapar: el pasto con la cerca (de lo alto de la cerca hacia abajo) y el balón */
+  function obstaculos() {
+    const cerca = P(0, 1.1, -5.5)[1], l = [{ x: vista.x, y: cerca, width: vista.w, height: vista.y + vista.h - cerca }];
+    if (zonaBalon) l.push(zonaBalon);
+    return l;
+  }
   function pinta(E) {
     const s = E.s, kk = k(), pos = E.pos;
     svg.style.setProperty("--k", n2(kk));
@@ -204,7 +212,7 @@ export function creaCancha(cont, cfg) {
       }
       if (E.t >= B.x / s.vx - 1e-9 && B.x < s.R) {
         const yb = s.vy * (B.x / s.vx) - 5 * (B.x / s.vx) ** 2, pasa = yb > B.alto;
-        nota(gNotas, P(B.x, B.alto), pasa ? `pasa la barrera (${n1(yb)} m > ${n1(B.alto)} m)` : `¡choca con la barrera! (${n1(Math.max(yb, 0))} m)`, { color: pasa ? VERDE : CORAL, anc: "middle", dy: 1.5, chica: true, prio: 1 });
+        nota(gNotas, P(B.x, B.alto + 1.2), pasa ? `pasa la barrera (${n1(yb)} m > ${n1(B.alto)} m)` : `¡choca con la barrera! (${n1(Math.max(yb, 0))} m)`, { color: pasa ? VERDE : CORAL, anc: "middle", dy: -0.4, chica: true, prio: 1 });
       }
       if (E.t >= Math.min(s.tv, PO.x / s.vx) - 1e-9) {
         const tp = PO.x / s.vx, yp = tp <= s.tv ? s.vy * tp - 5 * tp * tp : -1;
@@ -224,6 +232,7 @@ export function creaCancha(cont, cfg) {
     }
     /* balón (más grande que a escala) y su sombra */
     const p = P(pos[0], pos[1]), rb = Math.max(0.45 * S, 7 * kk), q = P(pos[0], 0);
+    zonaBalon = { x: p[0] - rb * 1.2, y: p[1] - rb * 1.2, width: rb * 2.4, height: rb * 2.4 };
     balonG.setAttribute("transform", `translate(${n1(p[0])} ${n1(p[1])}) scale(${n2(rb / 10)}) rotate(${n1(pos[0] * 40)})`);
     /* la sombra se queda en el suelo bajo el balón y se encoge y aclara mientras más alto va */
     const f = 1 - Math.min(0.55, pos[1] / 14);
@@ -244,7 +253,7 @@ export function creaCancha(cont, cfg) {
     dePantalla: (p) => [p[0] / S, -p[1] / S],
     escalaTexto: k,
     pxPorMetro: () => S,
-    caja: () => vista,
+    caja: () => vista, obstaculos,
     encuadra, pinta,
     mostrar(si) { svg.style.display = si ? "" : "none"; if (si) { ponVista(); ultimo = ""; } },
     ajusta() { ponVista(); ultimo = ""; }
