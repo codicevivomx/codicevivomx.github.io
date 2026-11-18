@@ -79,6 +79,7 @@
 .l2-herr__lnombre{font:700 .7rem/1.2 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--rubrica)}
 .l2-herr__lvalor{font:700 1.5rem/1.1 var(--sans);font-variant-numeric:tabular-nums;color:var(--texto);white-space:nowrap}
 .l2-herr__lvalor sub{font-size:.6em}
+.l2-herr__lunid{font-size:.62em;font-weight:600;color:var(--suave);white-space:nowrap}
 .l2-herr__lsub{font-size:.85rem;line-height:1.25;color:var(--suave)}
 .l2-herr__lbotones{display:flex;gap:4px;flex:none}
 .l2-herr__anotar{font:600 .9rem/1 var(--sans);height:40px;padding:0 12px;border-radius:999px;border:1.5px solid var(--acento);background:var(--acento);color:var(--sobre-acento);cursor:pointer}

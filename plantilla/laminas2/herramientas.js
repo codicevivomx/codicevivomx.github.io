@@ -189,8 +189,9 @@ export function creaHerramientas(o) {
     if (actual === "transportador") {
       const w = o.movil.vel(t);
       if (!w) return { v: "—", s: "El balón ya está en el suelo." };
-      const a = anguloDe(w);
-      return { v: Math.abs(a) + "°", s: t <= 0 ? "Ángulo de salida." : Math.abs(w[1]) < 0.05 ? "En la cima: la velocidad es horizontal." : a > 0 ? `Subiendo, en t = ${num(t, 2)} s.` : `Bajando, en t = ${num(t, 2)} s.` };
+      const a = anguloDe(w), lado = Math.abs(w[1]) < 0.05 || a === 0 ? "horizontal" : a > 0 ? "sobre la horizontal" : "bajo la horizontal";
+      return { v: Math.abs(a) + "° " + `<span class="l2-herr__lunid">${lado}</span>`, txt: Math.abs(a) + "° " + lado,
+        s: t <= 0 ? "Ángulo de salida." : lado === "horizontal" ? "En la cima: la velocidad es horizontal." : a > 0 ? `Subiendo, en t = ${num(t, 2)} s.` : `Bajando, en t = ${num(t, 2)} s.` };
     }
     if (actual === "velocidad") {
       const w = o.movil.vel(t);
@@ -209,7 +210,7 @@ export function creaHerramientas(o) {
     const l = lectura(), t = o.reloj(), limpio = (s) => s.replace(/<sub>(.*?)<\/sub>/g, "<sub>$1</sub>");
     if (actual === "regla") return `Regla: ${l.v} (${l.s.replace(/\.$/, "").toLowerCase()})`;
     if (actual === "cronometro") return `Cronómetro: ${l.v}${crono.sel.length === 2 ? " (" + l.s.replace(/\.$/, "").toLowerCase() + ")" : ""}`;
-    if (actual === "transportador") return `Transportador: ${l.v} en t = ${num(t, 2)} s`;
+    if (actual === "transportador") return `Transportador: ${l.txt || l.v} en t = ${num(t, 2)} s`;
     if (actual === "velocidad") return `En t = ${num(t, 2)} s: ${limpio(l.v)} m/s`;
     return "";
   }
