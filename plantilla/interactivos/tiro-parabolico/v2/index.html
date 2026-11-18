@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Tiro parabólico 2.0 · Códice Vivo</title>
+<link rel="preload" href="../../../codice/fuentes/eb-garamond.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+.iso{
+  --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
+  --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
+  --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
+  --anatomy-lit-top:#262626;--anatomy-lit-shade:#1d1d1d;
+  --anatomy-hi:#d4d4d4;--anatomy-mid:#6a6a6a;--anatomy-lo:#3e3e3e;--anatomy-faint:#2a2a2a;--anatomy-lit:#ffffff;
+  --anatomy-halo:#050505;--anatomy-halo-opacity:.9;--anatomy-dot:#e6e6e6;
+  --anatomy-red:#ff6b6b;--anatomy-green:#6be0a0;--anatomy-blue:#6b9bff;
+  --anatomy-weight:.6px;--anatomy-ease:cubic-bezier(.32,.72,0,1);
+  --anatomy-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff0a,inset 0 0 0 1px #ffffff06,0 0 0 1px #00000026,0 1px 1px -.5px #00000014,0 3px 3px -1.5px #00000014,0 6px 6px -3px #00000014,0 12px 12px -6px #00000014;
+}
+.iso[data-theme="light"]{
+  --anatomy-page:#f2f2ef;--anatomy-card:#fbfbfa;--anatomy-text:#57575a;--anatomy-strong:#18181a;--anatomy-muted:#8c8c90;
+  --anatomy-paper:#fbfbfa;--anatomy-face:#ffffff;--anatomy-top:#ffffff;
+  --anatomy-shade-0:#dcdcd9;--anatomy-shade-1:#e5e5e2;--anatomy-shade-2:#ededea;--anatomy-shade-3:#f4f4f1;
+  --anatomy-lit-top:#ffffff;--anatomy-lit-shade:#eeeeeb;
+  --anatomy-hi:#26262a;--anatomy-mid:#8a8a8f;--anatomy-lo:#b4b4b8;--anatomy-faint:#d4d4d6;--anatomy-lit:#000000;
+  --anatomy-halo:#8a8a80;--anatomy-halo-opacity:.32;--anatomy-dot:#3a3a3e;
+  --anatomy-red:#e5484d;--anatomy-green:#30a46c;--anatomy-blue:#3e63dd;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff,0 0 0 1px #0000000f,0 1px 1px -.5px #0000000a,0 3px 3px -1.5px #0000000a,0 6px 6px -3px #0000000a,0 12px 12px -6px #0000000a;
+}
+.iso-svg{display:block;width:100%;height:auto;overflow:visible}
+.iso-svg path,.iso-svg circle{vector-effect:non-scaling-stroke}
+.iso-fill{fill:var(--anatomy-paper);stroke:none}
+.iso-solid[data-lit]>.iso-fill{fill:var(--anatomy-face)}
+.iso-shade,.iso-top{stroke:none}
+.iso-shade[data-shade="0"]{fill:var(--anatomy-shade-0)}
+.iso-shade[data-shade="1"]{fill:var(--anatomy-shade-1)}
+.iso-shade[data-shade="2"]{fill:var(--anatomy-shade-2)}
+.iso-shade[data-shade="3"]{fill:var(--anatomy-shade-3)}
+.iso-top{fill:var(--anatomy-top)}
+.iso-solid[data-lit]>.iso-top{fill:var(--anatomy-lit-top)}
+.iso-solid[data-lit]>.iso-shade{fill:var(--anatomy-lit-shade)}
+.iso-solid[data-seamless]>.iso-shade,.iso-solid[data-seamless]>.iso-top{stroke-width:.4;stroke-linejoin:round}
+.iso-solid[data-seamless]>.iso-shade[data-shade="0"]{stroke:var(--anatomy-shade-0)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="1"]{stroke:var(--anatomy-shade-1)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="2"]{stroke:var(--anatomy-shade-2)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="3"]{stroke:var(--anatomy-shade-3)}
+.iso-solid[data-seamless]>.iso-top{stroke:var(--anatomy-top)}
+.iso-solid[data-seamless][data-lit]>.iso-top{stroke:var(--anatomy-lit-top)}
+.iso-solid[data-seamless][data-lit]>.iso-shade{stroke:var(--anatomy-lit-shade)}
+.iso-solid[data-lit]>.iso-edge{stroke:var(--anatomy-lit)}
+.iso-halo{fill:var(--anatomy-halo);stroke:none;filter:blur(9px);opacity:var(--anatomy-halo-opacity);transform:translateY(3px)}
+.iso-line{fill:none;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight);stroke-linecap:round;stroke-linejoin:round}
+.iso-line[data-tone="hi"]{stroke:var(--anatomy-hi)}
+.iso-line[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.iso-line[data-tone="lo"]{stroke:var(--anatomy-lo)}
+.iso-line[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.iso-line[data-tone="lit"]{stroke:var(--anatomy-lit)}
+.iso-line[data-tone="red"]{stroke:var(--anatomy-red)}
+.iso-line[data-tone="green"]{stroke:var(--anatomy-green)}
+.iso-line[data-tone="blue"]{stroke:var(--anatomy-blue)}
+.iso-line[data-dotted]{stroke-dasharray:.01 3.5;stroke-width:1}
+.iso-line[data-dashed]{stroke-dasharray:3 3}
+.iso-line[data-flow]{stroke-dasharray:2 6}
+.iso-wire-end{fill:var(--anatomy-paper);stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
+.iso-wire[data-tone="hi"] .iso-wire-end{stroke:var(--anatomy-hi)}
+.iso-wire[data-tone="mid"] .iso-wire-end{stroke:var(--anatomy-mid)}
+.iso-wire[data-tone="faint"] .iso-wire-end{stroke:var(--anatomy-faint)}
+.iso-wire[data-tone="lit"] .iso-wire-end{stroke:var(--anatomy-lit)}
+.iso-dots circle{fill:var(--anatomy-dot);stroke:none;opacity:.32}
+.iso-dots[data-tone="hi"] circle{opacity:.85}
+.iso-dots[data-tone="mid"] circle{opacity:.45}
+.iso-dots[data-tone="lo"] circle{opacity:.22}
+.iso-dots[data-tone="faint"] circle{opacity:.12}
+.iso-face-text{fill:var(--anatomy-mid);font-family:var(--anatomy-mono);letter-spacing:.04em}
+.iso-face-text[data-tone="hi"]{fill:var(--anatomy-hi)}
+.iso-face-text[data-tone="lo"]{fill:var(--anatomy-lo)}
+.iso-face-text[data-tone="faint"]{fill:var(--anatomy-faint)}
+.tb-body{fill:var(--anatomy-shade-2);stroke:none}
+.tb-shine{fill:var(--anatomy-top);stroke:none}
+.tb-shade{fill:var(--anatomy-shade-0);stroke:none}
+.tb-ring{fill:none;stroke:var(--anatomy-lo);stroke-width:.45;stroke-linecap:butt;stroke-linejoin:round}
+.tb-ring[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.tb-ring[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.tb-ring[data-tone="hi"]{stroke:var(--anatomy-hi)}
+@keyframes iso-flow{to{stroke-dashoffset:-32}}
+@keyframes iso-pulse{0%,100%{opacity:.18}12%{opacity:1}40%{opacity:.18}}
+.iso-line[data-flow]{animation:iso-flow 1600ms linear infinite}
+.iso-dots circle[data-pulse]{animation:iso-pulse 1600ms steps(1,end) infinite;animation-delay:var(--pulse-at,0ms)}
+.iso-figure{margin:32px 0 36px}
+.iso-plate{position:relative;padding:52px 24px;border-radius:0;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-mid);--anatomy-paper:var(--anatomy-card)}
+.iso-plate-corners{position:absolute;inset:18px 20px;pointer-events:none}
+.iso-plate-corner{position:absolute;color:var(--anatomy-muted);font-family:var(--anatomy-mono);font-size:10.5px;line-height:1;letter-spacing:.04em;white-space:nowrap}
+.iso-plate-corner[data-corner="fig"]{top:0;left:0;color:var(--anatomy-text)}
+.iso-plate-corner[data-corner="title"]{top:0;right:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="hint"]{bottom:0;left:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="readout"]{right:0;bottom:0;color:var(--anatomy-text);font-variant-numeric:tabular-nums}
+.iso-plate .iso-svg{margin:0 auto}
+.iso-legend{display:grid;gap:8px;margin-top:12px;color:var(--anatomy-muted);font-size:13px;line-height:1.55}
+.iso-keys{display:flex;flex-wrap:wrap;gap:6px 18px}
+.iso-key{display:inline-flex;align-items:center;gap:7px}
+.iso-swatch{width:16px;height:10px;flex:none;overflow:visible}
+.iso-swatch path{fill:none;stroke:var(--anatomy-hi);stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.iso-swatch[data-mark="raised"] path,.iso-swatch[data-mark="flat"] path{stroke:var(--anatomy-mid)}
+.iso-swatch[data-mark="lit"] path{stroke:var(--anatomy-lit)}
+.iso-swatch[data-mark="dim"] path{stroke:var(--anatomy-lo)}
+.iso-swatch[data-mark="dotted"] path{stroke-dasharray:.01 3;stroke-width:1.4}
+.iso-swatch[data-mark="dashed"] path{stroke-dasharray:3 2.5}
+.iso-swatch[data-mark="red"] path{stroke:var(--anatomy-red)}
+.iso-swatch[data-mark="green"] path{stroke:var(--anatomy-green)}
+.iso-swatch[data-mark="blue"] path{stroke:var(--anatomy-blue)}
+.iso-swatch-crease{stroke:var(--anatomy-lo)!important}
+@media (max-width:560px){.iso-plate{padding:48px 12px 70px}.iso-plate-corner[data-corner="hint"]{bottom:18px}}
+@media (prefers-reduced-motion:reduce){.iso-line[data-flow],.iso-dots circle[data-pulse]{animation:none}}
+
+@font-face{font-family:"EB Garamond";font-style:normal;font-weight:400 600;font-display:swap;src:url(../../../codice/fuentes/eb-garamond.woff2) format("woff2")}
+:root{
+  --bg:#F6F1E6;--sup:#FFFCF6;--texto:#2E2117;--suave:#77634F;--borde:#E5DACA;--borde-fuerte:#CDBEA5;
+  --acento:#2F6F73;--rubrica:#A5352A;--dorado:#B08A3E;--bien:#2F7D5B;--mal:#A5352A;--agua-sup:#D9EEEC;--sobre-acento:#FFFFFF;
+  --serif:"EB Garamond","Iowan Old Style",Georgia,serif;
+  color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17120D;--sup:#211912;--texto:#EFE4CF;--suave:#B6A385;--borde:#382C20;--borde-fuerte:#4D3D2C;
+  --acento:#7FB3B0;--rubrica:#E07A5F;--dorado:#D9B26A;--bien:#7FC9A0;--mal:#E07A5F;--agua-sup:#8CC4C0;--sobre-acento:#17120D;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17120D;--sup:#211912;--texto:#EFE4CF;--suave:#B6A385;--borde:#382C20;--borde-fuerte:#4D3D2C;
+  --acento:#7FB3B0;--rubrica:#E07A5F;--dorado:#D9B26A;--bien:#7FC9A0;--mal:#E07A5F;--agua-sup:#8CC4C0;--sobre-acento:#17120D;color-scheme:dark}
+.iso{
+  --anatomy-page:var(--bg);--anatomy-card:var(--sup);--anatomy-text:#5E5145;--anatomy-strong:var(--texto);--anatomy-muted:#9A8C7B;
+  --anatomy-paper:#FFFCF6;--anatomy-face:#FFFFFF;--anatomy-top:#FFFEFA;
+  --anatomy-shade-0:#E2DACB;--anatomy-shade-1:#EAE3D6;--anatomy-shade-2:#F1EBE0;--anatomy-shade-3:#F7F2E9;
+  --anatomy-lit-top:#FFFFFF;--anatomy-lit-shade:#F1ECE3;
+  --anatomy-hi:#2E2621;--anatomy-mid:#8E8477;--anatomy-lo:#BCB2A4;--anatomy-faint:#DCD3C5;--anatomy-lit:#1E1712;
+  --anatomy-halo:#8A7C66;--anatomy-halo-opacity:.32;--anatomy-dot:#3E342B;
+  --anatomy-red:var(--rubrica);--anatomy-green:var(--acento);--anatomy-blue:var(--acento);
+  --anatomy-weight:.6px;--anatomy-mono:ui-monospace,Consolas,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .iso{
+  --anatomy-text:#BCAE98;--anatomy-muted:#7E715F;--anatomy-paper:#211912;--anatomy-face:#2A2018;--anatomy-top:#2B2119;
+  --anatomy-shade-0:#1A140E;--anatomy-shade-1:#1D1610;--anatomy-shade-2:#201812;--anatomy-shade-3:#241B14;
+  --anatomy-lit-top:#3A2E23;--anatomy-lit-shade:#2C2219;
+  --anatomy-hi:#E3D7C3;--anatomy-mid:#7C6F5F;--anatomy-lo:#4B4035;--anatomy-faint:#33291F;--anatomy-lit:#FFF7E8;
+  --anatomy-halo:#050302;--anatomy-halo-opacity:.85;--anatomy-dot:#E3D7C3}}
+:root[data-theme="dark"] .iso{
+  --anatomy-text:#BCAE98;--anatomy-muted:#7E715F;--anatomy-paper:#211912;--anatomy-face:#2A2018;--anatomy-top:#2B2119;
+  --anatomy-shade-0:#1A140E;--anatomy-shade-1:#1D1610;--anatomy-shade-2:#201812;--anatomy-shade-3:#241B14;
+  --anatomy-lit-top:#3A2E23;--anatomy-lit-shade:#2C2219;
+  --anatomy-hi:#E3D7C3;--anatomy-mid:#7C6F5F;--anatomy-lo:#4B4035;--anatomy-faint:#33291F;--anatomy-lit:#FFF7E8;
+  --anatomy-halo:#050302;--anatomy-halo-opacity:.85;--anatomy-dot:#E3D7C3}
+html{background:var(--bg)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--texto);font:400 17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;-webkit-text-size-adjust:100%}
+output{font-variant-numeric:tabular-nums}
+sub,sup{font-size:.72em;line-height:0;position:relative;vertical-align:baseline}
+sub{bottom:-.25em} sup{top:-.45em}
+.pagina{max-width:1160px;margin:0 auto;padding:20px 12px 40px}
+header{margin-bottom:18px}
+.marca-casa{font:italic 400 1.05rem/1.2 var(--serif);color:var(--rubrica)}
+h1{margin:2px 0 4px;font:500 clamp(2.1rem,8vw,3.1rem)/1.02 var(--serif);letter-spacing:-.015em}
+.sub{margin:0;padding-bottom:12px;border-bottom:3px double var(--borde-fuerte);color:var(--suave)}
+.rejilla{display:grid;gap:16px;grid-template-columns:minmax(0,1fr);grid-template-areas:"a" "lab" "b"}
+#pasos-a{grid-area:a} #pasos-b{grid-area:b} .lab{grid-area:lab}
+.pasos{display:grid;gap:16px;align-content:start}
+.tarjeta{background:var(--sup);border:1px solid var(--borde);border-radius:12px;padding:18px 16px 16px;display:grid;gap:6px;justify-items:start}
+.tarjeta>*{max-width:100%}
+.tarjeta>.opciones,.tarjeta>.predice,.tarjeta>div{justify-self:stretch}
+.tarjeta h2{display:flex;align-items:center;gap:10px;margin:0 0 4px;font:500 1.4rem/1.15 var(--serif)}
+.n{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--rubrica);color:var(--rubrica);font:500 1.05rem/1 var(--serif);font-variant-numeric:lining-nums}
+.tarjeta p{margin:0;max-width:62ch}
+.sub-paso{margin:14px 0 0;font:500 1.25rem/1.2 var(--serif);color:var(--rubrica)}
+.formula{display:inline-block;padding:4px 10px;border-radius:8px;background:var(--bg);font:500 1.2rem var(--serif);font-variant-numeric:lining-nums}
+.opciones{display:grid;gap:8px;margin-top:6px}
+.op{font:inherit;color:var(--texto);text-align:left;background:var(--sup);border:1.5px solid var(--borde);border-radius:12px;padding:12px 14px;min-height:48px;cursor:pointer}
+@media (hover:hover){.op:hover{border-color:var(--suave)}}
+.op:focus-visible,.boton:focus-visible,input:focus-visible,.iso-stage:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
+.op .res{display:block;margin-top:4px;font-size:.92rem;color:var(--suave)}
+.op.bien{border:2px solid var(--bien)} .op.mal{border:2px dashed var(--mal)}
+.op:disabled{cursor:default}
+.ico{width:1em;height:1em;vertical-align:-.15em;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.ico.b{stroke:var(--bien)} .ico.m{stroke:var(--mal)}
+.lab{padding:10px 10px 16px;border:3px double var(--borde-fuerte);display:grid;gap:12px;justify-items:stretch}
+.predice{background:var(--bg);border-radius:12px;padding:12px 14px;margin-top:6px}
+.lab-barra{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.lab-barra__der{display:flex;gap:6px;align-items:center}
+@media (max-width:400px){.b-cuaderno{padding:0 12px}.b-cuaderno span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+.b-cuaderno{display:inline-flex;align-items:center;gap:8px;font:600 1rem/1 var(--sans,system-ui);min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--texto);background:var(--sup);color:var(--texto);cursor:pointer}
+.b-cuaderno svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.b-cuaderno:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
+.escenario{position:relative;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--borde);background:var(--sup)}
+.escenario .iso-figure{margin:0}
+.escenario .iso-svg{display:block;width:100%;height:auto}
+#lab-dibujo[hidden],#cancha[hidden]{display:none}
+#cancha{aspect-ratio:2;background:#f3ead6}
+/* pantalla completa: la escena llena su hueco */
+.l2-pc .escenario{box-shadow:none;background:transparent;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.l2-pc #lab-dibujo,.l2-pc #lab-dibujo .iso-stage{width:100%;height:100%}
+.l2-pc #lab-dibujo .iso-figure,.l2-pc #lab-dibujo .iso-svg{width:100%;height:100%}
+.l2-pc #cancha{width:100%;height:100%;aspect-ratio:auto!important}
+.iso-stage{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.controles{display:grid;gap:10px}
+.fila{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:36px;margin:0;background:transparent;cursor:pointer;--p:0%}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:linear-gradient(to right,var(--acento) var(--p),var(--borde) var(--p))}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:var(--borde)}
+input[type=range]::-moz-range-progress{height:8px;border-radius:4px;background:var(--acento)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-9px;border-radius:50%;background:var(--sup);border:3px solid var(--acento);box-shadow:inset 0 0 0 4px var(--sup),inset 0 0 0 10px var(--dorado)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--sup);border:3px solid var(--acento)}
+.nota{margin:0;color:var(--texto);min-height:1.5em}
+.botones{display:flex;gap:8px;flex-wrap:wrap}
+.boton{font:inherit;font-weight:600;border-radius:999px;padding:10px 18px;min-height:44px;cursor:pointer;border:1.5px solid var(--acento)}
+.boton.pri{background:var(--acento);color:var(--sobre-acento)} .boton.sec{background:transparent;color:var(--acento)}
+.boton.sec[aria-pressed="true"]{border-color:var(--rubrica);color:var(--rubrica)}
+.pie{margin:0;font-size:.9rem;color:var(--suave);max-width:70ch}
+.pie i{font-family:var(--serif);font-size:1.05rem;color:var(--texto)}
+@media (min-width:880px){
+  .pagina{padding:36px 28px 56px}
+  .rejilla{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);grid-template-rows:auto 1fr;grid-template-areas:"a lab" "b lab";column-gap:24px;align-items:start}
+  .lab{padding:14px 14px 18px}
+}
+/* Dibujo del riel. --k = unidades del SVG por px: los textos de la escena miden lo mismo en pantalla (mín. 14 px). */
+.iso-svg{--k:1}
+.solo-revelado{display:none} .revelado .solo-revelado{display:inline}
+.oculto{display:none}
+.solo-trampa{display:none} .trampa-on .solo-trampa{display:inline}
+.balon{fill:var(--anatomy-face);stroke:var(--anatomy-hi);stroke-width:.8}
+.balon-sombra{fill:var(--anatomy-shade-0)} .balon-brillo{fill:var(--anatomy-lit-top)}
+.sombra{fill:var(--anatomy-halo);opacity:calc(var(--anatomy-halo-opacity) * .7)}
+.transp{fill:var(--agua-sup);fill-opacity:.18;stroke:none}
+.marca-oro{fill:var(--dorado)}
+.estela{fill:none;stroke:var(--acento);stroke-width:1.8;stroke-linecap:round}
+.marca-t{fill:var(--sup);stroke:var(--acento);stroke-width:1.4}
+.parabola{fill:none;stroke:var(--acento);stroke-width:1.1;stroke-dasharray:5 4;opacity:.8}
+.ref{fill:none;stroke:var(--suave);stroke-width:1.2;stroke-dasharray:2 3}
+.guia{fill:none;stroke:var(--dorado);stroke-width:.9;stroke-dasharray:3 3}
+.cima{fill:var(--sup);stroke:var(--dorado);stroke-width:1.4}
+.banderin{fill:var(--acento)}
+.arco{fill:none;stroke:var(--rubrica);stroke-width:1.3}
+.fantasma{fill:none;stroke:var(--rubrica);stroke-width:1.1;stroke-dasharray:4 3}
+.flecha line{stroke:var(--rubrica);stroke-width:2.2;stroke-linecap:round} .flecha polygon{fill:var(--rubrica)}
+.t-h,.t-caida,.t-ang,.t-vel,.t-ref,.t-trampa{font:600 calc(15px*var(--k)) var(--sans,system-ui);font-variant-numeric:lining-nums tabular-nums;paint-order:stroke;stroke:var(--sup);stroke-width:calc(4px*var(--k));stroke-linejoin:round}
+.t-h{fill:var(--dorado)} .t-caida{fill:var(--acento)} .t-ang,.t-vel,.t-trampa{fill:var(--rubrica)} .t-ref{fill:var(--suave);text-anchor:middle}
+.t-trampa{font-size:calc(14px*var(--k))}
+.t-regla{font:500 calc(14px*var(--k)) var(--sans,system-ui);fill:var(--anatomy-text);font-variant-numeric:tabular-nums}
+.estrecha .t-regla.impar{display:none}
+#mango{cursor:grab;touch-action:none} .mango-toque{fill:transparent}
+.mango{fill:var(--sup);stroke:var(--rubrica);stroke-width:2}
+#mango:hover .mango,#mango:active .mango{fill:var(--rubrica)}
+</style>
+<link rel="stylesheet" href="../../../laminas2/laminas2.css">
+</head>
+<body>
+<main class="pagina">
+  <header>
+    <div class="marca-casa">Códice Vivo · Laboratorio</div>
+    <h1 id="titulo">Tiro parabólico</h1>
+    <p class="sub" id="subtitulo"></p>
+  </header>
+  <div class="rejilla">
+    <div id="pasos-a" class="pasos"></div>
+    <section class="tarjeta lab" aria-label="Laboratorio">
+      <div class="lab-barra" data-pc="cabeza">
+        <div id="escenas"></div>
+        <div class="lab-barra__der">
+          <button type="button" class="b-cuaderno" id="b-cuaderno"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 2.5h10.5a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H4z"/><path d="M4 2.5v15M7.5 6.5h5M7.5 9.5h5M7.5 12.5h3"/></svg><span>Cuaderno</span></button>
+          <button type="button" id="b-pc" aria-label="Pantalla completa"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"/></svg></button>
+        </div>
+      </div>
+      <div id="prediccion" data-pc="pred"></div>
+      <div class="escenario" data-pc="escena">
+        <div id="lab-dibujo" class="iso"><div class="iso-stage" tabindex="0" role="slider" aria-label="Flecha de lanzamiento: flechas del teclado para cambiar el ángulo" aria-valuemin="15" aria-valuemax="75" aria-valuenow="37"><svg xmlns="http://www.w3.org/2000/svg" class="iso-svg" viewBox="0 0 640 340" role="img" aria-label="Tiro parabólico: un balón sale del suelo en ángulo, sube en parábola y cae más adelante; su velocidad se separa en componente horizontal y vertical."><path class="iso-halo" d="M34.9 269.1L35.2 268.2L48 247.7L48.8 246.9L50.1 246.1L51.8 245.4L53.9 244.8L56.2 244.4L58.8 244.1L61.4 244.1L64.1 244.2L594.3 282.7L596.8 283L599.2 283.4L601.2 284L602.9 284.7L604.1 285.5L604.8 286.4L605.1 287.3L605.1 300.1L604.8 301L592 321.5L591.2 322.3L589.9 323.1L588.2 323.8L586.1 324.4L583.8 324.8L581.2 325.1L578.6 325.1L575.9 325L45.7 286.5L43.2 286.2L40.8 285.8L38.8 285.2L37.1 284.5L35.9 283.7L35.2 282.8L34.9 281.9Z"/><g class="iso-solid"><path class="iso-fill" d="M67.7 268.6L67.9 267.7L68.8 266.9L70.2 266.1L72 265.4L74.3 264.9L76.8 264.6L79.4 264.5L82.1 264.6L84.6 264.9L86.9 265.4L88.8 266L90.2 266.8L91.1 267.6L91.5 268.5L91.5 271.1L91.2 272L90.4 272.8L89 273.6L87.1 274.3L84.9 274.8L82.4 275.1L79.8 275.2L77.1 275.1L74.6 274.8L72.3 274.3L70.4 273.7L68.9 272.9L68 272.1L67.7 271.2Z"/><path class="iso-shade" data-shade="0" d="M91.2 272L90.4 272.8L90.4 270.3L91.2 269.4ZM90.4 272.8L89 273.6L89 271.1L90.4 270.3ZM89 273.6L87.1 274.3L87.1 271.7L89 271.1ZM87.1 274.3L84.9 274.8L84.9 272.2L87.1 271.7ZM91.5 271.1L91.2 272L91.2 269.4L91.5 268.5Z"/><path class="iso-shade" data-shade="1" d="M84.9 274.8L82.4 275.1L82.4 272.5L84.9 272.2ZM82.4 275.1L79.8 275.2L79.8 272.6L82.4 272.5Z"/><path class="iso-shade" data-shade="2" d="M79.8 275.2L77.1 275.1L77.1 272.5L79.8 272.6ZM77.1 275.1L74.6 274.8L74.6 272.3L77.1 272.5Z"/><path class="iso-shade" data-shade="3" d="M74.6 274.8L72.3 274.3L72.3 271.8L74.6 272.3ZM72.3 274.3L70.4 273.7L70.4 271.2L72.3 271.8ZM70.4 273.7L68.9 272.9L68.9 270.4L70.4 271.2ZM68.9 272.9L68 272.1L68 269.5L68.9 270.4ZM68 272.1L67.7 271.2L67.7 268.6L68 269.5Z"/><path class="iso-top" d="M91.2 269.4L90.4 270.3L89 271.1L87.1 271.7L84.9 272.2L82.4 272.5L79.8 272.6L77.1 272.5L74.6 272.3L72.3 271.8L70.4 271.2L68.9 270.4L68 269.5L67.7 268.6L67.9 267.7L68.8 266.9L70.2 266.1L72 265.4L74.3 264.9L76.8 264.6L79.4 264.5L82.1 264.6L84.6 264.9L86.9 265.4L88.8 266L90.2 266.8L91.1 267.6L91.5 268.5Z"/><path class="iso-line iso-crease" data-tone="faint" d="M91.5 268.5L91.2 269.4L90.4 270.3L89 271.1L87.1 271.7L84.9 272.2L82.4 272.5L79.8 272.6L77.1 272.5L74.6 272.3L72.3 271.8L70.4 271.2L68.9 270.4L68 269.5L67.7 268.6"/><path class="iso-line iso-edge" data-tone="lo" d="M67.7 268.6L67.9 267.7L68.8 266.9L70.2 266.1L72 265.4L74.3 264.9L76.8 264.6L79.4 264.5L82.1 264.6L84.6 264.9L86.9 265.4L88.8 266L90.2 266.8L91.1 267.6L91.5 268.5M91.5 271.1L91.2 272L90.4 272.8L89 273.6L87.1 274.3L84.9 274.8L82.4 275.1L79.8 275.2L77.1 275.1L74.6 274.8L72.3 274.3L70.4 273.7L68.9 272.9L68 272.1L67.7 271.2M67.7 268.6L67.7 271.2M91.5 268.5L91.5 271.1"/></g><g class="iso-solid"><path class="iso-fill" d="M70.4 263.2L70.6 262.5L71.3 261.8L72.3 261.2L73.8 260.7L75.5 260.3L77.4 260.1L79.4 260L81.5 260.1L83.4 260.3L85.2 260.7L86.7 261.1L87.8 261.7L88.5 262.4L88.8 263.1L88.8 268.5L88.6 269.2L87.9 269.9L86.8 270.5L85.4 271L83.7 271.4L81.8 271.6L79.7 271.7L77.7 271.6L75.7 271.4L74 271.1L72.5 270.6L71.4 270L70.7 269.3L70.4 268.6Z"/><path class="iso-shade" data-shade="0" d="M88.6 269.2L87.9 269.9L87.9 264.5L88.6 263.8ZM87.9 269.9L86.8 270.5L86.8 265.1L87.9 264.5ZM86.8 270.5L85.4 271L85.4 265.6L86.8 265.1ZM85.4 271L83.7 271.4L83.7 265.9L85.4 265.6ZM88.8 268.5L88.6 269.2L88.6 263.8L88.8 263.1Z"/><path class="iso-shade" data-shade="1" d="M83.7 271.4L81.8 271.6L81.8 266.2L83.7 265.9ZM81.8 271.6L79.7 271.7L79.7 266.3L81.8 266.2Z"/><path class="iso-shade" data-shade="2" d="M79.7 271.7L77.7 271.6L77.7 266.2L79.7 266.3ZM77.7 271.6L75.7 271.4L75.7 266L77.7 266.2Z"/><path class="iso-shade" data-shade="3" d="M75.7 271.4L74 271.1L74 265.6L75.7 266ZM74 271.1L72.5 270.6L72.5 265.1L74 265.6ZM72.5 270.6L71.4 270L71.4 264.5L72.5 265.1ZM71.4 270L70.7 269.3L70.7 263.9L71.4 264.5ZM70.7 269.3L70.4 268.6L70.4 263.2L70.7 263.9Z"/><path class="iso-top" d="M88.6 263.8L87.9 264.5L86.8 265.1L85.4 265.6L83.7 265.9L81.8 266.2L79.7 266.3L77.7 266.2L75.7 266L74 265.6L72.5 265.1L71.4 264.5L70.7 263.9L70.4 263.2L70.6 262.5L71.3 261.8L72.3 261.2L73.8 260.7L75.5 260.3L77.4 260.1L79.4 260L81.5 260.1L83.4 260.3L85.2 260.7L86.7 261.1L87.8 261.7L88.5 262.4L88.8 263.1Z"/><path class="iso-line iso-crease" data-tone="faint" d="M88.8 263.1L88.6 263.8L87.9 264.5L86.8 265.1L85.4 265.6L83.7 265.9L81.8 266.2L79.7 266.3L77.7 266.2L75.7 266L74 265.6L72.5 265.1L71.4 264.5L70.7 263.9L70.4 263.2"/><path class="iso-line iso-edge" data-tone="mid" d="M70.4 263.2L70.6 262.5L71.3 261.8L72.3 261.2L73.8 260.7L75.5 260.3L77.4 260.1L79.4 260L81.5 260.1L83.4 260.3L85.2 260.7L86.7 261.1L87.8 261.7L88.5 262.4L88.8 263.1M88.8 268.5L88.6 269.2L87.9 269.9L86.8 270.5L85.4 271L83.7 271.4L81.8 271.6L79.7 271.7L77.7 271.6L75.7 271.4L74 271.1L72.5 270.6L71.4 270L70.7 269.3L70.4 268.6M70.4 263.2L70.4 268.6M88.8 263.1L88.8 268.5"/></g><g class="iso-solid"><path class="iso-fill" d="M64.9 273.2L65.1 272.3L66 271.4L67.3 270.6L69.2 270L71.4 269.5L73.9 269.2L76.6 269.1L79.2 269.1L81.8 269.4L84 269.9L85.9 270.5L87.4 271.3L88.3 272.2L88.6 273.1L88.6 275.6L88.4 276.5L87.5 277.4L86.2 278.2L84.3 278.8L82.1 279.3L79.6 279.6L76.9 279.7L74.3 279.7L71.8 279.4L69.5 278.9L67.6 278.3L66.1 277.5L65.2 276.6L64.9 275.7Z"/><path class="iso-shade" data-shade="0" d="M88.4 276.5L87.5 277.4L87.5 274.8L88.4 274ZM87.5 277.4L86.2 278.2L86.2 275.6L87.5 274.8ZM86.2 278.2L84.3 278.8L84.3 276.3L86.2 275.6ZM84.3 278.8L82.1 279.3L82.1 276.8L84.3 276.3ZM88.6 275.6L88.4 276.5L88.4 274L88.6 273.1Z"/><path class="iso-shade" data-shade="1" d="M82.1 279.3L79.6 279.6L79.6 277.1L82.1 276.8ZM79.6 279.6L76.9 279.7L76.9 277.2L79.6 277.1Z"/><path class="iso-shade" data-shade="2" d="M76.9 279.7L74.3 279.7L74.3 277.1L76.9 277.2ZM74.3 279.7L71.8 279.4L71.8 276.8L74.3 277.1Z"/><path class="iso-shade" data-shade="3" d="M71.8 279.4L69.5 278.9L69.5 276.3L71.8 276.8ZM69.5 278.9L67.6 278.3L67.6 275.7L69.5 276.3ZM67.6 278.3L66.1 277.5L66.1 274.9L67.6 275.7ZM66.1 277.5L65.2 276.6L65.2 274.1L66.1 274.9ZM65.2 276.6L64.9 275.7L64.9 273.2L65.2 274.1Z"/><path class="iso-top" d="M88.4 274L87.5 274.8L86.2 275.6L84.3 276.3L82.1 276.8L79.6 277.1L76.9 277.2L74.3 277.1L71.8 276.8L69.5 276.3L67.6 275.7L66.1 274.9L65.2 274.1L64.9 273.2L65.1 272.3L66 271.4L67.3 270.6L69.2 270L71.4 269.5L73.9 269.2L76.6 269.1L79.2 269.1L81.8 269.4L84 269.9L85.9 270.5L87.4 271.3L88.3 272.2L88.6 273.1Z"/><path class="iso-line iso-crease" data-tone="faint" d="M88.6 273.1L88.4 274L87.5 274.8L86.2 275.6L84.3 276.3L82.1 276.8L79.6 277.1L76.9 277.2L74.3 277.1L71.8 276.8L69.5 276.3L67.6 275.7L66.1 274.9L65.2 274.1L64.9 273.2"/><path class="iso-line iso-edge" data-tone="lo" d="M64.9 273.2L65.1 272.3L66 271.4L67.3 270.6L69.2 270L71.4 269.5L73.9 269.2L76.6 269.1L79.2 269.1L81.8 269.4L84 269.9L85.9 270.5L87.4 271.3L88.3 272.2L88.6 273.1M88.6 275.6L88.4 276.5L87.5 277.4L86.2 278.2L84.3 278.8L82.1 279.3L79.6 279.6L76.9 279.7L74.3 279.7L71.8 279.4L69.5 278.9L67.6 278.3L66.1 277.5L65.2 276.6L64.9 275.7M64.9 273.2L64.9 275.7M88.6 273.1L88.6 275.6"/></g><g class="iso-solid"><path class="iso-fill" d="M67.6 267.7L67.8 267L68.4 266.4L69.5 265.8L70.9 265.3L72.6 264.9L74.6 264.6L76.6 264.6L78.7 264.6L80.6 264.8L82.4 265.2L83.8 265.7L85 266.3L85.7 266.9L85.9 267.6L85.9 273.1L85.7 273.8L85.1 274.4L84 275L82.6 275.5L80.9 275.9L78.9 276.2L76.9 276.3L74.8 276.2L72.9 276L71.1 275.6L69.7 275.1L68.5 274.5L67.8 273.9L67.6 273.2Z"/><path class="iso-shade" data-shade="0" d="M85.7 273.8L85.1 274.4L85.1 269L85.7 268.3ZM85.1 274.4L84 275L84 269.6L85.1 269ZM84 275L82.6 275.5L82.6 270.1L84 269.6ZM82.6 275.5L80.9 275.9L80.9 270.5L82.6 270.1ZM85.9 273.1L85.7 273.8L85.7 268.3L85.9 267.6Z"/><path class="iso-shade" data-shade="1" d="M80.9 275.9L78.9 276.2L78.9 270.7L80.9 270.5ZM78.9 276.2L76.9 276.3L76.9 270.8L78.9 270.7Z"/><path class="iso-shade" data-shade="2" d="M76.9 276.3L74.8 276.2L74.8 270.8L76.9 270.8ZM74.8 276.2L72.9 276L72.9 270.5L74.8 270.8Z"/><path class="iso-shade" data-shade="3" d="M72.9 276L71.1 275.6L71.1 270.2L72.9 270.5ZM71.1 275.6L69.7 275.1L69.7 269.7L71.1 270.2ZM69.7 275.1L68.5 274.5L68.5 269.1L69.7 269.7ZM68.5 274.5L67.8 273.9L67.8 268.4L68.5 269.1ZM67.8 273.9L67.6 273.2L67.6 267.7L67.8 268.4Z"/><path class="iso-top" d="M85.7 268.3L85.1 269L84 269.6L82.6 270.1L80.9 270.5L78.9 270.7L76.9 270.8L74.8 270.8L72.9 270.5L71.1 270.2L69.7 269.7L68.5 269.1L67.8 268.4L67.6 267.7L67.8 267L68.4 266.4L69.5 265.8L70.9 265.3L72.6 264.9L74.6 264.6L76.6 264.6L78.7 264.6L80.6 264.8L82.4 265.2L83.8 265.7L85 266.3L85.7 266.9L85.9 267.6Z"/><path class="iso-line iso-crease" data-tone="faint" d="M85.9 267.6L85.7 268.3L85.1 269L84 269.6L82.6 270.1L80.9 270.5L78.9 270.7L76.9 270.8L74.8 270.8L72.9 270.5L71.1 270.2L69.7 269.7L68.5 269.1L67.8 268.4L67.6 267.7"/><path class="iso-line iso-edge" data-tone="mid" d="M67.6 267.7L67.8 267L68.4 266.4L69.5 265.8L70.9 265.3L72.6 264.9L74.6 264.6L76.6 264.6L78.7 264.6L80.6 264.8L82.4 265.2L83.8 265.7L85 266.3L85.7 266.9L85.9 267.6M85.9 273.1L85.7 273.8L85.1 274.4L84 275L82.6 275.5L80.9 275.9L78.9 276.2L76.9 276.3L74.8 276.2L72.9 276L71.1 275.6L69.7 275.1L68.5 274.5L67.8 273.9L67.6 273.2M67.6 267.7L67.6 273.2M85.9 267.6L85.9 273.1"/></g><g class="iso-solid"><path class="iso-fill" d="M551.4 303.8L551.6 302.9L552.5 302L553.8 301.2L555.7 300.6L557.9 300.1L560.4 299.8L563.1 299.7L565.7 299.8L568.2 300L570.5 300.5L572.4 301.1L573.9 301.9L574.8 302.8L575.1 303.7L575.1 306.2L574.9 307.1L574 308L572.7 308.8L570.8 309.4L568.6 309.9L566.1 310.2L563.4 310.4L560.8 310.3L558.2 310L556 309.5L554.1 308.9L552.6 308.1L551.7 307.3L551.4 306.3Z"/><path class="iso-shade" data-shade="0" d="M574.9 307.1L574 308L574 305.4L574.9 304.6ZM574 308L572.7 308.8L572.7 306.2L574 305.4ZM572.7 308.8L570.8 309.4L570.8 306.9L572.7 306.2ZM570.8 309.4L568.6 309.9L568.6 307.4L570.8 306.9ZM575.1 306.2L574.9 307.1L574.9 304.6L575.1 303.7Z"/><path class="iso-shade" data-shade="1" d="M568.6 309.9L566.1 310.2L566.1 307.7L568.6 307.4ZM566.1 310.2L563.4 310.4L563.4 307.8L566.1 307.7Z"/><path class="iso-shade" data-shade="2" d="M563.4 310.4L560.8 310.3L560.8 307.7L563.4 307.8ZM560.8 310.3L558.2 310L558.2 307.4L560.8 307.7Z"/><path class="iso-shade" data-shade="3" d="M558.2 310L556 309.5L556 307L558.2 307.4ZM556 309.5L554.1 308.9L554.1 306.3L556 307ZM554.1 308.9L552.6 308.1L552.6 305.6L554.1 306.3ZM552.6 308.1L551.7 307.3L551.7 304.7L552.6 305.6ZM551.7 307.3L551.4 306.3L551.4 303.8L551.7 304.7Z"/><path class="iso-top" d="M574.9 304.6L574 305.4L572.7 306.2L570.8 306.9L568.6 307.4L566.1 307.7L563.4 307.8L560.8 307.7L558.2 307.4L556 307L554.1 306.3L552.6 305.6L551.7 304.7L551.4 303.8L551.6 302.9L552.5 302L553.8 301.2L555.7 300.6L557.9 300.1L560.4 299.8L563.1 299.7L565.7 299.8L568.2 300L570.5 300.5L572.4 301.1L573.9 301.9L574.8 302.8L575.1 303.7Z"/><path class="iso-line iso-crease" data-tone="faint" d="M575.1 303.7L574.9 304.6L574 305.4L572.7 306.2L570.8 306.9L568.6 307.4L566.1 307.7L563.4 307.8L560.8 307.7L558.2 307.4L556 307L554.1 306.3L552.6 305.6L551.7 304.7L551.4 303.8"/><path class="iso-line iso-edge" data-tone="lo" d="M551.4 303.8L551.6 302.9L552.5 302L553.8 301.2L555.7 300.6L557.9 300.1L560.4 299.8L563.1 299.7L565.7 299.8L568.2 300L570.5 300.5L572.4 301.1L573.9 301.9L574.8 302.8L575.1 303.7M575.1 306.2L574.9 307.1L574 308L572.7 308.8L570.8 309.4L568.6 309.9L566.1 310.2L563.4 310.4L560.8 310.3L558.2 310L556 309.5L554.1 308.9L552.6 308.1L551.7 307.3L551.4 306.3M551.4 303.8L551.4 306.3M575.1 303.7L575.1 306.2"/></g><g class="iso-solid"><path class="iso-fill" d="M554.1 298.4L554.3 297.7L554.9 297L556 296.4L557.4 295.9L559.1 295.5L561.1 295.3L563.1 295.2L565.2 295.2L567.1 295.5L568.9 295.8L570.3 296.3L571.5 296.9L572.2 297.6L572.4 298.3L572.4 303.7L572.2 304.4L571.6 305.1L570.5 305.7L569.1 306.2L567.4 306.5L565.4 306.8L563.4 306.9L561.3 306.8L559.4 306.6L557.6 306.2L556.2 305.7L555 305.1L554.3 304.5L554.1 303.8Z"/><path class="iso-shade" data-shade="0" d="M572.2 304.4L571.6 305.1L571.6 299.6L572.2 299ZM571.6 305.1L570.5 305.7L570.5 300.2L571.6 299.6ZM570.5 305.7L569.1 306.2L569.1 300.7L570.5 300.2ZM569.1 306.2L567.4 306.5L567.4 301.1L569.1 300.7ZM572.4 303.7L572.2 304.4L572.2 299L572.4 298.3Z"/><path class="iso-shade" data-shade="1" d="M567.4 306.5L565.4 306.8L565.4 301.4L567.4 301.1ZM565.4 306.8L563.4 306.9L563.4 301.4L565.4 301.4Z"/><path class="iso-shade" data-shade="2" d="M563.4 306.9L561.3 306.8L561.3 301.4L563.4 301.4ZM561.3 306.8L559.4 306.6L559.4 301.2L561.3 301.4Z"/><path class="iso-shade" data-shade="3" d="M559.4 306.6L557.6 306.2L557.6 300.8L559.4 301.2ZM557.6 306.2L556.2 305.7L556.2 300.3L557.6 300.8ZM556.2 305.7L555 305.1L555 299.7L556.2 300.3ZM555 305.1L554.3 304.5L554.3 299L555 299.7ZM554.3 304.5L554.1 303.8L554.1 298.4L554.3 299Z"/><path class="iso-top" d="M572.2 299L571.6 299.6L570.5 300.2L569.1 300.7L567.4 301.1L565.4 301.4L563.4 301.4L561.3 301.4L559.4 301.2L557.6 300.8L556.2 300.3L555 299.7L554.3 299L554.1 298.4L554.3 297.7L554.9 297L556 296.4L557.4 295.9L559.1 295.5L561.1 295.3L563.1 295.2L565.2 295.2L567.1 295.5L568.9 295.8L570.3 296.3L571.5 296.9L572.2 297.6L572.4 298.3Z"/><path class="iso-line iso-crease" data-tone="faint" d="M572.4 298.3L572.2 299L571.6 299.6L570.5 300.2L569.1 300.7L567.4 301.1L565.4 301.4L563.4 301.4L561.3 301.4L559.4 301.2L557.6 300.8L556.2 300.3L555 299.7L554.3 299L554.1 298.4"/><path class="iso-line iso-edge" data-tone="mid" d="M554.1 298.4L554.3 297.7L554.9 297L556 296.4L557.4 295.9L559.1 295.5L561.1 295.3L563.1 295.2L565.2 295.2L567.1 295.5L568.9 295.8L570.3 296.3L571.5 296.9L572.2 297.6L572.4 298.3M572.4 303.7L572.2 304.4L571.6 305.1L570.5 305.7L569.1 306.2L567.4 306.5L565.4 306.8L563.4 306.9L561.3 306.8L559.4 306.6L557.6 306.2L556.2 305.7L555 305.1L554.3 304.5L554.1 303.8M554.1 298.4L554.1 303.8M572.4 298.3L572.4 303.7"/></g><g class="iso-solid"><path class="iso-fill" d="M548.5 308.3L548.8 307.4L549.6 306.6L551 305.8L552.9 305.1L555.1 304.6L557.6 304.3L560.2 304.2L562.9 304.3L565.4 304.6L567.7 305.1L569.6 305.7L571.1 306.5L572 307.3L572.3 308.2L572.3 310.8L572.1 311.7L571.2 312.5L569.8 313.3L568 314L565.7 314.5L563.2 314.8L560.6 314.9L557.9 314.8L555.4 314.5L553.1 314.1L551.2 313.4L549.8 312.7L548.9 311.8L548.5 310.9Z"/><path class="iso-shade" data-shade="0" d="M572.1 311.7L571.2 312.5L571.2 310L572.1 309.1ZM571.2 312.5L569.8 313.3L569.8 310.8L571.2 310ZM569.8 313.3L568 314L568 311.4L569.8 310.8ZM568 314L565.7 314.5L565.7 311.9L568 311.4ZM572.3 310.8L572.1 311.7L572.1 309.1L572.3 308.2Z"/><path class="iso-shade" data-shade="1" d="M565.7 314.5L563.2 314.8L563.2 312.2L565.7 311.9ZM563.2 314.8L560.6 314.9L560.6 312.3L563.2 312.2Z"/><path class="iso-shade" data-shade="2" d="M560.6 314.9L557.9 314.8L557.9 312.3L560.6 312.3ZM557.9 314.8L555.4 314.5L555.4 312L557.9 312.3Z"/><path class="iso-shade" data-shade="3" d="M555.4 314.5L553.1 314.1L553.1 311.5L555.4 312ZM553.1 314.1L551.2 313.4L551.2 310.9L553.1 311.5ZM551.2 313.4L549.8 312.7L549.8 310.1L551.2 310.9ZM549.8 312.7L548.9 311.8L548.9 309.2L549.8 310.1ZM548.9 311.8L548.5 310.9L548.5 308.3L548.9 309.2Z"/><path class="iso-top" d="M572.1 309.1L571.2 310L569.8 310.8L568 311.4L565.7 311.9L563.2 312.2L560.6 312.3L557.9 312.3L555.4 312L553.1 311.5L551.2 310.9L549.8 310.1L548.9 309.2L548.5 308.3L548.8 307.4L549.6 306.6L551 305.8L552.9 305.1L555.1 304.6L557.6 304.3L560.2 304.2L562.9 304.3L565.4 304.6L567.7 305.1L569.6 305.7L571.1 306.5L572 307.3L572.3 308.2Z"/><path class="iso-line iso-crease" data-tone="faint" d="M572.3 308.2L572.1 309.1L571.2 310L569.8 310.8L568 311.4L565.7 311.9L563.2 312.2L560.6 312.3L557.9 312.3L555.4 312L553.1 311.5L551.2 310.9L549.8 310.1L548.9 309.2L548.5 308.3"/><path class="iso-line iso-edge" data-tone="lo" d="M548.5 308.3L548.8 307.4L549.6 306.6L551 305.8L552.9 305.1L555.1 304.6L557.6 304.3L560.2 304.2L562.9 304.3L565.4 304.6L567.7 305.1L569.6 305.7L571.1 306.5L572 307.3L572.3 308.2M572.3 310.8L572.1 311.7L571.2 312.5L569.8 313.3L568 314L565.7 314.5L563.2 314.8L560.6 314.9L557.9 314.8L555.4 314.5L553.1 314.1L551.2 313.4L549.8 312.7L548.9 311.8L548.5 310.9M548.5 308.3L548.5 310.9M572.3 308.2L572.3 310.8"/></g><g class="iso-solid"><path class="iso-fill" d="M551.2 302.9L551.4 302.2L552.1 301.5L553.2 300.9L554.6 300.4L556.3 300L558.2 299.8L560.3 299.7L562.3 299.8L564.3 300L566 300.4L567.5 300.9L568.6 301.4L569.3 302.1L569.6 302.8L569.6 308.2L569.4 308.9L568.7 309.6L567.7 310.2L566.2 310.7L564.5 311.1L562.6 311.3L560.6 311.4L558.5 311.4L556.6 311.1L554.8 310.8L553.3 310.3L552.2 309.7L551.5 309L551.2 308.3Z"/><path class="iso-shade" data-shade="0" d="M569.4 308.9L568.7 309.6L568.7 304.2L569.4 303.5ZM568.7 309.6L567.7 310.2L567.7 304.8L568.7 304.2ZM567.7 310.2L566.2 310.7L566.2 305.3L567.7 304.8ZM566.2 310.7L564.5 311.1L564.5 305.7L566.2 305.3ZM569.6 308.2L569.4 308.9L569.4 303.5L569.6 302.8Z"/><path class="iso-shade" data-shade="1" d="M564.5 311.1L562.6 311.3L562.6 305.9L564.5 305.7ZM562.6 311.3L560.6 311.4L560.6 306L562.6 305.9Z"/><path class="iso-shade" data-shade="2" d="M560.6 311.4L558.5 311.4L558.5 305.9L560.6 306ZM558.5 311.4L556.6 311.1L556.6 305.7L558.5 305.9Z"/><path class="iso-shade" data-shade="3" d="M556.6 311.1L554.8 310.8L554.8 305.3L556.6 305.7ZM554.8 310.8L553.3 310.3L553.3 304.8L554.8 305.3ZM553.3 310.3L552.2 309.7L552.2 304.3L553.3 304.8ZM552.2 309.7L551.5 309L551.5 303.6L552.2 304.3ZM551.5 309L551.2 308.3L551.2 302.9L551.5 303.6Z"/><path class="iso-top" d="M569.4 303.5L568.7 304.2L567.7 304.8L566.2 305.3L564.5 305.7L562.6 305.9L560.6 306L558.5 305.9L556.6 305.7L554.8 305.3L553.3 304.8L552.2 304.3L551.5 303.6L551.2 302.9L551.4 302.2L552.1 301.5L553.2 300.9L554.6 300.4L556.3 300L558.2 299.8L560.3 299.7L562.3 299.8L564.3 300L566 300.4L567.5 300.9L568.6 301.4L569.3 302.1L569.6 302.8Z"/><path class="iso-line iso-crease" data-tone="faint" d="M569.6 302.8L569.4 303.5L568.7 304.2L567.7 304.8L566.2 305.3L564.5 305.7L562.6 305.9L560.6 306L558.5 305.9L556.6 305.7L554.8 305.3L553.3 304.8L552.2 304.3L551.5 303.6L551.2 302.9"/><path class="iso-line iso-edge" data-tone="mid" d="M551.2 302.9L551.4 302.2L552.1 301.5L553.2 300.9L554.6 300.4L556.3 300L558.2 299.8L560.3 299.7L562.3 299.8L564.3 300L566 300.4L567.5 300.9L568.6 301.4L569.3 302.1L569.6 302.8M569.6 308.2L569.4 308.9L568.7 309.6L567.7 310.2L566.2 310.7L564.5 311.1L562.6 311.3L560.6 311.4L558.5 311.4L556.6 311.1L554.8 310.8L553.3 310.3L552.2 309.7L551.5 309L551.2 308.3M551.2 302.9L551.2 308.3M569.6 302.8L569.6 308.2"/></g><g class="iso-solid"><path class="iso-fill" d="M34.9 261.1L35.2 260.2L48 239.8L48.8 238.9L50.1 238.1L51.8 237.4L53.9 236.8L56.2 236.4L58.8 236.1L61.4 236.1L64.1 236.2L594.3 274.7L596.8 275L599.2 275.4L601.2 276L602.9 276.7L604.1 277.5L604.8 278.4L605.1 279.3L605.1 292.1L604.8 293L592 313.5L591.2 314.3L589.9 315.1L588.2 315.8L586.1 316.4L583.8 316.8L581.2 317.1L578.6 317.2L575.9 317L45.7 278.5L43.2 278.2L40.8 277.8L38.8 277.2L37.1 276.5L35.9 275.7L35.2 274.8L34.9 273.9Z"/><path class="iso-shade" data-shade="0" d="M605.1 292.1L604.8 293L604.8 280.2L605.1 279.3ZM604.8 293L592 313.5L592 300.7L604.8 280.2ZM592 313.5L591.2 314.3L591.2 301.6L592 300.7ZM591.2 314.3L589.9 315.1L589.9 302.4L591.2 301.6ZM589.9 315.1L588.2 315.8L588.2 303.1L589.9 302.4ZM588.2 315.8L586.1 316.4L586.1 303.6L588.2 303.1Z"/><path class="iso-shade" data-shade="1" d="M586.1 316.4L583.8 316.8L583.8 304L586.1 303.6ZM583.8 316.8L581.2 317.1L581.2 304.3L583.8 304ZM581.2 317.1L578.6 317.2L578.6 304.4L581.2 304.3Z"/><path class="iso-shade" data-shade="2" d="M578.6 317.2L575.9 317L575.9 304.3L578.6 304.4ZM575.9 317L45.7 278.5L45.7 265.7L575.9 304.3ZM45.7 278.5L43.2 278.2L43.2 265.5L45.7 265.7ZM43.2 278.2L40.8 277.8L40.8 265L43.2 265.5Z"/><path class="iso-shade" data-shade="3" d="M40.8 277.8L38.8 277.2L38.8 264.4L40.8 265ZM38.8 277.2L37.1 276.5L37.1 263.7L38.8 264.4ZM37.1 276.5L35.9 275.7L35.9 262.9L37.1 263.7ZM35.9 275.7L35.2 274.8L35.2 262L35.9 262.9ZM35.2 274.8L34.9 273.9L34.9 261.1L35.2 262Z"/><path class="iso-top" d="M594.3 274.7L596.8 275L599.2 275.4L601.2 276L602.9 276.7L604.1 277.5L604.8 278.4L605.1 279.3L604.8 280.2L592 300.7L591.2 301.6L589.9 302.4L588.2 303.1L586.1 303.6L583.8 304L581.2 304.3L578.6 304.4L575.9 304.3L45.7 265.7L43.2 265.5L40.8 265L38.8 264.4L37.1 263.7L35.9 262.9L35.2 262L34.9 261.1L35.2 260.2L48 239.8L48.8 238.9L50.1 238.1L51.8 237.4L53.9 236.8L56.2 236.4L58.8 236.1L61.4 236.1L64.1 236.2Z"/><path class="iso-line iso-crease" data-tone="faint" d="M605.1 279.3L604.8 280.2L592 300.7L591.2 301.6L589.9 302.4L588.2 303.1L586.1 303.6L583.8 304L581.2 304.3L578.6 304.4L575.9 304.3L45.7 265.7L43.2 265.5L40.8 265L38.8 264.4L37.1 263.7L35.9 262.9L35.2 262L34.9 261.1"/><path class="iso-line iso-bevel" data-tone="faint" d="M605.1 279.3L602.1 280.1L589.4 300.5L588.7 301.2L587.7 301.8L586.3 302.4L584.7 302.8L582.8 303.2L580.7 303.4L578.6 303.4L576.4 303.4L46.4 264.8L44.2 264.6L42.4 264.2L40.7 263.8L39.4 263.2L38.4 262.6L37.8 261.9L34.9 261.1"/><path class="iso-line iso-edge" data-tone="mid" d="M34.9 261.1L35.2 260.2L48 239.8L48.8 238.9L50.1 238.1L51.8 237.4L53.9 236.8L56.2 236.4L58.8 236.1L61.4 236.1L64.1 236.2L594.3 274.7L596.8 275L599.2 275.4L601.2 276L602.9 276.7L604.1 277.5L604.8 278.4L605.1 279.3M605.1 292.1L604.8 293L592 313.5L591.2 314.3L589.9 315.1L588.2 315.8L586.1 316.4L583.8 316.8L581.2 317.1L578.6 317.2L575.9 317L45.7 278.5L43.2 278.2L40.8 277.8L38.8 277.2L37.1 276.5L35.9 275.7L35.2 274.8L34.9 273.9M605.1 279.3L605.1 292.1M34.9 261.1L34.9 273.9"/></g><path class="iso-line" data-tone="lo" d="M592.5 277.6L593.5 277.7L594.4 277.8L595.1 278L595.7 278.3L596.2 278.6L596.5 278.9L596.6 279.3L596.5 279.6L583.7 300.1L583.4 300.4L582.9 300.7L582.3 301L581.5 301.2L580.6 301.3L579.7 301.4L578.7 301.5L577.7 301.4L47.5 262.9L46.5 262.8L45.6 262.6L44.9 262.4L44.3 262.1L43.8 261.8L43.5 261.5L43.4 261.2L43.5 260.8L56.3 240.4L56.6 240L57.1 239.7L57.7 239.5L58.5 239.3L59.4 239.1L60.3 239L61.3 239L62.3 239Z"/><path class="iso-line" data-tone="lo" d="M67.5 242.4L67 242.8L65.9 243.2L64.6 243.4L63.1 243.3L61.8 243.1L60.7 242.8L60.2 242.3L60.2 241.8L60.8 241.4L61.8 241L63.2 240.8L64.6 240.8L66 241L67 241.4L67.5 241.9ZM591.1 280.4L590.5 280.9L589.5 281.2L588.1 281.4L586.7 281.4L585.3 281.2L584.3 280.9L583.8 280.4L583.8 279.9L584.4 279.4L585.4 279.1L586.8 278.9L588.2 278.9L589.6 279.1L590.6 279.5L591.1 279.9ZM56.2 260.6L55.6 261L54.6 261.4L53.2 261.5L51.8 261.5L50.4 261.3L49.4 261L48.9 260.5L48.9 260L49.5 259.6L50.5 259.2L51.9 259L53.3 259L54.7 259.2L55.7 259.6L56.2 260.1ZM579.8 298.6L579.2 299.1L578.2 299.4L576.8 299.6L575.4 299.6L574 299.4L573 299L572.5 298.6L572.5 298.1L573 297.6L574.1 297.3L575.4 297.1L576.9 297.1L578.2 297.3L579.3 297.7L579.8 298.1Z"/><g class="iso-dots" data-tone="mid"><circle cx="63.9" cy="242.1" r="0.5"/><circle cx="587.4" cy="280.2" r="0.5"/><circle cx="52.6" cy="260.3" r="0.5"/><circle cx="576.1" cy="298.3" r="0.5"/></g><path class="iso-line" data-tone="faint" d="M154.7 246.9L144.4 263.4M204.5 250.5L194.3 267M254.4 254.2L244.2 270.7M304.3 257.8L294 274.3M354.1 261.4L343.9 277.9M404 265L393.8 281.5M453.9 268.7L443.6 285.2M503.7 272.3L493.5 288.8M553.6 275.9L543.3 292.4"/><path class="iso-line" data-tone="lo" data-dashed="" d="M98.1 254.1L561.8 287.8"/><g class="iso-solid"><path class="iso-fill" d="M444.5 268.8L446.6 265.4L447 265.1L447.7 265L448.6 264.9L584.9 274.9L585.7 275L586.2 275.2L586.2 275.5L586.2 276.5L584.1 279.9L583.7 280.2L583 280.3L582.1 280.4L445.8 270.5L445 270.3L444.5 270.1L444.5 269.8Z"/><path class="iso-shade" data-shade="0" d="M586.2 276.5L584.1 279.9L584.1 279L586.2 275.5ZM584.1 279.9L583.7 280.2L583.7 279.2L584.1 279ZM583.7 280.2L583 280.3L583 279.4L583.7 279.2Z"/><path class="iso-shade" data-shade="1" d="M583 280.3L582.1 280.4L582.1 279.4L583 279.4Z"/><path class="iso-shade" data-shade="2" d="M582.1 280.4L445.8 270.5L445.8 269.5L582.1 279.4ZM445.8 270.5L445 270.3L445 269.4L445.8 269.5Z"/><path class="iso-shade" data-shade="3" d="M445 270.3L444.5 270.1L444.5 269.1L445 269.4ZM444.5 270.1L444.5 269.8L444.5 268.8L444.5 269.1Z"/><path class="iso-top" d="M584.9 274.9L585.7 275L586.2 275.2L586.2 275.5L584.1 279L583.7 279.2L583 279.4L582.1 279.4L445.8 269.5L445 269.4L444.5 269.1L444.5 268.8L446.6 265.4L447 265.1L447.7 265L448.6 264.9Z"/><path class="iso-line iso-edge" data-tone="lo" d="M444.5 268.8L446.6 265.4L447 265.1L447.7 265L448.6 264.9L584.9 274.9L585.7 275L586.2 275.2L586.2 275.5M586.2 276.5L584.1 279.9L583.7 280.2L583 280.3L582.1 280.4L445.8 270.5L445 270.3L444.5 270.1L444.5 269.8M586.2 275.5L586.2 276.5M444.5 268.8L444.5 269.8"/></g><text class="iso-face-text" data-tone="lo" transform="matrix(1.662 0.121 -0.353 0.568 451.636 268.496)" font-size="3" text-anchor="start">TIRO PARABÓLICO · g = 10 m/s²</text><g class="iso-dots" data-tone="mid"><circle cx="448.4" cy="267.6" r="0.4"/><circle cx="582" cy="277.3" r="0.4"/></g><g class="iso-solid"><path class="iso-fill" d="M81.1 263.5L83.2 260L83.6 259.8L84.3 259.6L85.2 259.6L568.9 294.8L569.7 294.9L570.1 295.2L570.2 295.5L570.2 296.7L568.1 300.1L567.7 300.4L566.9 300.6L566.1 300.6L82.4 265.4L81.6 265.3L81.1 265L81.1 264.7Z"/><path class="iso-shade" data-shade="0" d="M570.2 296.7L568.1 300.1L568.1 298.9L570.2 295.5ZM568.1 300.1L567.7 300.4L567.7 299.1L568.1 298.9ZM567.7 300.4L566.9 300.6L566.9 299.3L567.7 299.1Z"/><path class="iso-shade" data-shade="1" d="M566.9 300.6L566.1 300.6L566.1 299.3L566.9 299.3Z"/><path class="iso-shade" data-shade="2" d="M566.1 300.6L82.4 265.4L82.4 264.1L566.1 299.3ZM82.4 265.4L81.6 265.3L81.6 264L82.4 264.1Z"/><path class="iso-shade" data-shade="3" d="M81.6 265.3L81.1 265L81.1 263.8L81.6 264ZM81.1 265L81.1 264.7L81.1 263.5L81.1 263.8Z"/><path class="iso-top" d="M568.9 294.8L569.7 294.9L570.1 295.2L570.2 295.5L568.1 298.9L567.7 299.1L566.9 299.3L566.1 299.3L82.4 264.1L81.6 264L81.1 263.8L81.1 263.5L83.2 260L83.6 259.8L84.3 259.6L85.2 259.6Z"/><path class="iso-line iso-edge" data-tone="hi" d="M81.1 263.5L83.2 260L83.6 259.8L84.3 259.6L85.2 259.6L568.9 294.8L569.7 294.9L570.1 295.2L570.2 295.5M570.2 296.7L568.1 300.1L567.7 300.4L566.9 300.6L566.1 300.6L82.4 265.4L81.6 265.3L81.1 265L81.1 264.7M570.2 295.5L570.2 296.7M81.1 263.5L81.1 264.7"/></g><path class="iso-line" data-tone="faint" d="M98.5 260.6L97.9 261.5M103.5 260.9L102.9 261.8M108.5 261.3L107.9 262.2M113.5 261.7L112.9 262.6M123.4 262.4L122.9 263.3M128.4 262.7L127.9 263.7M133.4 263.1L132.8 264M138.4 263.5L137.8 264.4M148.4 264.2L147.8 265.1M153.4 264.6L152.8 265.5M158.3 264.9L157.8 265.8M163.3 265.3L162.8 266.2M173.3 266L172.7 266.9M178.3 266.4L177.7 267.3M183.3 266.7L182.7 267.6M188.3 267.1L187.7 268M198.2 267.8L197.7 268.7M203.2 268.2L202.7 269.1M208.2 268.5L207.6 269.5M213.2 268.9L212.6 269.8M223.2 269.6L222.6 270.5M228.1 270L227.6 270.9M233.1 270.4L232.6 271.3M238.1 270.7L237.6 271.6M248.1 271.4L247.5 272.4M253.1 271.8L252.5 272.7M258.1 272.2L257.5 273.1M263.1 272.5L262.5 273.4M273 273.3L272.5 274.2M278 273.6L277.4 274.5M283 274L282.4 274.9M288 274.3L287.4 275.3M298 275.1L297.4 276M302.9 275.4L302.4 276.3M307.9 275.8L307.4 276.7M312.9 276.2L312.3 277.1M322.9 276.9L322.3 277.8M327.9 277.2L327.3 278.2M332.9 277.6L332.3 278.5M337.8 278L337.3 278.9M347.8 278.7L347.3 279.6M352.8 279.1L352.2 280M357.8 279.4L357.2 280.3M362.8 279.8L362.2 280.7M372.7 280.5L372.2 281.4M377.7 280.9L377.2 281.8M382.7 281.2L382.2 282.1M387.7 281.6L387.1 282.5M397.7 282.3L397.1 283.2M402.7 282.7L402.1 283.6M407.7 283L407.1 284M412.6 283.4L412.1 284.3M422.6 284.1L422 285M427.6 284.5L427 285.4M432.6 284.9L432 285.8M437.6 285.2L437 286.1M447.5 285.9L447 286.9M452.5 286.3L452 287.2M457.5 286.7L457 287.6M462.5 287L461.9 287.9M472.5 287.8L471.9 288.7M477.5 288.1L476.9 289M482.4 288.5L481.9 289.4M487.4 288.8L486.9 289.8M497.4 289.6L496.8 290.5M502.4 289.9L501.8 290.8M507.4 290.3L506.8 291.2M512.4 290.7L511.8 291.6M522.3 291.4L521.8 292.3M527.3 291.7L526.8 292.7M532.3 292.1L531.7 293M537.3 292.5L536.7 293.4M547.3 293.2L546.7 294.1M552.3 293.6L551.7 294.5M557.2 293.9L556.7 294.8M562.2 294.3L561.7 295.2"/><path class="iso-line" data-tone="lo" d="M118.4 262L117.4 263.7M168.3 265.6L167.3 267.3M218.2 269.3L217.1 271M268 272.9L267 274.6M317.9 276.5L316.8 278.2M367.8 280.1L366.7 281.8M417.6 283.8L416.6 285.5M467.5 287.4L466.4 289.1M517.4 291L516.3 292.7M567.2 294.6L566.2 296.3"/><path class="iso-line" data-tone="mid" d="M93.5 260.2L92 262.6M143.4 263.8L141.9 266.2M193.2 267.5L191.8 269.8M243.1 271.1L241.6 273.5M293 274.7L291.5 277.1M342.8 278.3L341.3 280.7M392.7 282L391.2 284.3M442.6 285.6L441.1 288M492.4 289.2L490.9 291.6M542.3 292.8L540.8 295.2"/><text class="t-regla l2-etq" data-prio="4" data-fija="1" x="90.7" y="270" dy="0.8em" text-anchor="middle">0</text><text class="t-regla l2-etq impar" data-prio="4" data-fija="1" x="140.6" y="273.7" dy="0.8em" text-anchor="middle">10</text><text class="t-regla l2-etq" data-prio="4" data-fija="1" x="190.4" y="277.3" dy="0.8em" text-anchor="middle">20</text><text class="t-regla l2-etq impar" data-prio="4" data-fija="1" x="240.3" y="280.9" dy="0.8em" text-anchor="middle">30</text><text class="t-regla l2-etq" data-prio="4" data-fija="1" x="290.1" y="284.5" dy="0.8em" text-anchor="middle">40</text><text class="t-regla l2-etq impar" data-prio="4" data-fija="1" x="340" y="288.2" dy="0.8em" text-anchor="middle">50</text><text class="t-regla l2-etq" data-prio="4" data-fija="1" x="389.9" y="291.8" dy="0.8em" text-anchor="middle">60</text><text class="t-regla l2-etq impar" data-prio="4" data-fija="1" x="439.7" y="295.4" dy="0.8em" text-anchor="middle">70</text><text class="t-regla l2-etq" data-prio="4" data-fija="1" x="489.6" y="299" dy="0.8em" text-anchor="middle">80</text><text class="t-regla l2-etq impar" data-prio="4" data-fija="1" x="539.5" y="302.7" dy="0.8em" text-anchor="middle">90 m</text><g class="iso-solid"><path class="iso-fill" d="M58 249.7L58.2 249L58.9 248.2L60.1 247.5L61.7 247L63.6 246.6L65.8 246.3L68 246.2L70.3 246.3L72.5 246.5L74.4 246.9L76.1 247.5L77.3 248.1L78.1 248.9L78.4 249.6L78.4 251.9L78.2 252.6L77.4 253.4L76.3 254L74.7 254.6L72.8 255L70.6 255.3L68.3 255.4L66.1 255.3L63.9 255.1L62 254.7L60.3 254.1L59.1 253.5L58.3 252.7L58 252Z"/><path class="iso-shade" data-shade="0" d="M78.2 252.6L77.4 253.4L77.4 251.1L78.2 250.4ZM77.4 253.4L76.3 254L76.3 251.8L77.4 251.1ZM76.3 254L74.7 254.6L74.7 252.4L76.3 251.8ZM74.7 254.6L72.8 255L72.8 252.8L74.7 252.4ZM78.4 251.9L78.2 252.6L78.2 250.4L78.4 249.6Z"/><path class="iso-shade" data-shade="1" d="M72.8 255L70.6 255.3L70.6 253.1L72.8 252.8ZM70.6 255.3L68.3 255.4L68.3 253.2L70.6 253.1Z"/><path class="iso-shade" data-shade="2" d="M68.3 255.4L66.1 255.3L66.1 253.1L68.3 253.2ZM66.1 255.3L63.9 255.1L63.9 252.8L66.1 253.1Z"/><path class="iso-shade" data-shade="3" d="M63.9 255.1L62 254.7L62 252.4L63.9 252.8ZM62 254.7L60.3 254.1L60.3 251.9L62 252.4ZM60.3 254.1L59.1 253.5L59.1 251.2L60.3 251.9ZM59.1 253.5L58.3 252.7L58.3 250.5L59.1 251.2ZM58.3 252.7L58 252L58 249.7L58.3 250.5Z"/><path class="iso-top" d="M78.2 250.4L77.4 251.1L76.3 251.8L74.7 252.4L72.8 252.8L70.6 253.1L68.3 253.2L66.1 253.1L63.9 252.8L62 252.4L60.3 251.9L59.1 251.2L58.3 250.5L58 249.7L58.2 249L58.9 248.2L60.1 247.5L61.7 247L63.6 246.6L65.8 246.3L68 246.2L70.3 246.3L72.5 246.5L74.4 246.9L76.1 247.5L77.3 248.1L78.1 248.9L78.4 249.6Z"/><path class="iso-line iso-crease" data-tone="faint" d="M78.4 249.6L78.2 250.4L77.4 251.1L76.3 251.8L74.7 252.4L72.8 252.8L70.6 253.1L68.3 253.2L66.1 253.1L63.9 252.8L62 252.4L60.3 251.9L59.1 251.2L58.3 250.5L58 249.7"/><path class="iso-line iso-bevel" data-tone="faint" d="M78.4 249.6L77.7 250.4L77 251.1L75.9 251.7L74.3 252.2L72.5 252.6L70.5 252.9L68.3 253L66.2 252.9L64.1 252.7L62.3 252.3L60.7 251.8L59.5 251.2L58.8 250.5L58 249.7"/><path class="iso-line iso-edge" data-tone="mid" d="M58 249.7L58.2 249L58.9 248.2L60.1 247.5L61.7 247L63.6 246.6L65.8 246.3L68 246.2L70.3 246.3L72.5 246.5L74.4 246.9L76.1 247.5L77.3 248.1L78.1 248.9L78.4 249.6M78.4 251.9L78.2 252.6L77.4 253.4L76.3 254L74.7 254.6L72.8 255L70.6 255.3L68.3 255.4L66.1 255.3L63.9 255.1L62 254.7L60.3 254.1L59.1 253.5L58.3 252.7L58 252M58 249.7L58 252M78.4 249.6L78.4 251.9"/></g><g class="iso-solid"><path class="iso-fill" d="M64.8 28.7L66.3 26.3L66.6 26.2L67.3 26.1L70.9 26.4L71.5 26.5L71.6 26.7L71.6 248.7L70.1 251.1L69.7 251.3L69.1 251.3L65.4 251L64.9 250.9L64.8 250.7Z"/><path class="iso-shade" data-shade="0" d="M71.6 248.7L70.1 251.1L70.1 29.1L71.6 26.7ZM70.1 251.1L69.7 251.3L69.7 29.3L70.1 29.1Z"/><path class="iso-shade" data-shade="1" d="M69.7 251.3L69.1 251.3L69.1 29.3L69.7 29.3Z"/><path class="iso-shade" data-shade="2" d="M69.1 251.3L65.4 251L65.4 29.1L69.1 29.3Z"/><path class="iso-shade" data-shade="3" d="M65.4 251L64.9 250.9L64.9 29L65.4 29.1ZM64.9 250.9L64.8 250.7L64.8 28.7L64.9 29Z"/><path class="iso-top" d="M70.9 26.4L71.5 26.5L71.6 26.7L70.1 29.1L69.7 29.3L69.1 29.3L65.4 29.1L64.9 29L64.8 28.7L66.3 26.3L66.6 26.2L67.3 26.1Z"/><path class="iso-line iso-edge" data-tone="hi" d="M64.8 28.7L66.3 26.3L66.6 26.2L67.3 26.1L70.9 26.4L71.5 26.5L71.6 26.7M71.6 248.7L70.1 251.1L69.7 251.3L69.1 251.3L65.4 251L64.9 250.9L64.8 250.7M71.6 26.7L71.6 248.7M64.8 28.7L64.8 250.7"/></g><g class="iso-solid"><path class="iso-fill" d="M63.8 25.3L63.9 24.9L64.4 24.4L65.2 24.1L66.4 23.8L67.7 23.7L69.1 23.7L70.4 23.9L71.5 24.2L72.2 24.6L72.6 25L72.6 27.6L72.5 28L72 28.5L71.1 28.9L70 29.1L68.7 29.2L67.3 29.2L66 29L64.9 28.7L64.2 28.3L63.8 27.9Z"/><path class="iso-shade" data-shade="0" d="M72.5 28L72 28.5L72 25.9L72.5 25.5ZM72 28.5L71.1 28.9L71.1 26.3L72 25.9ZM71.1 28.9L70 29.1L70 26.6L71.1 26.3ZM72.6 27.6L72.5 28L72.5 25.5L72.6 25Z"/><path class="iso-shade" data-shade="1" d="M70 29.1L68.7 29.2L68.7 26.7L70 26.6Z"/><path class="iso-shade" data-shade="2" d="M68.7 29.2L67.3 29.2L67.3 26.7L68.7 26.7ZM67.3 29.2L66 29L66 26.5L67.3 26.7Z"/><path class="iso-shade" data-shade="3" d="M66 29L64.9 28.7L64.9 26.2L66 26.5ZM64.9 28.7L64.2 28.3L64.2 25.8L64.9 26.2ZM64.2 28.3L63.8 27.9L63.8 25.3L64.2 25.8Z"/><path class="iso-top" d="M72.5 25.5L72 25.9L71.1 26.3L70 26.6L68.7 26.7L67.3 26.7L66 26.5L64.9 26.2L64.2 25.8L63.8 25.3L63.9 24.9L64.4 24.4L65.2 24.1L66.4 23.8L67.7 23.7L69.1 23.7L70.4 23.9L71.5 24.2L72.2 24.6L72.6 25Z"/><path class="iso-line iso-crease" data-tone="faint" d="M72.6 25L72.5 25.5L72 25.9L71.1 26.3L70 26.6L68.7 26.7L67.3 26.7L66 26.5L64.9 26.2L64.2 25.8L63.8 25.3"/><path class="iso-line iso-bevel" data-tone="faint" d="M72.6 25L72 25.5L71.6 25.8L70.8 26.2L69.8 26.4L68.6 26.5L67.4 26.5L66.2 26.3L65.3 26.1L64.6 25.7L63.8 25.3"/><path class="iso-line iso-edge" data-tone="mid" d="M63.8 25.3L63.9 24.9L64.4 24.4L65.2 24.1L66.4 23.8L67.7 23.7L69.1 23.7L70.4 23.9L71.5 24.2L72.2 24.6L72.6 25M72.6 27.6L72.5 28L72 28.5L71.1 28.9L70 29.1L68.7 29.2L67.3 29.2L66 29L64.9 28.7L64.2 28.3L63.8 27.9M63.8 25.3L63.8 27.9M72.6 25L72.6 27.6"/></g><path class="iso-line" data-tone="faint" d="M70.9 237.3L73.5 237.5M70.9 232.5L73.5 232.7M70.9 227.7L73.5 227.9M70.9 222.9L73.5 223.1M70.9 213.3L73.5 213.5M70.9 208.5L73.5 208.7M70.9 203.7L73.5 203.9M70.9 198.9L73.5 199.1M70.9 189.4L73.5 189.6M70.9 184.6L73.5 184.8M70.9 179.8L73.5 180M70.9 175L73.5 175.2M70.9 165.4L73.5 165.6M70.9 160.6L73.5 160.8M70.9 155.8L73.5 156M70.9 151L73.5 151.2M70.9 141.5L73.5 141.6M70.9 136.7L73.5 136.9M70.9 131.9L73.5 132.1M70.9 127.1L73.5 127.3M70.9 117.5L73.5 117.7M70.9 112.7L73.5 112.9M70.9 107.9L73.5 108.1M70.9 103.1L73.5 103.3M70.9 93.6L73.5 93.7M70.9 88.8L73.5 89M70.9 84L73.5 84.2M70.9 79.2L73.5 79.4M70.9 69.6L73.5 69.8M70.9 64.8L73.5 65M70.9 60L73.5 60.2M70.9 55.2L73.5 55.4M70.9 45.6L73.5 45.8M70.9 40.9L73.5 41.1M70.9 36.1L73.5 36.3M70.9 31.3L73.5 31.5"/><path class="iso-line" data-tone="lo" d="M70.9 218.1L75.8 218.5M70.9 170.2L75.8 170.6M70.9 122.3L75.8 122.7M70.9 74.4L75.8 74.8"/><path class="iso-line" data-tone="mid" d="M70.9 242.1L77.8 242.6M70.9 194.1L77.8 194.7M70.9 146.2L77.8 146.8M70.9 98.3L77.8 98.8M70.9 50.4L77.8 50.9"/><text class="t-regla l2-etq" data-prio="4" data-fija="1" x="64" y="241.6" dy="0.35em" text-anchor="end">0</text><text class="t-regla l2-etq impar" data-prio="4" data-fija="1" x="64" y="193.7" dy="0.35em" text-anchor="end">10</text><text class="t-regla l2-etq" data-prio="4" data-fija="1" x="64" y="145.7" dy="0.35em" text-anchor="end">20</text><text class="t-regla l2-etq impar" data-prio="4" data-fija="1" x="64" y="97.8" dy="0.35em" text-anchor="end">30</text><text class="t-regla l2-etq" data-prio="4" data-fija="1" x="64" y="49.9" dy="0.35em" text-anchor="end">40 m</text><path class="transp" d="M140.1 243.5L140.1 242L140 240.5L139.8 239L139.6 237.5L139.4 236L139 234.5L138.6 233L138.2 231.5L137.7 230.1L137.1 228.6L136.5 227.2L135.8 225.8L135 224.4L134.2 223.1L133.4 221.7L132.5 220.4L131.6 219.2L130.6 217.9L129.5 216.7L128.4 215.6L127.3 214.4L126.1 213.4L124.9 212.3L123.7 211.3L122.4 210.4L121.1 209.5L119.7 208.6L118.3 207.8L116.9 207L115.5 206.3L114 205.7L112.6 205.1L111.1 204.5L109.5 204L108 203.6L106.5 203.2L104.9 202.9L103.4 202.6L101.8 202.4L100.2 202.3 M100.2 240.6L140.1 243.5 M100.2 240.6L100.2 202.3 Z"/><path class="iso-line" data-tone="mid" d="M140.1 243.5L140.1 242L140 240.5L139.8 239L139.6 237.5L139.4 236L139 234.5L138.6 233L138.2 231.5L137.7 230.1L137.1 228.6L136.5 227.2L135.8 225.8L135 224.4L134.2 223.1L133.4 221.7L132.5 220.4L131.6 219.2L130.6 217.9L129.5 216.7L128.4 215.6L127.3 214.4L126.1 213.4L124.9 212.3L123.7 211.3L122.4 210.4L121.1 209.5L119.7 208.6L118.3 207.8L116.9 207L115.5 206.3L114 205.7L112.6 205.1L111.1 204.5L109.5 204L108 203.6L106.5 203.2L104.9 202.9L103.4 202.6L101.8 202.4L100.2 202.3M132.6 243L132.6 241.8L132.5 240.5L132.4 239.3L132.2 238.1L132 236.9L131.7 235.6L131.4 234.4L131.1 233.2L130.6 232.1L130.2 230.9L129.7 229.7L129.1 228.6L128.5 227.5L127.9 226.4L127.2 225.3L126.5 224.2L125.7 223.2L124.9 222.2L124 221.2L123.1 220.3L122.2 219.4L121.3 218.5L120.3 217.6L119.3 216.8L118.2 216L117.2 215.3L116.1 214.6L114.9 213.9L113.8 213.3L112.6 212.8L111.4 212.2L110.2 211.7L109 211.3L107.8 210.9L106.6 210.5L105.3 210.2L104 210L102.8 209.8L101.5 209.6L100.2 209.5"/><path class="iso-line" data-tone="lo" d="M136.3 240.2L140 240.2M135.9 237.2L139.5 236.8M134.3 231.2L137.7 230.2M133.1 228.3L136.4 227.1M129.9 222.8L132.9 221M128 220.3L130.8 218.2M123.5 215.6L125.9 213.1M121 213.6L123.1 210.9M115.5 210.2L117.1 207.1M112.6 208.8L113.9 205.6M106.5 206.8L107.2 203.4M103.4 206.2L103.7 202.7"/><path class="iso-line" data-tone="mid" d="M132.6 243L140.1 243.5M131.5 234.8L138.8 233.5M128.3 227.1L134.8 224M123.1 220.3L128.4 215.6M116.4 214.8L120.2 208.9M108.6 211.2L110.6 204.4M100.2 209.5L100.2 202.3"/><circle class="marca-oro" cx="135" cy="218" r="1.6"/><circle class="marca-oro" cx="126.4" cy="209.1" r="1.6"/><g class="iso-dots" data-tone="mid"><circle cx="100.2" cy="240.6" r="0.6"/></g><g class="iso-solid"><path class="iso-fill" d="M84.5 252.7L84.8 251.8L85.5 251.1L86.6 250.4L88 249.7L89.7 249.2L91.7 248.7L93.9 248.4L96.2 248.2L98.6 248.2L100.9 248.3L103.2 248.5L105.3 248.9L107.2 249.4L108.8 250L110.1 250.6L111 251.4L111.6 252.2L111.7 253L111.7 254.3L111.4 255.1L110.7 255.8L109.6 256.6L108.2 257.2L106.5 257.8L104.5 258.2L102.3 258.5L100 258.7L97.6 258.7L95.3 258.6L93 258.4L90.9 258L89 257.5L87.4 257L86.1 256.3L85.2 255.5L84.6 254.7L84.5 253.9Z"/><path class="iso-shade" data-shade="0" d="M111.4 255.1L110.7 255.8L110.7 254.6L111.4 253.8ZM110.7 255.8L109.6 256.6L109.6 255.3L110.7 254.6ZM109.6 256.6L108.2 257.2L108.2 255.9L109.6 255.3ZM108.2 257.2L106.5 257.8L106.5 256.5L108.2 255.9ZM106.5 257.8L104.5 258.2L104.5 256.9L106.5 256.5ZM111.7 254.3L111.4 255.1L111.4 253.8L111.7 253Z"/><path class="iso-shade" data-shade="1" d="M104.5 258.2L102.3 258.5L102.3 257.2L104.5 256.9ZM102.3 258.5L100 258.7L100 257.4L102.3 257.2ZM100 258.7L97.6 258.7L97.6 257.5L100 257.4Z"/><path class="iso-shade" data-shade="2" d="M97.6 258.7L95.3 258.6L95.3 257.4L97.6 257.5ZM95.3 258.6L93 258.4L93 257.1L95.3 257.4ZM93 258.4L90.9 258L90.9 256.8L93 257.1Z"/><path class="iso-shade" data-shade="3" d="M90.9 258L89 257.5L89 256.3L90.9 256.8ZM89 257.5L87.4 257L87.4 255.7L89 256.3ZM87.4 257L86.1 256.3L86.1 255L87.4 255.7ZM86.1 256.3L85.2 255.5L85.2 254.3L86.1 255ZM85.2 255.5L84.6 254.7L84.6 253.5L85.2 254.3ZM84.6 254.7L84.5 253.9L84.5 252.7L84.6 253.5Z"/><path class="iso-top" d="M111.4 253.8L110.7 254.6L109.6 255.3L108.2 255.9L106.5 256.5L104.5 256.9L102.3 257.2L100 257.4L97.6 257.5L95.3 257.4L93 257.1L90.9 256.8L89 256.3L87.4 255.7L86.1 255L85.2 254.3L84.6 253.5L84.5 252.7L84.8 251.8L85.5 251.1L86.6 250.4L88 249.7L89.7 249.2L91.7 248.7L93.9 248.4L96.2 248.2L98.6 248.2L100.9 248.3L103.2 248.5L105.3 248.9L107.2 249.4L108.8 250L110.1 250.6L111 251.4L111.6 252.2L111.7 253Z"/><path class="iso-line iso-crease" data-tone="faint" d="M111.7 253L111.4 253.8L110.7 254.6L109.6 255.3L108.2 255.9L106.5 256.5L104.5 256.9L102.3 257.2L100 257.4L97.6 257.5L95.3 257.4L93 257.1L90.9 256.8L89 256.3L87.4 255.7L86.1 255L85.2 254.3L84.6 253.5L84.5 252.7"/><path class="iso-line iso-bevel" data-tone="faint" d="M111.7 253L111.1 253.8L110.4 254.5L109.3 255.2L108 255.8L106.3 256.4L104.3 256.8L102.2 257.1L100 257.3L97.6 257.3L95.4 257.2L93.1 257L91.1 256.7L89.2 256.2L87.7 255.6L86.4 254.9L85.5 254.2L85 253.4L84.5 252.7"/><path class="iso-line iso-edge" data-tone="mid" d="M84.5 252.7L84.8 251.8L85.5 251.1L86.6 250.4L88 249.7L89.7 249.2L91.7 248.7L93.9 248.4L96.2 248.2L98.6 248.2L100.9 248.3L103.2 248.5L105.3 248.9L107.2 249.4L108.8 250L110.1 250.6L111 251.4L111.6 252.2L111.7 253M111.7 254.3L111.4 255.1L110.7 255.8L109.6 256.6L108.2 257.2L106.5 257.8L104.5 258.2L102.3 258.5L100 258.7L97.6 258.7L95.3 258.6L93 258.4L90.9 258L89 257.5L87.4 257L86.1 256.3L85.2 255.5L84.6 254.7L84.5 253.9M84.5 252.7L84.5 253.9M111.7 253L111.7 254.3"/></g><path class="iso-line" data-tone="faint" d="M106.4 253.4L105.8 254L104.8 254.6L103.5 255.1L101.9 255.4L100.1 255.6L98.2 255.7L96.3 255.7L94.5 255.5L92.9 255.1L91.5 254.7L90.5 254.1L89.9 253.5L89.6 252.9L89.8 252.2L90.4 251.6L91.4 251L92.7 250.6L94.3 250.2L96.1 250L98 249.9L99.9 250L101.7 250.2L103.3 250.5L104.7 251L105.7 251.5L106.4 252.1L106.6 252.8Z"/><g id="g-cima" class="oculto"><path id="guia-h" class="guia" d=""/><path id="guia-v" class="guia" d=""/><circle id="cima" class="cima" r="3"/><text id="t-h" class="t-h l2-etq" data-prio="1"></text></g><path id="parabola" class="parabola solo-revelado" d=""/><path id="ref" class="ref oculto" d=""/><text id="t-ref" class="t-ref l2-etq oculto" data-prio="3"></text><path id="estela" class="estela" d=""/><g id="marcas"></g><g id="caida" class="solo-revelado"><path class="iso-line" data-tone="mid" d="M105.1 254.6L104.5 255.2L103.4 255.7L102 256.1L100.3 256.4L98.5 256.5L96.6 256.5L94.9 256.3L93.3 255.9L92.1 255.4L91.3 254.8L91 254.2L91.1 253.6L91.8 253L92.8 252.5L94.2 252L95.9 251.8L97.7 251.7L99.6 251.7L101.3 251.9L102.9 252.3L104.1 252.8L104.9 253.3L105.2 254Z"/><g class="iso-solid"><path class="iso-fill" d="M96.6 212.5L97 212.2L97.6 212.1L98.4 212.1L99.1 212.2L99.6 212.4L99.6 212.7L99.6 254.2L99.2 254.4L98.6 254.6L97.8 254.6L97.1 254.5L96.7 254.3L96.6 254Z"/><path class="iso-shade" data-shade="0" d="M99.6 254.2L99.2 254.4L99.2 212.9L99.6 212.7ZM99.2 254.4L98.6 254.6L98.6 213.1L99.2 212.9Z"/><path class="iso-shade" data-shade="1" d="M98.6 254.6L97.8 254.6L97.8 213.1L98.6 213.1Z"/><path class="iso-shade" data-shade="2" d="M97.8 254.6L97.1 254.5L97.1 213L97.8 213.1Z"/><path class="iso-shade" data-shade="3" d="M97.1 254.5L96.7 254.3L96.7 212.7L97.1 213ZM96.7 254.3L96.6 254L96.6 212.5L96.7 212.7Z"/><path class="iso-top" d="M99.6 212.7L99.2 212.9L98.6 213.1L97.8 213.1L97.1 213L96.7 212.7L96.6 212.5L97 212.2L97.6 212.1L98.4 212.1L99.1 212.2L99.6 212.4Z"/><path class="iso-line iso-edge" data-tone="hi" d="M96.6 212.5L97 212.2L97.6 212.1L98.4 212.1L99.1 212.2L99.6 212.4L99.6 212.7M99.6 254.2L99.2 254.4L98.6 254.6L97.8 254.6L97.1 254.5L96.7 254.3L96.6 254M99.6 212.7L99.6 254.2M96.6 212.5L96.6 254"/></g><polygon class="banderin" points="98.1,212.6 98.1,225.3 116.4,220.3"/></g><text id="t-caida" class="t-caida l2-etq solo-revelado" data-prio="1" text-anchor="middle"></text><g id="fantasma" class="solo-trampa"><path id="fant-v" class="fantasma" d=""/><path id="fant-b" class="fantasma" d="M107.3 254.6L106.4 255.4L105.1 256.1L103.2 256.6L101 257L98.6 257.1L96.2 257.1L93.9 256.8L91.9 256.3L90.3 255.7L89.2 254.9L88.8 254.1L89 253.3L89.8 252.5L91.2 251.8L93 251.3L95.2 250.9L97.6 250.7L100.1 250.8L102.4 251.1L104.4 251.6L105.9 252.2L107 252.9L107.4 253.8Z"/><text id="t-fantasma" class="t-trampa l2-etq" data-prio="2" text-anchor="end"></text></g><path id="sombra" class="sombra" d="M107.3 254.7L106.6 255.4L105.5 256L104 256.5L102.3 256.9L100.3 257.1L98.2 257.2L96.2 257.1L94.2 256.9L92.4 256.5L90.9 256L89.8 255.4L89 254.8L88.8 254.1L89 253.3L89.6 252.7L90.7 252.1L92.2 251.5L93.9 251.2L95.9 250.9L98 250.8L100.1 250.9L102 251.1L103.8 251.5L105.3 252L106.5 252.6L107.2 253.3L107.5 254Z"/><g><path id="arco" class="arco" d=""/><text id="t-ang" class="t-ang l2-etq" data-prio="2"></text></g><g id="fl-v0" class="flecha fl-v0"><line/><polygon/><text class="t-vel l2-etq" data-prio="2"></text></g><g id="balon"><circle class="balon" cx="98.1" cy="244" r="7.4"/><path class="balon-sombra" d="M 97 251.3 A 7.4 7.4 0 0 0 105.4 242.9 A 6.1 6.1 0 0 1 97 251.3 Z"/><path class="iso-line" data-tone="lo" d="M96.2 247.2L96.2 245.1L96.4 243L96.6 241L96.9 239.1L97.3 237.5L97.7 236.2L98.1 235.2L98.5 234.8L99 234.8L99.3 235.2L99.6 236.1L99.9 237.4L100 239L100.1 240.9L100 242.9L99.9 245L99.6 247.1L99.3 248.9L99 250.6L98.5 251.9L98.1 252.8L97.7 253.3L97.3 253.3L96.9 252.8L96.6 252L96.4 250.7L96.2 249ZM107.3 244.7L106.6 245.4L105.5 246L104 246.5L102.3 246.9L100.3 247.1L98.2 247.2L96.2 247.2L94.2 246.9L92.4 246.6L90.9 246.1L89.8 245.5L89 244.8L88.8 244.1L89 243.4L89.6 242.7L90.7 242.1L92.2 241.6L93.9 241.2L95.9 240.9L98 240.8L100.1 240.9L102 241.1L103.8 241.5L105.3 242L106.5 242.6L107.2 243.3L107.5 244Z"/><circle class="balon-brillo" cx="95.3" cy="241.1" r="1.5"/></g><g id="mango"><circle class="mango-toque" r="22"/><circle class="mango" r="6"/></g><g id="capa-pred"></g><g id="capa-herr"></g></svg></div></div>
+        <div id="cancha" hidden></div>
+      </div>
+      <div id="lectura" data-pc="lectura"></div>
+      <div id="tiempo" data-pc="tiempo"></div>
+      <div id="herramientas" data-pc="herr"></div>
+      <p class="nota" id="nota" aria-live="polite"></p>
+      <div class="controles">
+        <div>
+          <div class="fila"><label for="s-v0" id="l-v0"></label><output id="o-v0" for="s-v0"></output></div>
+          <input type="range" id="s-v0">
+        </div>
+        <div>
+          <div class="fila"><label for="s-ang" id="l-ang"></label><output id="o-ang" for="s-ang"></output></div>
+          <input type="range" id="s-ang">
+        </div>
+      </div>
+      <div class="botones">
+        <button type="button" class="boton sec" id="trampa" aria-pressed="false">¿Y con el tiempo de subida?</button>
+        <button type="button" class="boton sec" id="inicio">Volver al tiro inicial</button>
+      </div>
+      <p class="pie" id="pie"></p>
+    </section>
+    <div id="pasos-b" class="pasos"></div>
+  </div>
+</main>
+<script type="module">
+import { creaTiempo } from "../../../laminas2/tiempo.js";
+import { creaPrediccion, preguntaOpciones } from "../../../laminas2/prediccion.js";
+import { creaCuaderno } from "../../../laminas2/cuaderno.js";
+import { creaHerramientas } from "../../../laminas2/herramientas.js";
+import { creaSelector } from "../../../laminas2/escenas.js";
+import { montaPractica } from "../../../laminas2/practica.js";
+import { creaPantallaCompleta } from "../../../laminas2/pantalla-completa.js";
+import { acomodaEtiquetas } from "../../../laminas2/etiquetas.js";
+import { creaCancha } from "./cancha.js";
+import { PROBLEMAS } from "./practica-tiro.js";
+(function pagina(C, piezas) {
+(async () => {
+const { creaTiempo, creaPrediccion, preguntaOpciones, creaCuaderno, creaHerramientas, creaSelector, montaPractica, creaPantallaCompleta, acomodaEtiquetas, creaCancha, PROBLEMAS } = piezas;
+const $ = (s) => document.querySelector(s);
+const A = C.A;
+const iso = (p) => [A.o[0] + p[0] * A.ex[0] + p[1] * A.ey[0] + p[2] * A.ez[0], A.o[1] + p[0] * A.ex[1] + p[1] * A.ey[1] + p[2] * A.ez[1]];
+const mueve = (p) => { const q = iso(p); return `translate(${(q[0] - A.o[0]).toFixed(2)} ${(q[1] - A.o[1]).toFixed(2)})`; };
+
+async function cargar(){
+  const r = await fetch("../../../../contenido/fisica/tiro-parabolico-interactivo.json", {cache:"no-cache"});
+  if (!r.ok) throw new Error(r.status);
+  return await r.json();
+}
+let J;
+try { J = await cargar(); }
+catch (e) { $("#nota").textContent = "No se pudo leer contenido/fisica/tiro-parabolico-interactivo.json. Abre la página con npx serve, no como archivo."; return; }
+
+// ---------- Números (todos salen del JSON o de una fórmula) ----------
+const V = J.valoresIniciales, RG = J.rangos, AP = J.aproximaciones, g = V.g, L2 = J.laminas2;
+const num = (v, dec = 2) => {
+  const r = Math.round(v * 10 ** dec) / 10 ** dec;
+  let [i, d] = Math.abs(r).toFixed(dec).split(".");
+  d = (d || "").replace(/0+$/, "");
+  return (r < 0 ? "−" : "") + i + (d ? "." + d : "");
+};
+const tpl = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const svgSub = (s) => s.replace(/<sub>(.*?)<\/sub>/g, '<tspan dy="0.3em" font-size="72%">$1</tspan><tspan dy="-0.3em">​</tspan>');
+const trig = (a) => AP[a] ? { sen: AP[a].sen, cos: AP[a].cos, examen: true } : { sen: Math.sin(a * Math.PI / 180), cos: Math.cos(a * Math.PI / 180), examen: false };
+const tiro = (v0, a) => {
+  const { sen, cos, examen } = trig(a), vx = v0 * cos, vy = v0 * sen, ts = vy / g, tv = 2 * ts;
+  return { v0, a, sen, cos, examen, vx, vy, ts, tv, R: vx * tv, H: vy * vy / (2 * g), Rtrampa: vx * ts };
+};
+const A1 = Object.keys(AP).filter((x) => /^\d+$/.test(x)).map(Number).sort((a, b) => a - b); // [37, 53]
+
+let v0 = V.v0, ang = V.ang, revelado = false, cimaVista = false, trampaOn = false, refOn = false, aterrizado = false;
+const T = () => tiro(v0, ang);
+const pos = (tt, s = T()) => { const u = Math.min(Math.max(tt, 0), s.tv); return [s.vx * u, Math.max(0, s.vy * u - g * u * u / 2)]; };
+const vel = (tt, s = T()) => (tt >= s.tv - 1e-9 && tt > 0 ? null : [s.vx, s.vy - g * Math.max(0, tt)]);
+const nota = $("#nota"), decir = (s) => { nota.textContent = s; };
+
+$("#titulo").textContent = J.titulo;
+$("#subtitulo").textContent = J.subtitulo + " · Física · Examen de admisión UNAM";
+$("#l-v0").innerHTML = J.controles.v0 + ", v<sub>0</sub>";
+$("#l-ang").textContent = J.controles.ang;
+const sV0 = $("#s-v0"), sAng = $("#s-ang");
+sV0.min = RG.v0.min; sV0.max = RG.v0.max; sV0.step = RG.v0.paso; sV0.value = v0;
+sAng.min = RG.ang.min; sAng.max = RG.ang.max; sAng.step = RG.ang.paso; sAng.value = ang;
+
+// ---------- Escena 1: el laboratorio (riel) ----------
+const svg = $(".iso-svg"), dibLab = $("#lab-dibujo"), mango = $("#mango");
+const Wp = (xm, ym) => iso([C.M * xm, 0, C.ZB + C.M * ym]);       // punto del plano del tiro (centro del balón)
+const det = A.ex[0] * A.ez[1] - A.ex[1] * A.ez[0];
+const dP = (pts) => pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+function ponFlecha(id, p0, p1, texto, lado = 1){
+  const gr = $("#fl-" + id), ln = gr.querySelector("line"), pl = gr.querySelector("polygon"), tx = gr.querySelector("text");
+  const dx = p1[0] - p0[0], dy = p1[1] - p0[1], l = Math.hypot(dx, dy);
+  if (l < 2){ gr.style.display = "none"; return; } gr.style.display = "";
+  const ux = dx / l, uy = dy / l, cab = Math.min(10, l * 0.6), an = cab * 0.5;
+  const bx = p1[0] - ux * cab, by = p1[1] - uy * cab;
+  ln.setAttribute("x1", p0[0].toFixed(1)); ln.setAttribute("y1", p0[1].toFixed(1)); ln.setAttribute("x2", (bx + ux).toFixed(1)); ln.setAttribute("y2", (by + uy).toFixed(1));
+  pl.setAttribute("points", `${p1[0].toFixed(1)},${p1[1].toFixed(1)} ${(bx - uy * an).toFixed(1)},${(by + ux * an).toFixed(1)} ${(bx + uy * an).toFixed(1)},${(by - ux * an).toFixed(1)}`);
+  /* el texto va más allá de la punta, para que no se salga por la izquierda en celular */
+  tx.setAttribute("x", (p1[0] + 8).toFixed(1)); tx.setAttribute("y", (p1[1] - 6).toFixed(1));
+  tx.setAttribute("text-anchor", "start");
+  tx.innerHTML = svgSub(texto);
+}
+const mostrar = (sel, on) => $(sel).classList.toggle("oculto", !on);
+const NS = "http://www.w3.org/2000/svg";
+let vbLab = { x: 0, y: 0, w: C.W, h: C.H };
+const lab = {
+  svg, capaPrediccion: $("#capa-pred"), capaHerramientas: $("#capa-herr"), suelo: 0,
+  aPantalla: (w) => Wp(w[0], w[1]),
+  dePantalla: ([sx, sy]) => { const b = iso([0, 0, C.ZB]), dx = sx - b[0], dy = sy - b[1]; return [(dx * A.ez[1] - dy * A.ez[0]) / det / C.M, (A.ex[0] * dy - A.ex[1] * dx) / det / C.M]; },
+  /* unidades del SVG por px (con «meet» manda el lado más justo) */
+  escalaTexto: () => { const w = svg.clientWidth, h = svg.clientHeight; return w && h ? Math.max(vbLab.w / w, vbLab.h / h) : vbLab.w / C.W; },
+  pxPorMetro: () => Math.hypot(A.ex[0], A.ex[1]) * C.M,
+  caja: () => vbLab,
+  /* Recorta el dibujo a la trayectoria (x hasta x1 m, alto hasta y1 m), redondeado para no regalar el resultado:
+     sin vacío arriba ni regla de sobra a la derecha. El fondo de la placa siempre se ve. */
+  encuadra(o) {
+    const x1 = Math.min(C.XM - 5, Math.ceil(Math.max(o.x1, 25) / 10) * 10 + 5), y1 = Math.min(C.HM, Math.ceil(Math.max(o.y1, 5) / 5) * 5);
+    const ps = [iso([C.M * x1, C.REGLA_Y + 6, 0]), iso([C.M * x1, 0, C.ZB + C.M * y1]), iso([C.M * x1 + 30, -26, 0])];
+    const der = Math.min(C.W, Math.max(...ps.map((q) => q[0])) + 8);
+    const arriba = Math.max(0, Math.min(iso([C.POSTE, 0, C.ZB + C.M * y1])[1], iso([C.M * x1 * 0.5, 0, C.ZB + C.M * y1])[1]) - 64);   // margen arriba para las etiquetas
+    const w = Math.max(300, der), h = Math.max(150, C.H - arriba);
+    vbLab = { x: 0, y: C.H - h, w, h };
+    svg.setAttribute("viewBox", `0 ${(C.H - h).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
+  },
+  pinta(E) {
+    const s = E.s, t = E.t, [bx, by] = E.pos, kk = lab.escalaTexto();
+    svg.style.setProperty("--k", kk.toFixed(3));
+    svg.classList.toggle("estrecha", kk > 1.35);
+    const curva = (r, hasta, n = 64) => { const pts = []; for (let i = 0; i <= n; i++){ const [x, y] = pos(hasta * i / n, r); pts.push(Wp(x, y)); } return dP(pts); };
+    $("#balon").setAttribute("transform", mueve([C.M * bx, 0, C.M * by]));
+    $("#sombra").setAttribute("transform", mueve([C.M * bx, 0, 0]));
+    $("#estela").setAttribute("d", t > 0 ? curva(s, Math.min(t, s.tv), 48) : "");
+    const gm = $("#marcas"); gm.textContent = "";
+    E.marcas.forEach((tm) => { const [x, y] = pos(tm, s), p = Wp(x, y), c = document.createElementNS(NS, "circle"); c.setAttribute("cx", p[0].toFixed(1)); c.setAttribute("cy", p[1].toFixed(1)); c.setAttribute("r", (2.6 * Math.min(kk, 1.6)).toFixed(1)); c.setAttribute("class", "marca-t"); gm.appendChild(c); });
+    svg.classList.toggle("revelado", E.revelado);
+    if (E.revelado) $("#parabola").setAttribute("d", curva(s, s.tv));
+    mostrar("#ref", !!E.ref); mostrar("#t-ref", !!E.ref);
+    if (E.ref){ $("#ref").setAttribute("d", curva(E.ref, E.ref.tv)); const c = Wp(E.ref.R * 0.5, E.ref.H), tr = $("#t-ref");
+      tr.setAttribute("x", c[0].toFixed(1)); tr.setAttribute("y", (c[1] - 8).toFixed(1)); tr.textContent = `${E.ref.a}°`; }
+    mostrar("#g-cima", E.cimaVista || E.revelado);
+    const cx = s.vx * s.ts, pc = Wp(cx, s.H);
+    $("#cima").setAttribute("cx", pc[0].toFixed(1)); $("#cima").setAttribute("cy", pc[1].toFixed(1));
+    $("#guia-h").setAttribute("d", dP([pc, iso([C.POSTE + 1.6, 0, C.ZB + C.M * s.H])]));
+    $("#guia-v").setAttribute("d", dP([pc, iso([C.M * cx, 0, 0])]));
+    const ph = iso([C.POSTE + 6, 0, C.ZB + C.M * s.H]), th = $("#t-h");
+    th.setAttribute("x", ph[0].toFixed(1)); th.setAttribute("y", (ph[1] - 6).toFixed(1)); th.textContent = `H = ${num(s.H)} m`;
+    $("#caida").setAttribute("transform", mueve([C.M * s.R, 0, 0]));
+    const pcai = iso([C.M * s.R, 0, 34]), tc = $("#t-caida"); tc.setAttribute("x", pcai[0].toFixed(1)); tc.setAttribute("y", pcai[1].toFixed(1)); tc.textContent = `R = ${num(s.R)} m`;
+    svg.classList.toggle("trampa-on", E.trampa);
+    const pf = iso([C.M * s.Rtrampa, 0, 0]);
+    $("#fant-v").setAttribute("d", dP([pc, pf]));
+    $("#fant-b").setAttribute("transform", mueve([C.M * s.Rtrampa, 0, 0]));
+    const tf = $("#t-fantasma"); tf.setAttribute("x", (pf[0] - 6).toFixed(1)); tf.setAttribute("y", (pf[1] - 14 * kk).toFixed(1)); tf.textContent = `t de subida: ${num(s.Rtrampa)} m`;
+    const a = s.a * Math.PI / 180, o = Wp(0, 0), rA = 15;
+    const arc = []; for (let i = 0; i <= 24; i++){ const b = a * i / 24; arc.push(iso([rA * Math.cos(b), 0, C.ZB + rA * Math.sin(b)])); }
+    $("#arco").setAttribute("d", dP(arc));
+    const pa = iso([(rA + 10) * Math.cos(a / 2), 0, C.ZB + (rA + 10) * Math.sin(a / 2)]), ta = $("#t-ang");
+    ta.setAttribute("x", (pa[0] + 3).toFixed(1)); ta.setAttribute("y", (pa[1] + 5).toFixed(1)); ta.textContent = `${s.a}°`;
+    const KV = 2.1, tip = Wp(s.vx * KV / C.M, s.vy * KV / C.M);
+    ponFlecha("v0", o, tip, tpl(J.figura.v0, {v0:num(s.v0)}), -1);
+    $("#fl-v0").style.visibility = mango.style.visibility = E.t > 0 ? "hidden" : "";
+    mango.setAttribute("transform", `translate(${tip[0].toFixed(1)} ${tip[1].toFixed(1)})`);
+    $("#mango .mango-toque").setAttribute("r", (22 * kk).toFixed(1)); $("#mango .mango").setAttribute("r", (6 * Math.min(kk, 1.5)).toFixed(1));
+  },
+  mostrar(si) { dibLab.hidden = !si; }
+};
+
+// ---------- Escena 2: la situación real (cancha, tinta) ----------
+const SIT = L2.situacion;
+const cancha = creaCancha($("#cancha"), { barrera: SIT.barrera, porteria: SIT.porteria, alRedimensionar: () => { if (esc === cancha) redibuja(); } });
+cancha.suelo = 0;
+cancha.mostrar = ((m) => (si) => { $("#cancha").hidden = !si; m(si); })(cancha.mostrar);
+let esc = lab;
+
+// ---------- Cuaderno ----------
+const cuaderno = creaCuaderno({ boton: $("#b-cuaderno"), titulo: "Cuaderno",
+  alAbrir: (lateral) => { if (!lateral && !(pc && pc.activa)) $(".escenario").scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); },
+  secciones: [
+  { id: "datos", titulo: "Datos" }, { id: "solucion", titulo: "Paso a paso" }, { id: "prediccion", titulo: "Tu predicción vs resultado" },
+  { id: "medidas", titulo: "Medidas" }, { id: "truco", titulo: "Truco de examen" }] });
+cuaderno.escribe("truco", ["El tiempo lo da lo vertical: t = 2 v<sub>0y</sub> ÷ g.", "La distancia, lo horizontal: R = v<sub>x</sub> × t.",
+  `${A1.join("° o ")}°: triángulo 3-4-5 → sen y cos de 0.6 y 0.8.`, "Cuidado: el tiempo de subida es solo la mitad del vuelo."], { anima: false });
+function escribeDatos(){
+  const s = T();
+  cuaderno.escribe("datos", [`v<sub>0</sub> = ${num(v0)} m/s · θ = ${ang}° · g = ${num(g)} m/s²`,
+    s.examen ? `sen ${ang}° = ${num(s.sen)} · cos ${ang}° = ${num(s.cos)} <span class="l2-c-gris">(3-4-5)</span>` : `sen ${ang}° ≈ ${num(s.sen, 3)} · cos ${ang}° ≈ ${num(s.cos, 3)} <span class="l2-c-gris">(calculadora)</span>`], { anima: false });
+}
+function escribeSolucion(completa, anima = true){
+  const s = T(), n = (v, d = 2) => num(v, d), cs = n(s.cos, 3), sn = n(s.sen, 3);
+  const l = [`v<sub>x</sub> = v<sub>0</sub> cos θ = ${n(v0)} × ${cs} = <b>${n(s.vx)} m/s</b> <span class="l2-c-gris">(no cambia)</span>`,
+    `v<sub>0y</sub> = v<sub>0</sub> sen θ = ${n(v0)} × ${sn} = <b>${n(s.vy)} m/s</b>`];
+  if (completa) l.push(`t<sub>subida</sub> = v<sub>0y</sub> ÷ g = ${n(s.vy)} ÷ ${n(g)} = <b>${n(s.ts)} s</b>`,
+    `t<sub>vuelo</sub> = 2 × ${n(s.ts)} = <b>${n(s.tv)} s</b>`,
+    `<span class="l2-c-coral">R = v<sub>x</sub> × t<sub>vuelo</sub> = ${n(s.vx)} × ${n(s.tv)} = <b>${n(s.R)} m</b></span>`,
+    `<span class="l2-c-verde">H = v<sub>0y</sub>² ÷ (2g) = ${n(s.vy)}² ÷ ${n(2 * g)} = <b>${n(s.H)} m</b></span>`,
+    `En la cima: v<sub>y</sub> = 0, pero v = v<sub>x</sub> = ${n(s.vx)} m/s.`);
+  if (completa && esc === cancha) {
+    const B = SIT.barrera, PO = SIT.porteria, tb = B.x / s.vx, yb = s.vy * tb - g / 2 * tb * tb, tp = PO.x / s.vx, yp = s.vy * tp - g / 2 * tp * tp;
+    l.push(`<b>Barrera</b> (x = ${n(B.x)} m): t = ${n(B.x)} ÷ ${n(s.vx)} = ${n(tb)} s → y = ${n(s.vy)} × ${n(tb)} − 5 × ${n(tb)}² = <b>${n(yb)} m</b> ${yb > B.alto ? '<span class="l2-c-verde">&gt; ' + n(B.alto) + " m: pasa</span>" : '<span class="l2-c-coral">≤ ' + n(B.alto) + " m: choca</span>"}`);
+    if (tp <= s.tv) l.push(`<b>Portería</b> (x = ${n(PO.x)} m): t = ${n(tp)} s → y = <b>${n(yp)} m</b> ${yp <= PO.alto ? '<span class="l2-c-verde">&lt; ' + n(PO.alto) + " m: entra bajo el travesaño</span>" : '<span class="l2-c-coral">&gt; ' + n(PO.alto) + " m: pasa por encima</span>"}`);
+    else l.push(`<b>Portería</b> (x = ${n(PO.x)} m): el balón cae antes, a ${n(s.R)} m.`);
+  }
+  else if (!completa) l.push('<span class="l2-c-gris">Patea para ver el resto.</span>');
+  cuaderno.escribe("solucion", l, { anima, cuenta: 1 });
+}
+
+// ---------- Predicción ----------
+const PR = L2.prediccion;
+let pred = null, fijaSinJugar = false;
+pred = creaPrediccion({
+  panel: $("#prediccion"),
+  texto: { titulo: PR.titulo, fijar: PR.boton, corto: PR.botonCorto, otra: "Predecir otra vez", pide: PR.pide, fijada: "" },
+  alDibujar: () => acomoda(),
+  marcadores: [
+    { id: "R", etiqueta: PR.alcance, corta: PR.alcanceEscena, unidad: "m", min: 0, max: C.XM - 5, paso: 0.5, espera: 6, tol: PR.tolAlcance,
+      /* banderín de ~45 px de alto en pantalla, sea cual sea la escena */
+      geo: (v) => { const h = 45 * esc.escalaTexto() / esc.pxPorMetro(); return { asa: [v, esc.suelo], linea: [[v, esc.suelo], [v, esc.suelo + h]], texto: [v + 0.15 * h, esc.suelo + h * 1.12], ancla: "start" }; },
+      valorDe: (p) => p[0] },
+    { id: "H", etiqueta: PR.altura, corta: PR.alturaEscena, unidad: "m", min: 0, max: C.HM, paso: 0.5, espera: 3, tol: PR.tolAltura,
+      /* la marca de altura va a la mitad del alcance más corto (predicho o real), para que siempre quede en cuadro */
+      geo: (v) => { const r = pred ? pred.valores().R : null, xa = Math.max(3, Math.min(r == null ? 16 : r, T().R) / 2), w = 30 * esc.escalaTexto() / esc.pxPorMetro(); return { asa: [xa, v], linea: [[xa - w, v], [xa + w, v]], texto: [xa + w * 1.15, v], ancla: "start" }; },
+      valorDe: (p) => p[1] }
+  ],
+  alFijar: () => { if (fijaSinJugar || reloj.corriendo) return; if (reloj.t >= T().tv - 1e-9) reloj.pon(0); reloj.juega(); },
+  alReiniciar: () => { reloj.detiene(); revelado = false; cimaVista = false; aterrizado = false; reloj.pon(0); decir(""); encuadra(); }
+});
+
+// ---------- Tiempo ----------
+const reloj = creaTiempo($("#tiempo"), {
+  duracion: T().tv, paso: L2.marcasCada,
+  antesDeJugar: () => { if (pred.estado === "abierta") { if (!pred.fija()) pred.pide(); return false; } return true; },
+  /* mover la línea de tiempo también cuenta como lanzar: sin predicción completa no se puede */
+  alCambiar: (t) => {
+    if (t > 0 && pred.estado === "abierta") {
+      if (!pred.completa()) { pred.pide(); reloj.pon(0); return; }
+      fijaSinJugar = true; pred.fija(); fijaSinJugar = false;
+    }
+    render(); if (t >= T().tv - 1e-9) aterriza();
+  }
+});
+
+// ---------- Herramientas ----------
+const herr = creaHerramientas({
+  barra: $("#herramientas"), lectura: $("#lectura"), reloj: () => reloj.t,
+  movil: { pos: (t) => pos(t), vel: (t) => vel(t) },
+  suelo: () => 0,
+  /* puntos donde se pega la regla: el balón y lo que ya se vio (cima, caída; en la cancha, barrera y travesaño) */
+  imanes: () => {
+    const s = T(), t = reloj.t, l = [{ p: pos(t), nombre: "el balón" }, { p: [0, 0], nombre: "la salida" }];
+    if (cimaVista || revelado) l.push({ p: [s.vx * s.ts, s.H], nombre: "la cima" });
+    if (revelado) l.push({ p: [s.R, 0], nombre: "donde cae" });
+    if (esc === cancha) l.push({ p: [SIT.barrera.x, SIT.barrera.alto], nombre: "lo alto de la barrera" }, { p: [SIT.porteria.x, SIT.porteria.alto], nombre: "el travesaño" }, { p: [SIT.barrera.x, 0], nombre: "el pie de la barrera" });
+    return l;
+  },
+  /* marcas del rastro (cada 0.5 s) más la salida y la caída */
+  marcas: () => {
+    const s = T(), t = reloj.t, l = [{ t: 0, p: [0, 0] }].concat(reloj.marcas(Math.min(t, s.tv)).filter((m) => m < s.tv - 1e-6).map((m) => ({ t: m, p: pos(m) })));
+    if (t >= s.tv - 1e-9) l.push({ t: s.tv, p: [s.R, 0] });
+    return l;
+  },
+  alDibujar: () => acomoda(),
+  anota: (txt) => cuaderno.anota("medidas", txt)
+});
+
+/* Ninguna etiqueta tapa a otra: se acomodan una vez por cuadro */
+let acomodoPendiente = 0;
+function acomoda(){ if (acomodoPendiente) return; acomodoPendiente = requestAnimationFrame(() => { acomodoPendiente = 0; const c = esc.caja ? esc.caja() : null; acomodaEtiquetas(esc.svg, { margen: 3 * esc.escalaTexto(), obstaculos: esc.obstaculos ? esc.obstaculos() : [], limites: c ? { x: c.x, y: c.y, width: c.w, height: c.h } : null }); }); }
+
+// ---------- Dibujo que cambia ----------
+function render(){
+  const s = T(), t = reloj.t, enSuelo = t >= s.tv - 1e-9 && t > 0;
+  if (t >= s.ts - 1e-9) cimaVista = true;
+  const E = { s, t, pos: pos(t, s), revelado, cimaVista, trampa: trampaOn, enAire: t > 0 && !enSuelo, enSuelo,
+    marcas: reloj.marcas(Math.min(t, s.tv)), ref: refOn ? tiro(v0, A1[0]) : null };
+  esc.pinta(E);
+  herr.vectores(!reloj.corriendo && t > 0 && !enSuelo);
+  acomoda();
+  sV0.style.setProperty("--p", (100 * (v0 - RG.v0.min) / (RG.v0.max - RG.v0.min)) + "%");
+  sAng.style.setProperty("--p", (100 * (ang - RG.ang.min) / (RG.ang.max - RG.ang.min)) + "%");
+  $("#o-v0").textContent = tpl(J.controles.valorV0, {v:num(v0)});
+  $("#o-ang").textContent = tpl(J.controles.valorAng, {v:ang});
+  sV0.setAttribute("aria-valuetext", tpl(J.controles.valorV0, {v:num(v0)}));
+  sAng.setAttribute("aria-valuetext", tpl(J.controles.valorAng, {v:ang}));
+  if (dibLab.querySelector(".iso-stage")) { const st = dibLab.querySelector(".iso-stage"); st.setAttribute("aria-valuenow", ang); st.setAttribute("aria-valuetext", `${ang}°, v₀ = ${num(v0)} m/s`); }
+}
+function redibuja(){ render(); pred.redibuja(); herr.redibuja(); }
+/* El encuadre sigue a la trayectoria real (en la cancha, también a la portería), nunca a la predicción:
+   si una predicción queda fuera de cuadro, prediccion.js pone una flecha en el borde con su valor. */
+function encuadra(){
+  const s = T();
+  lab.encuadra({ x1: s.R + 4, y1: s.H * 1.1 + 1 });
+  cancha.encuadra({ x1: s.R + 4, y1: s.H * 1.15 + 1 });
+}
+function aterriza(){
+  if (aterrizado) return;
+  aterrizado = true; revelado = true;
+  const s = T();
+  let extra = "";
+  if (pred.estado === "fijada") {
+    encuadra();
+    const res = pred.compara({ R: s.R, H: s.H });
+    const r = Object.fromEntries(res.map((x) => [x.id, x]));
+    cuaderno.anota("prediccion", `${ang}°, ${num(v0)} m/s → alcance: tú ${num(r.R.pred, 1)} m, real ${num(s.R)} m <span class="${r.R.acierto ? "l2-c-verde" : "l2-c-coral"}">(${r.R.texto.toLowerCase()})</span>`);
+    cuaderno.anota("prediccion", `altura: tú ${num(r.H.pred, 1)} m, real ${num(s.H)} m <span class="${r.H.acierto ? "l2-c-verde" : "l2-c-coral"}">(${r.H.texto.toLowerCase()})</span>`);
+    extra = ` ${r.R.texto} en el alcance; ${r.H.texto.charAt(0).toLowerCase() + r.H.texto.slice(1)} en la altura.`;
+  }
+  escribeSolucion(true);
+  decir(`Cae a ${num(s.R)} m después de ${num(s.tv)} s: v${"ₓ"} = ${num(s.vx)} m/s todo el vuelo × ${num(s.tv)} s.${extra} Abre el cuaderno para ver cada paso.`);
+  render();
+}
+function nuevoTiro(){
+  reloj.detiene(); revelado = false; cimaVista = false; aterrizado = false; refOn = false;
+  if (trampaOn) ponTrampa(false);
+  reloj.duracion(T().tv);
+  pred.reinicia({ vaciar: true });   // tiro nuevo, predicción nueva (vacía)
+  escribeDatos(); escribeSolucion(false, false); encuadra(); redibuja();
+}
+function ponAng(a){ a = Math.max(RG.ang.min, Math.min(RG.ang.max, Math.round(a))); if (a === ang) return; ang = a; sAng.value = a; nuevoTiro(); }
+function ponTrampa(si){
+  trampaOn = si; const b = $("#trampa"); b.setAttribute("aria-pressed", si); b.textContent = si ? "Ocultar la trampa" : "¿Y con el tiempo de subida?";
+  const s = T();
+  if (si){ revelado = true; cimaVista = true; decir(`Con el tiempo de subida (${num(s.ts)} s) solo llegas a ${num(s.vx)} × ${num(s.ts)} = ${num(s.Rtrampa)} m: justo debajo de la cima. El balón también baja: el vuelo dura ${num(s.tv)} s y cae a ${num(s.R)} m.`); }
+  render();
+}
+
+// ---------- Escenas ----------
+const tiroDe = new Map([[lab, { v0: V.v0, ang: V.ang }], [cancha, { v0: SIT.v0, ang: SIT.ang }]]);
+function usaEscena(id, inicio = false){
+  const nueva = id === "real" ? cancha : lab;
+  if (!inicio) tiroDe.set(esc, { v0, ang });
+  esc = nueva;
+  ({ v0, ang } = tiroDe.get(esc)); sV0.value = v0; sAng.value = ang;
+  lab.mostrar(esc === lab); cancha.mostrar(esc === cancha);
+  pred.usa(esc); herr.usa(esc);
+  nuevoTiro();
+}
+const selector = creaSelector($("#escenas"), { etiqueta: "Escena", opciones: [{ id: "lab", etiqueta: L2.escenas.laboratorio }, { id: "real", etiqueta: L2.escenas.real }], clave: "cv-l2-tiro-escena", alCambiar: usaEscena });
+if ("ResizeObserver" in window) new ResizeObserver(() => { if (esc === lab) redibuja(); }).observe(dibLab);
+
+// ---------- Pantalla completa (escena + tiempo + predicción compacta + cuaderno encima) ----------
+const pc = creaPantallaCompleta({ boton: $("#b-pc"), raiz: $(".lab"), dentro: [cuaderno.el],
+  alCambiar: () => { requestAnimationFrame(() => { if (esc === cancha) cancha.ajusta(); redibuja(); }); } });
+
+// ---------- Controles ----------
+sV0.addEventListener("input", () => { v0 = +sV0.value; nuevoTiro(); });
+sAng.addEventListener("input", () => { ponAng(+sAng.value); });
+$("#trampa").addEventListener("click", () => ponTrampa(!trampaOn));
+$("#inicio").addEventListener("click", () => { const t0 = esc === cancha ? { v0: SIT.v0, ang: SIT.ang } : { v0: V.v0, ang: V.ang }; v0 = t0.v0; ang = t0.ang; sV0.value = v0; sAng.value = ang; nuevoTiro(); decir(esc === cancha ? "De vuelta al tiro libre." : "De vuelta al tiro del examen."); });
+document.addEventListener("keydown", (e) => {
+  if (e.key.toLowerCase() !== "b" || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest && e.target.closest("input,textarea,select,[contenteditable]")) return;
+  e.preventDefault(); if (reloj.corriendo) reloj.pausa(); else if (pred.estado === "abierta") { if (!pred.fija()) pred.pide(); } else reloj.juega();
+});
+const stage = dibLab.querySelector(".iso-stage");
+stage.addEventListener("keydown", (e) => {
+  const p = RG.ang.paso, m = {ArrowUp:p, ArrowRight:p, ArrowDown:-p, ArrowLeft:-p, PageUp:5*p, PageDown:-5*p}[e.key];
+  if (e.key === "Home"){ e.preventDefault(); ponAng(RG.ang.min); return; }
+  if (e.key === "End"){ e.preventDefault(); ponAng(RG.ang.max); return; }
+  if (m === undefined) return;
+  e.preventDefault(); ponAng(ang + m);
+});
+// Arrastre de la flecha de lanzamiento (solo en el laboratorio)
+const svgPt = (e) => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+let arr = false;
+mango.addEventListener("pointerdown", (e) => { if (reloj.corriendo) return; arr = true; mango.setPointerCapture(e.pointerId); e.preventDefault(); });
+mango.addEventListener("pointermove", (e) => {
+  if (!arr) return;
+  const q = svgPt(e), [wx, wz] = lab.dePantalla([q.x, q.y]);
+  if (wx > 0.2 || wz > 0.2) ponAng(Math.atan2(wz, Math.max(wx, 0.01)) * 180 / Math.PI);
+});
+const soltar = () => { arr = false; };
+mango.addEventListener("pointerup", soltar); mango.addEventListener("pointercancel", soltar);
+
+// ---------- Los 6 pasos ----------
+const BIEN = '<svg class="ico b" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>';
+const MAL = '<svg class="ico m" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
+function opciones(cont, ops){
+  cont.innerHTML = "";
+  ops.forEach(o => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "op";
+    b.innerHTML = `<span>${o.t}</span><span class="res" aria-live="polite"></span>`;
+    b.addEventListener("click", () => {
+      b.classList.add(o.ok ? "bien" : "mal");
+      b.querySelector(".res").innerHTML = `${o.ok ? BIEN : MAL} <b>${o.ok ? J.prueba.marcaCorrecta : J.prueba.marcaIncorrecta}.</b> ${o.e}`;
+    });
+    cont.append(b);
+  });
+}
+const irLab = () => $(".lab").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+const e0 = tiro(V.v0, V.ang), e45 = V.v0 * V.v0 / g;
+const n = {v0:num(V.v0), ang:V.ang, g:num(g), sen:num(e0.sen), cos:num(e0.cos), vx:num(e0.vx), vy:num(e0.vy), ts:num(e0.ts), tv:num(e0.tv),
+  R:num(e0.R), H:num(e0.H), Rt:num(e0.Rtrampa), Rvy:num(e0.vy * e0.tv), R45:num(e45)};
+const PASOS = [
+  {n:1, titulo:"Pregunta de examen", enunciado:`Se patea un balón desde el suelo con una rapidez de ${n.v0} m/s y un ángulo de ${n.ang}° sobre la horizontal. Usa g = ${n.g} m/s², sen ${n.ang}° ≈ ${n.sen} y cos ${n.ang}° ≈ ${n.cos}, y desprecia la resistencia del aire. ¿A qué distancia cae el balón?`,
+    ops:[{t:`A) ${n.Rt} m`, e:`Usaste el tiempo de subida (${n.ts} s). El balón también baja: el vuelo dura el doble.`},
+         {t:`B) ${n.Rvy} m`, e:`Multiplicaste por v<sub>0y</sub> = ${n.vy} m/s. La distancia la da lo horizontal: v<sub>x</sub> = ${n.vx} m/s.`},
+         {t:`C) ${n.R} m`, ok:true, e:`v<sub>x</sub> = ${n.vx} m/s, vuelo 2 × ${n.ts} = ${n.tv} s, R = ${n.vx} × ${n.tv} = ${n.R} m.`},
+         {t:`D) ${n.R45} m`, e:`v<sub>0</sub>² ÷ g solo vale para 45°; aquí el ángulo es ${n.ang}°.`}]},
+  {n:2, titulo:"Idea en una frase", p:["El movimiento se separa en dos: en horizontal la velocidad no cambia, en vertical la gravedad frena y luego acelera, y el tiempo es el mismo para los dos.",
+    "Patea en la lámina y pausa: la flecha v<sub>x</sub> mide lo mismo todo el vuelo; v<sub>y</sub> se acorta al subir, vale 0 en la cima y crece al bajar."]},
+  {n:3, titulo:"Ejemplo resuelto", p:[`Componentes: v<sub>x</sub> = ${n.v0} × ${n.cos} = <b>${n.vx} m/s</b>; v<sub>0y</sub> = ${n.v0} × ${n.sen} = <b>${n.vy} m/s</b>.`,
+    `Tiempo de subida: ${n.vy} ÷ ${n.g} = ${n.ts} s. Tiempo de vuelo: 2 × ${n.ts} = <b>${n.tv} s</b>.`,
+    `Alcance: ${n.vx} × ${n.tv} = <b>${n.R} m</b> → respuesta C.`, `(Altura máxima: ${n.vy}² ÷ (2 × ${n.g}) = ${n.H} m.)`],
+    boton:["Escribirlo en el cuaderno", () => { if (esc !== lab) selector.pon("lab"); v0 = V.v0; ang = V.ang; sV0.value = v0; sAng.value = ang; nuevoTiro(); escribeSolucion(true, false); cuaderno.ve("solucion"); }]},
+  {n:4, titulo:"La trampa", p:[`Usar el tiempo de subida (${n.ts} s) como si fuera el de vuelo da ${n.vx} × ${n.ts} = ${n.Rt} m, la opción A. El balón sube y también baja: el tiempo de vuelo es el doble.`,
+    `Las otras también tienen dueño: B (${n.Rvy} m) multiplica por v<sub>0y</sub> en vez de v<sub>x</sub>, y D (${n.R45} m) usa v<sub>0</sub>² ÷ g, que solo vale para 45°.`],
+    boton:["Ver la trampa en la lámina", () => { if (esc !== lab) selector.pon("lab"); if (!trampaOn) ponTrampa(true); irLab(); }]},
+  {n:5, titulo:"Truco de examen", p:['Separa siempre: el tiempo lo da lo vertical <span class="formula">t = 2 v<sub>0y</sub> ÷ g</span> y la distancia, lo horizontal <span class="formula">v<sub>x</sub> × t</span>.',
+    `Si te dan ${A1.join("° o ")}°, piensa en el triángulo 3-4-5: las componentes salen exactas.`],
+    boton:["Abrir el truco en el cuaderno", () => cuaderno.ve("truco")], complementarios:true},
+  {n:6, titulo:J.prueba.titulo, enunciado:J.prueba.pregunta, ops:J.prueba.opciones.map(o => ({t:`${o.letra}) ${o.texto}`, ok:o.correcta, e:o.retro})), practica:true}
+];
+PASOS.forEach(p => {
+  const s = document.createElement("section"); s.className = "tarjeta";
+  s.innerHTML = `<h2><span class="n">${p.n}</span>${p.titulo}</h2>` + (p.p || []).map(t => `<p>${t}</p>`).join("");
+  if (p.enunciado){ s.insertAdjacentHTML("beforeend", `<p>${p.enunciado}</p>`); const l = document.createElement("div"); l.className = "opciones"; opciones(l, p.ops); s.append(l); }
+  if (p.boton){ const b = document.createElement("button"); b.type = "button"; b.className = "boton sec"; b.textContent = p.boton[0]; b.addEventListener("click", p.boton[1]); s.append(b); }
+  if (p.complementarios){
+    const c = document.createElement("div"); c.className = "predice"; s.append(c);
+    const [aA, aB] = A1, a = tiro(V.v0, aA), b = tiro(V.v0, aB);
+    preguntaOpciones(c, { pregunta: `Predice: si pateas a ${aB}° en vez de ${aA}° (misma rapidez), ¿cae más cerca, igual o más lejos?`, opciones: [
+      {t:"Más cerca", e:`Tienta pensar que más ángulo es menos avance: v<sub>x</sub> baja de ${num(a.vx)} a ${num(b.vx)} m/s. Pero el vuelo dura más (${num(a.tv)} → ${num(b.tv)} s) y se compensa: ${num(b.R)} m.`},
+      {t:"Igual", ok:true, e:`${aA}° y ${aB}° suman 90°: son complementarios. Sen y cos se intercambian, así que v<sub>x</sub> × t da lo mismo: ${num(b.R)} m.`},
+      {t:"Más lejos", e:`Sube más (H = ${num(b.H)} m contra ${num(a.H)} m), pero avanza más lento (v<sub>x</sub> = ${num(b.vx)} m/s). Cae en el mismo lugar: ${num(b.R)} m.`}],
+      alElegir: () => { if (esc !== lab) selector.pon("lab"); v0 = V.v0; sV0.value = v0; ang = aB; sAng.value = aB; nuevoTiro(); refOn = true; pred.pon({ R: a.R, H: a.H }); pred.fija(); irLab(); } });
+  }
+  if (p.practica){
+    s.insertAdjacentHTML("beforeend", `<h3 class="sub-paso">Práctica: 8 problemas</h3><p class="pie">Números nuevos en cada intento. Si fallas, la pista te dice qué error cometiste.</p>`);
+    const pr = document.createElement("div"); s.append(pr);
+    montaPractica(pr, { id: "tiro-parabolico", problemas: PROBLEMAS,
+      resumen: { titulo: "Lo que ya dominas", puntos: ["Descomponer v₀ con el triángulo 3-4-5.", "El tiempo sale de lo vertical; la distancia, de lo horizontal.", "45° da el alcance máximo; los complementarios caen igual."] },
+      examen: { reactivos: 10, minutos: 12 } });
+  }
+  $(p.n <= 2 ? "#pasos-a" : "#pasos-b").append(s);
+});
+
+$("#pie").innerHTML = `<i>${tpl(J.figura.pie, {g:num(g)})}</i> Modelo: ${A1.join("° y ")}° usan los valores del examen (sen y cos de 0.6 y 0.8); los demás ángulos, la calculadora.
+ En el laboratorio, la cancha y las reglas están en metros a la misma escala; en la cancha de fútbol, la barrera (${num(SIT.barrera.alto)} m) y la portería (${num(SIT.porteria.alto)} m) también. El balón y las flechas no están a escala.
+ El rastro marca un punto cada ${num(L2.marcasCada)} s. Teclas: B patea o pausa; con el laboratorio enfocado, las flechas cambian el ángulo.`;
+
+escribeDatos(); escribeSolucion(false, false);
+usaEscena(selector.id, true);
+window.__tiro = { set:(o) => { if ("v0" in o){ v0 = o.v0; sV0.value = v0; } if ("ang" in o){ ang = o.ang; sAng.value = ang; } nuevoTiro(); if ("t" in o) reloj.pon(o.t); },
+  reloj, pred, cuaderno, herr, selector, pc, estado:() => ({ v0, ang, t: reloj.t, revelado, aterrizado, pred: pred.estado }) };
+})();
+})({"A":{"o":[98.10984614005073,254.091423039412],"ex":[1.662098530786139,0.12083227894484594],"ey":[-0.35328994886069154,0.568471177720852],"ez":[0,-1.5967546444188372]},"M":3,"RB":5.5,"ZB":6.3,"POSTE":-18,"XM":95,"HM":45,"W":640,"H":340,"REGLA_Y":21}, { creaTiempo, creaPrediccion, preguntaOpciones, creaCuaderno, creaHerramientas, creaSelector, montaPractica, creaPantallaCompleta, acomodaEtiquetas, creaCancha, PROBLEMAS });
+</script>
+</body>
+</html>
