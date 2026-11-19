@@ -128,6 +128,13 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   Ronda 2 (15-nov-2026, última): la portada pasó a paisaje en pixel fino pintado en canvas por `assets/js/paisaje.js`
   (cielo, sierra, valle con río, castillo-biblioteca, primer plano; dragón, aves y los dos gatos como sprites SVG).
   Se quitaron torres de libros, islas y cascada. Placa como tarjeta de papel. Sin probar en celular real.
+- [x] Sitio «Renacimiento» (18-nov-2026, rama `sitio/menu-venta`; diseño en `docs/diseno-sitio.md`): estilo vidrio líquido
+  (`.vidrio`, `.vidrio--texto`, `.gota`, `.boton--oro`; respaldo sin desenfoque y en Instagram/TikTok con `html.sin-vidrio`),
+  menú de vidrio (isla abajo en celular que se encoge al bajar; barra arriba en PC con panel de Biblioteca) y scroll-spy.
+  Portada en 7 secciones: Inicio, Pruébalo (tiro-parabolico/v2 incrustado al acercarse; abajo «Más láminas gratis»),
+  Cómo enseñamos (+ bloques de «Qué es»), Qué incluye (antes «Cómo funciona»; `id="como"` se conserva), Retos,
+  Preguntas frecuentes y Preventa. Probado a 390 px, PC, oscuro y «menos movimiento»; sin probar en iPhone/Instagram real.
+  Pendiente: página «Para saber más» (hoy el panel apunta a `libros/fisica-unam/`) y enlace real de `ENLACES.preventa`.
   Fase 3 (15-nov-2026): `libros/fisica-unam/` como página de venta (libro 3D, qué incluye, capítulos en acordeón,
   visor de lámina al tocar, espacio del video, preguntas, cierre); `biblioteca/` con sala interior en pixel
   (`assets/js/paisaje.js`) y mueble de madera; portada con grecas, capitular y viñetas; pie completo con gatos dormidos.

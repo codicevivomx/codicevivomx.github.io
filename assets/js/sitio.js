@@ -340,3 +340,152 @@ else window.addEventListener('load', function () { setTimeout(fuentesDeAbajo, 0)
     });
   }
 })();
+
+/* Pruébalo: la lámina (tiro-parabolico/v2) se incrusta cuando la sección se acerca,
+   para no frenar la portada. Sin IntersectionObserver, o si tocan el botón, se carga al momento. */
+(function () {
+  document.querySelectorAll('[data-demo]').forEach(function (demo) {
+    var listo = false;
+    var carga = function () {
+      if (listo) return; listo = true;
+      var marco = document.createElement('iframe');
+      marco.src = demo.getAttribute('data-demo');
+      marco.title = demo.getAttribute('data-titulo') || 'Lámina interactiva';
+      marco.setAttribute('allow', 'fullscreen');
+      // abre en el laboratorio (se desplaza solo el documento de adentro, no la portada)
+      // (la lámina termina de armarse después de «load»: se reajusta unos instantes mientras nadie la mueva)
+      marco.addEventListener('load', function () {
+        var w = marco.contentWindow, puesto = 0, vueltas = 0;
+        var ajusta = function () {
+          try {
+            var lab = marco.contentDocument.querySelector('.lab');
+            if (!lab || Math.abs(w.scrollY - puesto) > 2) return;          // ya se movió a mano: no se toca
+            puesto = Math.max(0, Math.round(lab.getBoundingClientRect().top + w.scrollY - 8));
+            w.scrollTo(0, puesto); puesto = w.scrollY;
+            if (++vueltas < 16) setTimeout(ajusta, 150);
+          } catch (e) {}
+        };
+        ajusta();
+      });
+      demo.textContent = '';
+      demo.appendChild(marco);
+      return marco;
+    };
+    var boton = demo.querySelector('.demo__boton');
+    if (boton) boton.addEventListener('click', function (e) { e.preventDefault(); var m = carga(); if (m) m.focus(); });
+    // se vigila hasta que la persona empieza a bajar: en celular la sección asoma desde el primer pantallazo
+    if ('IntersectionObserver' in window) {
+      var vigila = function () {
+        window.removeEventListener('scroll', vigila);
+        var ojo = new IntersectionObserver(function (en) {
+          if (en[0].isIntersecting) { ojo.disconnect(); carga(); }
+        }, { rootMargin: '0px 0px 300px 0px' });
+        ojo.observe(demo);
+      };
+      if (window.scrollY > 40) vigila(); else window.addEventListener('scroll', vigila, { passive: true });
+    }
+  });
+})();
+
+/* Menú de vidrio: scroll-spy, gota que se desliza, isla que se encoge al bajar (celular) y panel de Biblioteca (PC).
+   Cada sección de la portada tiene id; las que no están en el menú marcan la anterior (alias). */
+(function () {
+  var menu = document.querySelector('[data-menu]');
+  if (!menu) return;
+  var quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pc = window.matchMedia('(min-width: 900px)');
+  var isla = menu.querySelector('.menu__isla'), gota = menu.querySelector('.menu__gota'), oro = menu.querySelector('.menu__oro');
+  var items = [].slice.call(menu.querySelectorAll('.menu__item'));
+  var alias = { metodo: 'pruebalo', preguntas: 'retos' };
+  var secs = ['inicio', 'pruebalo', 'metodo', 'incluye', 'retos', 'preguntas', 'preventa']
+    .map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  var actual = null, g = null, hasta = 0, corriendo = false, quietoHasta = 0;
+  var ve = function (el) { return el.getClientRects().length > 0; };
+  var busca = function (k) { return items.filter(function (i) { return i.getAttribute('data-sec') === k && ve(i); })[0]; };
+
+  // marca la sección: aria-current en el elemento visible (en celular, Preventa marca Retos y resalta el botón dorado)
+  function marca(sec) {
+    actual = sec;
+    var act = busca(alias[sec] || sec) || (sec === 'preventa' ? busca('retos') : null);
+    items.forEach(function (i) {
+      if (i === act) i.setAttribute('aria-current', i.tagName === 'A' ? 'location' : 'true'); else i.removeAttribute('aria-current');
+    });
+    oro.classList.toggle('es-activo', sec === 'preventa' && !pc.matches);
+    mueve();
+  }
+
+  // la gota persigue a la pastilla activa (también mientras las pastillas cambian de ancho)
+  function mueve() { hasta = performance.now() + 600; if (!corriendo) { corriendo = true; requestAnimationFrame(paso); } }
+  function paso(t) {
+    var act = menu.querySelector('.menu__item[aria-current]');
+    if (!act || !ve(act)) { gota.style.opacity = 0; g = null; corriendo = false; return; }
+    var ri = isla.getBoundingClientRect(), ra = act.getBoundingClientRect();
+    var m = [ra.left - ri.left - isla.clientLeft, ra.top - ri.top - isla.clientTop, ra.width, ra.height];
+    var k = quieto || !g ? 1 : 0.3, lejos = 0;
+    g = g || m.slice();
+    for (var i = 0; i < 4; i++) { g[i] += (m[i] - g[i]) * k; lejos += Math.abs(m[i] - g[i]); }
+    gota.style.opacity = 1;
+    gota.style.transform = 'translate(' + g[0].toFixed(1) + 'px,' + g[1].toFixed(1) + 'px)';
+    gota.style.width = g[2].toFixed(1) + 'px'; gota.style.height = g[3].toFixed(1) + 'px';
+    if (lejos > 0.5 || t < hasta) requestAnimationFrame(paso); else corriendo = false;
+  }
+
+  // scroll-spy: la última sección cuyo borde superior pasó el 40 % de la pantalla
+  function espia() {
+    if (performance.now() < quietoHasta) return;
+    var linea = window.innerHeight * 0.4, s = secs[0].id;
+    secs.forEach(function (x) { if (x.getBoundingClientRect().top <= linea) s = x.id; });
+    if (s !== actual) marca(s);
+  }
+
+  // celular: al bajar se encoge, al subir se expande
+  var ultimoY = window.scrollY;
+  function encoge() {
+    var y = window.scrollY, dy = y - ultimoY;
+    if (pc.matches) { menu.classList.remove('menu--chica'); return; }
+    if (Math.abs(dy) < 8) return;
+    ultimoY = y;
+    var chica = y > 160 && dy > 0 && !menu.contains(document.activeElement);
+    if (chica !== menu.classList.contains('menu--chica')) { menu.classList.toggle('menu--chica', chica); mueve(); }
+  }
+  function expande() { if (menu.classList.contains('menu--chica')) { menu.classList.remove('menu--chica'); mueve(); } }
+
+  var pendiente = false, finScroll = 0;
+  window.addEventListener('scroll', function () {
+    if (performance.now() < quietoHasta) quietoHasta = Math.max(quietoHasta, performance.now() + 160);
+    clearTimeout(finScroll); finScroll = setTimeout(espia, 200);
+    if (!pendiente) { pendiente = true; requestAnimationFrame(function () { pendiente = false; espia(); encoge(); }); }
+  }, { passive: true });
+  menu.addEventListener('focusin', expande);
+
+  // al tocar una sección: la gota va directo ahí (sin saltar por las de en medio mientras baja)
+  items.forEach(function (i) {
+    if (i.tagName !== 'A') return;
+    i.addEventListener('click', function (e) {
+      if (menu.classList.contains('menu--chica') && i.hasAttribute('aria-current')) { e.preventDefault(); expande(); return; }
+      quietoHasta = performance.now() + 700;
+      marca(i.getAttribute('data-sec'));
+    });
+  });
+
+  // PC: panel de Biblioteca
+  var abre = menu.querySelector('.menu__item--pc'), panel = document.getElementById('menu-panel');
+  function cierra(foco) {
+    if (!abre || !panel || panel.hidden) return;
+    panel.hidden = true; abre.setAttribute('aria-expanded', 'false'); if (foco) abre.focus();
+  }
+  if (abre && panel) {
+    abre.addEventListener('click', function () {
+      var ver = panel.hidden; panel.hidden = !ver; abre.setAttribute('aria-expanded', ver ? 'true' : 'false');
+    });
+    document.addEventListener('click', function (e) { if (!e.target.closest('.menu__biblio')) cierra(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cierra(panel.contains(document.activeElement)); });
+    panel.addEventListener('click', function (e) { if (e.target.closest('a')) cierra(false); });
+  }
+
+  var cambia = function () { cierra(false); expande(); marca(actual || 'inicio'); };
+  if (pc.addEventListener) pc.addEventListener('change', cambia); else pc.addListener(cambia);
+  window.addEventListener('resize', mueve);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(mueve);
+  espia();
+})();

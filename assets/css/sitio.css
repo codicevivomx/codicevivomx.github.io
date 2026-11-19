@@ -1021,3 +1021,127 @@ body{background-image:radial-gradient(rgba(var(--fibra),.07) 1px,transparent 1.3
 /* Escena del libro en celular: imagen fija; el 3D se carga al tocar (clase es-toca, la pone sitio.js) */
 .producto__escena.es-toca{cursor:pointer}
 .es-toca .producto__pista{opacity:1}
+
+/* ---------- Vidrio líquido (diseño en docs/diseno-sitio.md) ----------
+   Vidrio claro sin refracción con filtros SVG (fallan en iPhone e Instagram).
+   .vidrio: capa fina (botones sobre el paisaje). .vidrio--texto: paneles con texto, más opacos.
+   Respaldo: sin backdrop-filter, o en el navegador de Instagram/TikTok (html.sin-vidrio, lo pone el <head>),
+   fondo semitransparente sólido. Siempre claro, también en modo oscuro: el texto va en #2B1F1A. */
+:root{--vidrio-tinta:#2B1F1A;--vidrio-filtro:blur(8px) saturate(1.9) brightness(1.08);
+  --vidrio-luz:inset 0 1.5px 0 rgba(255,255,255,.9);
+  --vidrio-sombra:0 1px 2px rgba(43,31,26,.12),0 10px 28px -10px rgba(43,31,26,.38)}
+.vidrio,.vidrio--texto{color:var(--vidrio-tinta);border:1px solid rgba(255,255,255,.6);
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.22));
+  -webkit-backdrop-filter:var(--vidrio-filtro);backdrop-filter:var(--vidrio-filtro);
+  box-shadow:var(--vidrio-luz),var(--vidrio-sombra)}
+.vidrio--texto{background:linear-gradient(180deg,rgba(255,255,255,.76),rgba(255,255,255,.64))}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .vidrio{background:rgba(255,251,244,.82)} .vidrio--texto{background:rgba(255,251,244,.94)}
+}
+.sin-vidrio .vidrio,.sin-vidrio .vidrio--texto{-webkit-backdrop-filter:none;backdrop-filter:none}
+.sin-vidrio .vidrio{background:rgba(255,251,244,.82)} .sin-vidrio .vidrio--texto{background:rgba(255,251,244,.94)}
+
+/* Gota: pastilla activa de vidrio blanco */
+.gota{background:rgba(255,255,255,.72);color:var(--vidrio-tinta);border-radius:999px;
+  box-shadow:inset 0 1.5px 0 #fff,inset 0 -1px 0 rgba(43,31,26,.06),0 2px 8px -2px rgba(43,31,26,.28)}
+
+/* Botón de compra: vidrio dorado con texto café */
+.boton--oro{background:linear-gradient(180deg,#E8C470,#C4963A);color:#3B2614;border:1px solid rgba(255,236,190,.75);
+  box-shadow:inset 0 1.5px 0 rgba(255,248,225,.85),inset 0 -2px 0 rgba(120,80,25,.25),0 3px 0 #8E6626,0 10px 24px -10px rgba(90,60,20,.55)}
+.boton--oro:active{box-shadow:inset 0 1.5px 0 rgba(255,248,225,.85),0 1px 0 #8E6626}
+/* Botón de vidrio claro (secundario sobre el paisaje) */
+.boton--vidrio{box-shadow:var(--vidrio-luz),var(--vidrio-sombra)}
+.boton--vidrio:active{box-shadow:var(--vidrio-luz),0 1px 2px rgba(43,31,26,.2)}
+@media (prefers-reduced-motion:reduce){.boton--oro,.boton--vidrio{transition:none}.boton--oro:hover,.boton--vidrio:hover{transform:none}}
+
+/* ---------- Portada «Renacimiento»: piezas nuevas ---------- */
+.placa__botones{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px}
+.placa .placa__botones .boton{margin-top:0;flex:1 1 auto;min-width:min(100%,180px)}
+.placa .boton--oro{background:linear-gradient(180deg,#E8C470,#C4963A);color:#3B2614;
+  box-shadow:inset 0 1.5px 0 rgba(255,248,225,.85),inset 0 -2px 0 rgba(120,80,25,.25),0 3px 0 #8E6626,0 10px 24px -10px rgba(90,60,20,.55)}
+.placa.vidrio--texto h1{color:var(--vidrio-tinta)}
+.placa.vidrio--texto .placa__sub,.placa.vidrio--texto .placa__nota{color:#5A4636}
+
+/* Pruébalo: la lámina se incrusta al acercarse (antes, un póster que no pesa) */
+.demo{max-width:900px;margin:0 auto;border:1px solid var(--borde-fuerte);border-radius:20px;overflow:hidden;background:var(--papel);
+  box-shadow:0 2px 4px rgba(var(--sombra),.1),0 26px 50px -20px rgba(var(--sombra),.38)}
+.demo__poster{position:relative;display:grid;place-items:center;min-height:320px;padding:20px 16px 84px}
+.demo__poster img{width:100%;max-width:640px;height:auto;display:block;opacity:.85}
+.demo__boton{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);white-space:nowrap}
+.demo__boton:hover,.demo__boton:active{transform:translateX(-50%)}
+.demo iframe{display:block;width:100%;height:min(86vh,820px);height:min(86svh,820px);border:0;background:#F6F1E6}
+.demo__abrir{max-width:900px;margin:12px auto 0;text-align:right;font-size:.95rem}
+.mas-laminas,.retos-lista{margin-top:56px}
+.mas-laminas__t,.retos-lista__t{font-family:"Fraunces",var(--serif);font-weight:500;font-size:clamp(1.5rem,5.5vw,2rem);letter-spacing:-.01em;margin-bottom:14px}
+.retos-lista .subtitulo{margin:0 0 18px}
+.que-es{margin-top:64px}
+.incluye__mas{margin-top:18px}
+.cierre__botones{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+
+/* ---------- sección: menú (vidrio líquido) ----------
+   Celular: isla flotante abajo (la sección activa con ícono y nombre; las demás, solo ícono) y botón dorado aparte.
+   Al bajar se encoge a la pastilla activa (.menu--chica); al subir, se expande. La gota la mueve sitio.js.
+   PC (≥900 px): barra flotante arriba con logo, secciones, Biblioteca ▾ (panel) y botón dorado. */
+.menu{position:fixed;z-index:20;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:center;gap:10px;padding:0 12px;pointer-events:none}
+.menu>*{pointer-events:auto}
+.menu__isla{position:relative;display:flex;align-items:center;padding:5px;border-radius:999px}
+.menu__logo,.menu__solo-pc,.menu__panel,.menu__item.menu__item--pc{display:none}
+.menu__lista{position:relative;z-index:1;display:flex;align-items:center}
+.menu__item{display:flex;align-items:center;justify-content:center;gap:7px;height:48px;min-width:48px;max-width:180px;padding:0 13px;border:0;border-radius:999px;background:none;
+  color:rgba(43,31,26,.7);font:600 .95rem/1 var(--sans);text-decoration:none;white-space:nowrap;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:max-width .42s cubic-bezier(.3,1.25,.5,1),min-width .42s,padding .42s,opacity .25s,color .2s}
+.menu__item[aria-current]{color:var(--vidrio-tinta)}
+.menu__icono{flex:none;width:22px;height:22px}
+.menu__nombre{max-width:0;opacity:0;overflow:hidden;transition:max-width .42s cubic-bezier(.3,1.25,.5,1),opacity .25s}
+.menu__item[aria-current] .menu__nombre{max-width:120px;opacity:1}
+.menu--chica .menu__item:not([aria-current]){max-width:0;min-width:0;padding-inline:0;opacity:0;pointer-events:none}
+.menu__gota{position:absolute;z-index:0;left:0;top:0;width:48px;height:48px;opacity:0;pointer-events:none;will-change:transform}
+.menu__oro{position:relative;display:flex;align-items:center;justify-content:center;flex:none;width:58px;height:58px;padding:0;border-radius:50%;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.menu__oro .menu__icono{width:24px;height:24px}
+.menu__oro-txt{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.menu__oro.es-activo{outline:2px solid rgba(255,255,255,.95);outline-offset:3px}
+.menu :focus-visible{outline:3px solid #2F6F73;outline-offset:2px}
+/* el contenido no queda debajo de la isla ni de la zona segura */
+.portada .pie{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.seccion{padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+
+@media (min-width:900px){
+  html{scroll-padding-top:86px}
+  .encabezado--mundo{display:none}
+  .portada .pie{padding-bottom:0}
+  .menu{top:14px;bottom:auto;left:50%;right:auto;width:min(calc(100% - 32px),1080px);transform:translateX(-50%);gap:8px;padding:6px 6px 6px 20px;border-radius:999px}
+  /* el vidrio de la barra va en ::before: así el panel de Biblioteca (otro vidrio) sí ve la página detrás */
+  .menu::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;border:1px solid rgba(255,255,255,.6);
+    background:linear-gradient(180deg,rgba(255,255,255,.76),rgba(255,255,255,.64));
+    -webkit-backdrop-filter:var(--vidrio-filtro);backdrop-filter:var(--vidrio-filtro);box-shadow:var(--vidrio-luz),var(--vidrio-sombra)}
+  .sin-vidrio .menu::before{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,251,244,.94)}
+  .menu__isla{flex:1;padding:0;background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .menu__logo{display:block;line-height:0;margin-right:auto}
+  .menu__logo img{height:32px;width:auto}
+  .menu__lista{gap:2px}
+  .menu__item.menu__item--movil{display:none}
+  .menu__item.menu__item--pc{display:flex}
+  .menu__solo-pc{display:block}
+  .menu__item{height:42px;min-width:0;max-width:none;padding:0 16px;color:var(--vidrio-tinta);font-size:.98rem}
+  .menu__item .menu__icono{display:none}
+  .menu__nombre{max-width:none;opacity:1}
+  .menu__item:hover:not([aria-current]){background:rgba(255,255,255,.38)}
+  .menu__flecha{width:7px;height:7px;margin:-3px 0 0 3px;border-right:1.6px solid;border-bottom:1.6px solid;transform:rotate(45deg);transition:transform .2s}
+  .menu__item[aria-expanded="true"] .menu__flecha{transform:rotate(-135deg);margin-top:4px}
+  .menu__biblio{position:relative}
+  .menu__panel{position:absolute;top:calc(100% + 16px);left:50%;transform:translateX(-50%);width:580px;display:grid;grid-template-columns:1fr 1fr;gap:4px 26px;padding:20px 22px 18px;border-radius:24px}
+  .menu__panel[hidden]{display:none}
+  .menu__cab{font:600 .72rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:#8A3A2C;margin:8px 10px 8px}
+  .menu__panel ul a{display:block;padding:8px 10px;border-radius:14px;color:var(--vidrio-tinta);text-decoration:none;transition:background .15s}
+  .menu__panel ul a:hover,.menu__panel ul a:focus-visible{background:rgba(255,255,255,.62)}
+  .menu__panel b{display:block;font:500 1.08rem/1.2 var(--serif)}
+  .menu__panel ul span{display:block;font-size:.85rem;color:#6B5540}
+  .menu__todos{grid-column:1/-1;justify-self:end;margin:8px 10px 0;color:#2F6F73;font-weight:600}
+  .menu__oro{width:auto;height:46px;gap:8px;padding:0 20px;border-radius:999px;font:600 .98rem/1 var(--sans)}
+  .menu__oro .menu__icono{width:20px;height:20px}
+  .menu__oro-txt{position:static;width:auto;height:auto;clip:auto}
+  .menu__oro.es-activo{outline:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .menu__item,.menu__nombre,.menu__flecha,.menu__panel ul a{transition:none}
+}
