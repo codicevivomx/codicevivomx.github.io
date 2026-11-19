@@ -18,13 +18,52 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentEle
 </head>
 <body class="portada">
 <a class="saltar" href="#contenido">Ir al contenido</a>
-<!-- sección: encabezado -->
+<!-- sección: encabezado (en celular, el logo sobre el paisaje; en PC lo lleva la barra del menú) -->
 <header class="encabezado encabezado--mundo">
   <a class="encabezado__logo" href="./" aria-label="Códice Vivo, inicio">
     <img src="assets/logo/codice-vivo-horizontal-oscuro.svg" alt="Códice Vivo" width="551" height="160">
   </a>
-  <nav aria-label="Principal"><a class="enlace" href="biblioteca/">Biblioteca</a></nav>
 </header>
+<!-- sección: menú (vidrio líquido: isla abajo en celular, barra arriba en PC; lo mueve sitio.js) -->
+<nav class="menu" aria-label="Principal" data-menu>
+  <div class="menu__isla vidrio--texto">
+    <span class="menu__gota gota" aria-hidden="true"></span>
+    <a class="menu__logo" href="#inicio"><img src="assets/logo/codice-vivo-horizontal.svg" alt="Códice Vivo, inicio" width="551" height="160"></a>
+    <ul class="menu__lista">
+      <li><a class="menu__item" href="#inicio" data-sec="inicio" aria-label="Inicio"><svg class="menu__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-6h4v6"/></svg><span class="menu__nombre">Inicio</span></a></li>
+      <li><a class="menu__item" href="#pruebalo" data-sec="pruebalo" aria-label="Pruébalo"><svg class="menu__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span class="menu__nombre">Pruébalo</span></a></li>
+      <li class="menu__biblio">
+        <a class="menu__item menu__item--movil" href="#incluye" data-sec="incluye" aria-label="Biblioteca"><svg class="menu__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4.5 4h4v16h-4zM9.5 4h4v16h-4z"/><path d="M15 5.3l3.7-1 3 14.7-3.7 1z"/></svg><span class="menu__nombre">Biblioteca</span></a>
+        <button type="button" class="menu__item menu__item--pc" data-sec="incluye" aria-expanded="false" aria-controls="menu-panel"><span class="menu__nombre">Biblioteca</span><span class="menu__flecha" aria-hidden="true"></span></button>
+        <div class="menu__panel vidrio--texto" id="menu-panel" hidden>
+          <div class="menu__col">
+            <p class="menu__cab">Temas</p>
+            <ul>
+              <li><a href="plantilla/interactivos/leyes-de-newton-1/plus/"><b>Primera ley de Newton</b><span>Inercia</span></a></li>
+              <li><a href="plantilla/interactivos/tiro-parabolico/v2/"><b>Tiro parabólico</b><span>Alcance y altura máxima</span></a></li>
+              <li><a href="plantilla/interactivos/prensa-hidraulica/plus/"><b>Prensa hidráulica</b><span>Principio de Pascal</span></a></li>
+            </ul>
+          </div>
+          <div class="menu__col">
+            <p class="menu__cab">Retos</p>
+            <ul>
+              <li><a href="retos/esquiador/"><b>El esquiador</b><span>¿Con qué velocidad llega?</span></a></li>
+              <li><a href="retos/catapulta/"><b>La catapulta</b><span>¿Le das a la puerta del castillo?</span></a></li>
+            </ul>
+            <p class="menu__cab">Para saber más</p>
+            <ul>
+              <li><a href="libros/fisica-unam/"><b>Física UNAM</b><span>Temas, retos y preguntas frecuentes</span></a></li>
+            </ul>
+          </div>
+          <a class="menu__todos enlace" href="libros/fisica-unam/">Ver los 15 temas →</a>
+        </div>
+      </li>
+      <li><a class="menu__item" href="#retos" data-sec="retos" aria-label="Retos"><svg class="menu__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg><span class="menu__nombre">Retos</span></a></li>
+      <li class="menu__solo-pc"><a class="menu__item" href="#preventa" data-sec="preventa"><span class="menu__nombre">Lo que viene</span></a></li>
+    </ul>
+  </div>
+  <a class="menu__oro boton--oro" href="#preventa" data-enlace="preventa" aria-label="Preventa: avísame cuando salga"><svg class="menu__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="menu__oro-txt">Avísame cuando salga</span></a>
+</nav>
 <main id="contenido">
 <!-- sección: mundo (portada: paisaje en pixel art; lo pinta assets/js/paisaje.js) -->
 <section class="mundo" id="inicio" aria-labelledby="titular">
