@@ -340,3 +340,49 @@ else window.addEventListener('load', function () { setTimeout(fuentesDeAbajo, 0)
     });
   }
 })();
+
+/* Pruébalo: la lámina (tiro-parabolico/v2) se incrusta cuando la sección se acerca,
+   para no frenar la portada. Sin IntersectionObserver, o si tocan el botón, se carga al momento. */
+(function () {
+  document.querySelectorAll('[data-demo]').forEach(function (demo) {
+    var listo = false;
+    var carga = function () {
+      if (listo) return; listo = true;
+      var marco = document.createElement('iframe');
+      marco.src = demo.getAttribute('data-demo');
+      marco.title = demo.getAttribute('data-titulo') || 'Lámina interactiva';
+      marco.setAttribute('allow', 'fullscreen');
+      // abre en el laboratorio (se desplaza solo el documento de adentro, no la portada)
+      // (la lámina termina de armarse después de «load»: se reajusta unos instantes mientras nadie la mueva)
+      marco.addEventListener('load', function () {
+        var w = marco.contentWindow, puesto = 0, vueltas = 0;
+        var ajusta = function () {
+          try {
+            var lab = marco.contentDocument.querySelector('.lab');
+            if (!lab || Math.abs(w.scrollY - puesto) > 2) return;          // ya se movió a mano: no se toca
+            puesto = Math.max(0, Math.round(lab.getBoundingClientRect().top + w.scrollY - 8));
+            w.scrollTo(0, puesto); puesto = w.scrollY;
+            if (++vueltas < 16) setTimeout(ajusta, 150);
+          } catch (e) {}
+        };
+        ajusta();
+      });
+      demo.textContent = '';
+      demo.appendChild(marco);
+      return marco;
+    };
+    var boton = demo.querySelector('.demo__boton');
+    if (boton) boton.addEventListener('click', function (e) { e.preventDefault(); var m = carga(); if (m) m.focus(); });
+    // se vigila hasta que la persona empieza a bajar: en celular la sección asoma desde el primer pantallazo
+    if ('IntersectionObserver' in window) {
+      var vigila = function () {
+        window.removeEventListener('scroll', vigila);
+        var ojo = new IntersectionObserver(function (en) {
+          if (en[0].isIntersecting) { ojo.disconnect(); carga(); }
+        }, { rootMargin: '0px 0px 300px 0px' });
+        ojo.observe(demo);
+      };
+      if (window.scrollY > 40) vigila(); else window.addEventListener('scroll', vigila, { passive: true });
+    }
+  });
+})();
