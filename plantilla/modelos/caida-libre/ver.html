@@ -54,11 +54,11 @@ const MODELOS = [   // vista inicial: la avioneta desde abajo (desde arriba el a
   { id: "avioneta", nombre: "Avioneta", vista: "abajo" },
   { id: "paracaidista", nombre: "Paracaidista", vista: "arriba" },
   { id: "tandem", nombre: "Tándem", vista: "arriba" },
-  { id: "paracaidas", nombre: "Paracaídas", vista: "arriba" },
+  { id: "paracaidas", nombre: "Paracaídas", vista: "arriba", fin: true },   // fin: abre ya inflado
 ];
 const TINTA = 0x2a2a33, FONDO = 0xf4f4f1;
 const GROSOR_PX = 2.2;                     // contorno en píxeles CSS
-const NO_CONTORNO = /interior/i;           // la cabina por dentro no lleva contorno
+const NO_CONTORNO = /interior|cuerda/i;    // sin contorno: la cabina por dentro y las cuerdas (líneas finas)
 const q = new URLSearchParams(location.search);
 
 const lienzo = document.getElementById("lienzo");
@@ -84,13 +84,16 @@ const UMBRAL = 0.12;                        // n·l por encima = cara con luz
 
 const toonVert = /* glsl */`
   #include <common>
+  #include <morphtarget_pars_vertex>
   #include <skinning_pars_vertex>
   varying vec3 vNormal;
   void main() {
     #include <beginnormal_vertex>
+    #include <morphnormal_vertex>
     #include <skinbase_vertex>
     #include <skinnormal_vertex>
     #include <begin_vertex>
+    #include <morphtarget_vertex>
     #include <skinning_vertex>
     vNormal = normalize(mat3(modelMatrix) * objectNormal);   // normal en mundo
     gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
@@ -123,14 +126,17 @@ const matContorno = new THREE.ShaderMaterial({
   side: THREE.BackSide,
   vertexShader: /* glsl */`
     #include <common>
+    #include <morphtarget_pars_vertex>
     #include <skinning_pars_vertex>
     attribute vec3 normalContorno;
     uniform float grosor; uniform vec2 resolucion;
     void main() {
       vec3 objectNormal = normalContorno;
+      #include <morphnormal_vertex>   // el empuje sigue a la vela plegada, no a la inflada
       #include <skinbase_vertex>
       #include <skinnormal_vertex>
       #include <begin_vertex>
+      #include <morphtarget_vertex>
       #include <skinning_vertex>
       vec4 clip = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
       vec3 n = normalize(normalMatrix * objectNormal);
@@ -170,11 +176,15 @@ function estilizar(raiz) {
     const g = m.geometry;
     tris += (g.index ? g.index.count : g.attributes.position.count) / 3;
     m.material = Array.isArray(m.material) ? m.material.map(materialToon) : materialToon(m.material);
-    const nombre = (m.name + " " + (m.parent?.name || ""));
+    const nombre = [m.name, m.parent?.name || "", ...[].concat(m.material).map(x => x.name)].join(" ");
     if (NO_CONTORNO.test(nombre)) continue;
     normalesSuaves(g);
     const c = m.isSkinnedMesh ? new THREE.SkinnedMesh(g, matContorno) : new THREE.Mesh(g, matContorno);
     if (m.isSkinnedMesh) c.bind(m.skeleton, m.bindMatrix);
+    if (m.morphTargetInfluences) {        // el contorno se deforma igual que la malla (paracaídas)
+      c.morphTargetInfluences = m.morphTargetInfluences;
+      c.morphTargetDictionary = m.morphTargetDictionary;
+    }
     c.name = "contorno"; c.renderOrder = -1;
     m.add(c);
   }
@@ -187,10 +197,9 @@ let actual = null, mixers = [], helice = null, girar = false, cache = {};
 const caja = new THREE.Box3(), centro = new THREE.Vector3(), tam = new THREE.Vector3();
 
 function cajaPosada(obj) {
-  // Las mallas con esqueleto guardan la caja de la pose de reposo: se recalcula con la pose actual.
+  // Caja exacta con la pose y los morphs actuales (la de la geometría es la del reposo, o suma los morphs).
   obj.updateMatrixWorld(true);
-  obj.traverse(o => { if (o.isSkinnedMesh) o.computeBoundingBox(); });
-  return new THREE.Box3().setFromObject(obj);
+  return new THREE.Box3().setFromObject(obj, true);
 }
 
 const VISTAS = {   // dirección hacia la cámara (glTF: frente del modelo = +Z, derecha = -X)
@@ -234,9 +243,31 @@ function ajustar() {
   camara.updateProjectionMatrix();
 }
 
+const obtener = async id => cache[id] || (cache[id] = await loader.loadAsync(`${id}.glb`));
+
+// Reproduce un clip una vez y se queda en el último cuadro. t: segundo fijo (para capturas), "fin" = al final.
+function reproducir(obj, clip, t) {
+  const m = new THREE.AnimationMixer(obj);
+  const a = m.clipAction(clip);
+  a.setLoop(THREE.LoopOnce); a.clampWhenFinished = true; a.play();
+  if (t === "fin") a.time = clip.duration;
+  else if (t != null && !isNaN(t)) { a.time = Math.min(+t, clip.duration); a.paused = true; }
+  m.update(0); mixers.push(m);
+  return a;
+}
+
+// Recolorea las celdas de un paracaídas ya estilizado, p. ej. {vela_1: 0x6f93c9}. Materiales: vela_1, vela_2, vela_3.
+function colorearVela(obj, colores) {
+  obj.traverse(o => {
+    if (!o.isMesh || o.name === "contorno") return;
+    for (const m of [].concat(o.material)) if (m.name in colores) m.uniforms.color.value.set(colores[m.name]);
+  });
+}
+
 // modo: nombre de una acción, "todas" (las poses lado a lado) o vacío (la primera acción).
 async function cargar(id, modo) {
-  const gltf = cache[id] || (cache[id] = await loader.loadAsync(`${id}.glb`));
+  const gltf = await obtener(id);
+  const modelo = MODELOS.find(m => m.id === id);
   const clips = gltf.animations;
   const todas = modo === "todas" && clips.length > 1;
   const lista = todas ? clips : [clips.find(c => c.name === modo) || clips[0] || null];
@@ -246,10 +277,7 @@ async function cargar(id, modo) {
   let tris = 0, x = 0;
   for (const clip of lista) {
     const o = clonarEsqueleto(gltf.scene);          // el original queda limpio para recargar
-    if (clip) {
-      const m = new THREE.AnimationMixer(o);
-      m.clipAction(clip).play(); m.update(0); mixers.push(m);
-    }
+    if (clip) reproducir(o, clip, q.get("t") ?? (!modo && modelo.fin ? "fin" : null));
     tris = estilizar(o);
     actual.add(o);
     if (todas) {
@@ -279,14 +307,62 @@ async function cargar(id, modo) {
     b.onclick = () => cargar(id, "todas");
     acc.append(b);
   }
+  if (id === "paracaidas") {
+    const b = document.createElement("button");
+    b.textContent = "Montaje";
+    b.onclick = () => montaje();
+    acc.append(b);
+  }
   cajaPosada(actual.children[0]).getSize(tam);
-  const modelo = MODELOS.find(m => m.id === id);
   document.getElementById("info").textContent =
-    `${modelo.nombre} · ${tris} triángulos` + (todas ? "" : clips.length ? ` · pose «${lista[0].name}»` : "") +
+    `${modelo.nombre} · ${tris} triángulos` + (todas ? "" : clips.length ? ` · «${lista[0].name}»` : "") +
     `\n${tam.x.toFixed(2)} × ${tam.y.toFixed(2)} × ${tam.z.toFixed(2)} m`;
   for (const b of document.querySelectorAll("#modelos button"))
     b.setAttribute("aria-pressed", String(b.dataset.id === id));
   encuadrar(q.get("vista") || modelo.vista);
+}
+
+// Montaje: paracaidista y tándem en «vertical», cada uno con su paracaídas colgado del hueso «enganche».
+// El del tándem es 1.3× más grande y con otro color de celdas (así se distinguen en la escena).
+async function montaje() {
+  const [gP, gT, gV] = await Promise.all(["paracaidista", "tandem", "paracaidas"].map(obtener));
+  if (actual) escena.remove(actual);
+  actual = new THREE.Group();
+  mixers = [];
+  const abrir = [];
+  let tris = 0;
+  const filas = [{ g: gP, x: -3.2, escala: 1.0, colores: null },
+                 { g: gT, x: 3.2, escala: 1.3, colores: { vela_1: 0x6f93c9 } }];
+  for (const f of filas) {
+    const persona = clonarEsqueleto(f.g.scene);
+    persona.updateMatrixWorld(true);                   // pose de reposo: el cuerpo de pie
+    const eng = persona.getObjectByName("enganche");
+    // La vela se alinea con el cuerpo (no con los ejes propios del hueso) y sigue al pecho.
+    const qCuerpo = persona.getWorldQuaternion(new THREE.Quaternion());
+    const vela = clonarEsqueleto(gV.scene);
+    vela.quaternion.copy(eng.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(qCuerpo));
+    vela.scale.setScalar(f.escala / eng.getWorldScale(new THREE.Vector3()).x);
+    eng.add(vela);
+    reproducir(persona, f.g.animations.find(c => c.name === "vertical"), "fin");
+    abrir.push(reproducir(vela, gV.animations.find(c => c.name === "abrir"), q.get("t") ?? "fin"));
+    tris += estilizar(persona);
+    if (f.colores) colorearVela(vela, f.colores);
+    persona.position.x = f.x;
+    actual.add(persona);
+  }
+  escena.add(actual);
+  helice = null;
+  document.getElementById("helice").disabled = true;
+  const acc = document.getElementById("acciones");
+  acc.innerHTML = "";
+  const b = document.createElement("button");
+  b.textContent = "Abrir los dos";
+  b.onclick = () => abrir.forEach(a => { a.paused = false; a.reset().play(); });
+  acc.append(b);
+  document.getElementById("info").textContent =
+    `Montaje · paracaidista + tándem con sus paracaídas · ${tris} triángulos`;
+  for (const bt of document.querySelectorAll("#modelos button")) bt.setAttribute("aria-pressed", "false");
+  encuadrar(q.get("vista") || "arriba");
 }
 
 const cont = document.getElementById("modelos");
@@ -314,7 +390,8 @@ renderer.setAnimationLoop(() => {
   renderer.render(escena, camara);
 });
 
-cargar(q.get("modelo") || "avioneta", q.get("poses") === "todas" ? "todas" : q.get("accion")).catch(e => {
+(q.has("montaje") ? montaje()
+  : cargar(q.get("modelo") || "avioneta", q.get("poses") === "todas" ? "todas" : q.get("accion"))).catch(e => {
   document.getElementById("info").textContent = "No se pudo cargar: " + e.message;
 });
 </script>

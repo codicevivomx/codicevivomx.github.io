@@ -20,6 +20,8 @@ PALETA = {
     "menta": "8FD3B0", "menta_oscuro": "5FAE8C", "coral": "E39A84",
     "coral_oscuro": "C77964", "azul": "6F93C9", "vidrio": "A8C4E6", "tinta": "2A2A33",
     "llanta": "3B3E4A", "traje_alumna": "E3B95A",
+    # Paracaídas: las celdas usan tres materiales propios para poder recolorearlas desde three.js.
+    "vela_1": "8FD3B0", "vela_2": "F4F4F1", "vela_3": "E39A84", "cuerda": "3B3E4A", "boca": "9FA3AA",
 }
 Z0 = 0.95          # altura de la cadera = centro de masa aproximado (≈55 % de la estatura)
 DXH = 0.02         # hombros 2 cm más afuera (pecho más ancho)
@@ -437,7 +439,7 @@ def crear_acciones(arm, juego):
         for pr, g in pares:
             aplicar_pose(arm, g, pr, otros)
         for pb in arm.pose.bones:
-            for f in (1, 24):
+            for f in (0, 24):   # el clip empieza en 0 s
                 pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)
         for fc in curvas(act, ad):
             for kp in fc.keyframe_points:
