@@ -76,6 +76,7 @@ class Pieza:
         s.bm = bmesh.new()
         s.dl = s.bm.verts.layers.deform.verify()
         s.mats, s.grupos = [], list(grupos)
+        s.prefijo = ""          # se antepone a los huesos de los pesos (p. ej. "alu_" en el tándem)
 
     def mi(s, n):
         if n not in s.mats:
@@ -86,7 +87,7 @@ class Pieza:
         vert = s.bm.verts.new(co)
         for g, w in pesos.items():
             if w > 1e-4:
-                vert[s.dl][s.grupos.index(g)] = w
+                vert[s.dl][s.grupos.index(s.prefijo + g)] = w
         return vert
 
     def f(s, vs, mat):
@@ -185,7 +186,7 @@ def aro(P, c, rx, ry, r, m, n, mat, pesos):
 
 
 # ---------------------------------------------------------------- cuerpo
-def cuerpo(P, traje, acento, mochila="azul", casco="blanco", arnes="gris_oscuro", dy=0.0, dz=0.0):
+def cuerpo(P, traje, acento, mochila="azul", casco="blanco", arnes="gris_oscuro", dy=0.0, dz=0.0, mochila_escala=1.0):
     """Arma una persona en P. dy/dz la desplazan (para el tándem)."""
     o = Vector((0, dy, dz))
 
@@ -268,15 +269,28 @@ def cuerpo(P, traje, acento, mochila="azul", casco="blanco", arnes="gris_oscuro"
     tubo(P, [V(-.13, -.155, 1.30), V(.13, -.155, 1.30)], .015, 6, arnes, pt)
 
     if mochila:
+        k = mochila_escala      # tándem: mochila más grande (lleva dos velas)
         M = [(1.00, .13, .050), (1.04, .155, .068), (1.38, .165, .070), (1.46, .145, .058)]
-        rings = [anillo(P, V(0, 0.138 + ry, z), X, Y, rx, ry, 12, peso_torso(z), p=3.2) for z, rx, ry in M]
-        loft(P, rings, mochila, (V(0, .185, 0.99), peso_torso(0.99), mochila), (V(0, .195, 1.47), {"pecho": 1}, mochila))
+        rings = [anillo(P, V(0, 0.138 + ry * k, z), X, Y, rx * min(k, 1.1), ry * k, 12, peso_torso(z), p=3.2)
+                 for z, rx, ry in M]
+        loft(P, rings, mochila, (V(0, .138 + .047 * k, 0.99), peso_torso(0.99), mochila),
+             (V(0, .138 + .057 * k, 1.47), {"pecho": 1}, mochila))
         for s, _ in LADOS:   # salidas de las bandas (aquí se unen las bandas del paracaídas)
             tubo(P, [V(s * .085, .195, 1.45), V(s * .085, .195, 1.50)], .02, 6, arnes, lambda p: {"pecho": 1})
 
 
 # ---------------------------------------------------------------- esqueleto
-def huesos(dy=0.0, dz=0.0, prefijo=""):
+def huesos(dy=0.0, dz=0.0, prefijo="", padre_raiz=None, enganche=True):
+    """Lista (nombre, cabeza, cola, padre). padre_raiz cuelga la cadera de otro hueso (alumna → instructor)."""
+    lista = _huesos(dy, dz, prefijo)
+    if not enganche:
+        lista = [h for h in lista if not h[0].endswith("enganche")]
+    if padre_raiz:
+        lista = [(n, h, t, padre_raiz if p is None else p) for n, h, t, p in lista]
+    return lista
+
+
+def _huesos(dy=0.0, dz=0.0, prefijo=""):
     o = Vector((0, dy, dz))
     H = [("cadera", (0, 0, Z0), (0, 0, 1.08), None), ("columna", (0, 0, 1.08), (0, 0, 1.30), "cadera"),
          ("pecho", (0, 0, 1.30), (0, 0, 1.47), "columna"), ("cuello", (0, 0, 1.47), (0, 0, 1.55), "pecho"),
@@ -310,7 +324,7 @@ def crear_esqueleto(col, nombre, lista):
             eb.parent = ad.edit_bones[p]
     bpy.ops.object.mode_set(mode="OBJECT")
     for b in ad.bones:
-        b.use_deform = not b.name.endswith("enganche")
+        b.use_deform = not (b.name.endswith("enganche") or b.name == "centro")
     ad.display_type = "STICK"
     return ob
 
@@ -364,11 +378,16 @@ EJES = {"X": X, "Y": Y, "Z": Z}
 REFERENCIA = {"pecho", "cadera"}   # marcos para ("dir", ...)
 
 
-def aplicar_pose(arm, giros, prefijo=""):
+def aplicar_pose(arm, giros, prefijo="", otros=()):
+    """Pone la pose en los huesos con ese prefijo ("" = sin prefijo; otros = prefijos que se saltan)."""
     delta = {}                                  # giro de cada hueso en ejes del cuerpo (padres primero)
     for pb in arm.pose.bones:
+        if prefijo and not pb.name.startswith(prefijo):
+            continue
+        if not prefijo and any(pb.name.startswith(o) for o in otros):
+            continue
         pb.rotation_mode = "QUATERNION"
-        nombre = pb.name[len(prefijo):] if pb.name.startswith(prefijo) else pb.name
+        nombre = pb.name[len(prefijo):]
         q = Quaternion()
         for eje, g in giros.get(nombre, []):
             if eje == "dir":
@@ -401,7 +420,8 @@ def curvas(act, ad):
     return list(getattr(act, "fcurves", []))
 
 
-def crear_acciones(arm, juego, prefijos=("",)):
+def crear_acciones(arm, juego):
+    """juego = {nombre: giros} o {nombre: [(prefijo, giros), ...]} (tándem: instructor y alumna)."""
     """Una acción por pose (2 claves iguales) en su propia pista NLA."""
     ad = arm.animation_data or arm.animation_data_create()
     for t in list(ad.nla_tracks):
@@ -412,8 +432,10 @@ def crear_acciones(arm, juego, prefijos=("",)):
             bpy.data.actions.remove(act)
         act = bpy.data.actions.new(nombre)
         ad.action = act
-        for pr in prefijos:
-            aplicar_pose(arm, giros, pr)
+        pares = giros if isinstance(giros, list) else [("", giros)]
+        otros = tuple(pr for pr, _ in pares if pr)
+        for pr, g in pares:
+            aplicar_pose(arm, g, pr, otros)
         for pb in arm.pose.bones:
             for f in (1, 24):
                 pb.keyframe_insert("rotation_quaternion", frame=f, group=pb.name)

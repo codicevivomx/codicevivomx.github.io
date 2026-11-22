@@ -108,7 +108,11 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
     paracaídas), acciones «parada», «arco» (cactus) y «vertical» (solo rotación, LINEAR). Cuerpo, arnés,
     esqueleto y poses en `fuentes/persona.py` (lo hereda el tándem). `ver.html`: botones por pose,
     «Todas las poses» y vista «Debajo». `.blend` renombrado a `caida-libre.blend` (una escena por modelo).
-  - [ ] tándem · [ ] paracaídas
+  - [x] tándem (22-nov-2026): 4 480 triángulos, 36 huesos. Instructor (menta, casco gris, mochila grande,
+    `enganche`) y alumna (`alu_*`, #E3B95A) en un esqueleto; raíz «centro» en el centro de masa de los dos.
+    Acciones «arco» (piernas de la alumna entre las del instructor) y «vertical» (instructor en los
+    mandos, alumna sujeta la pechera).
+  - [ ] paracaídas
 - [ ] Unificar three.js para los modelos de caída libre: las láminas usan `assets/js/vendor/three.min.js` (r187, sin
   módulos ni GLTFLoader) y `plantilla/modelos/caida-libre/ver.html` usa three r187 por CDN fijado (importmap, módulos).
   Al hacer la lámina final: vendorizar `three.module.js` + `GLTFLoader` (o un bundle) y llevar el toon de 2 tonos +
