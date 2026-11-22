@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caída libre · El salto · Códice Vivo</title>
+<link rel="preload" href="../../../../assets/fuentes/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="estilos.css">
+<script type="importmap">
+{ "imports": {
+    "three": "../../../../assets/js/vendor/three-r187/three.module.min.js",
+    "three/addons/": "../../../../assets/js/vendor/three-r187/addons/"
+} }
+</script>
+</head>
+<body>
+<div class="wrap">
+  <section class="lamina sombra">
+    <header><div class="eti" id="etiqueta"></div><h1 id="titulo"></h1></header>
+    <div class="maqueta" id="maqueta">
+      <img id="respaldo" src="respaldo.webp" alt="" width="1200" height="620" decoding="async">
+      <canvas id="esc" role="img" hidden></canvas>
+      <canvas id="borde" aria-hidden="true"></canvas>
+      <span id="carga" hidden></span>
+      <div class="claqueta" id="toma" hidden><span class="eti" id="tomaN"></span><b id="tomaT"></b></div>
+      <div class="cuenta" id="cuenta" hidden></div>
+      <div class="titulo3d" id="tit3d" hidden></div>
+    </div>
+    <div class="controles">
+      <button class="btn" id="saltar" disabled></button>
+      <button class="btn sec" id="vel"></button>
+      <input type="range" id="tiempo" min="0" max="17" step="0.02" value="0" disabled>
+    </div>
+  </section>
+
+  <section class="mesa3d" id="mesa3d">
+    <div class="escala"><div class="plano casi">
+      <div class="tapete"></div><div class="lampara"></div>
+      <div class="obj t-cuaderno toca" id="mCuaderno"><div class="hoja sombra3d cinta miniatura"><div class="eti" id="eCuaderno"></div><p class="mano" id="mCuadernoT"></p><p class="mano" style="color:#22212B"><span id="c1" class="oculto"></span><br><span id="c2" class="oculto"></span><br><span id="c3" class="oculto"></span></p></div></div>
+      <div class="obj t-mili" id="mMili"><div class="milimetrico sombra3d cinta miniatura"><div class="eti" id="ePausas"></div><p class="mano" id="mMiliT"></p></div></div>
+      <div class="obj t-postit"><div class="postit sombra3d"><div class="eti" style="color:#6B5A20" id="ePred"></div><p class="mano" id="miPred"></p></div></div>
+      <div class="obj t-ficha"><div class="ficha sombra3d"><div class="eti" style="color:#5A4422" id="eDatos"></div><p class="mano" id="ficha"></p></div></div>
+      <div class="t-regla" id="regla" aria-hidden="true"></div>
+      <div class="obj t-crono"><svg id="cronometro" viewBox="0 0 160 190" aria-hidden="true"></svg><span class="etq" id="nCrono"></span></div>
+      <div class="obj t-velo"><svg id="velocimetro" viewBox="0 0 160 190" aria-hidden="true"></svg><span class="etq" id="nVel"></span></div>
+      <div class="obj t-alti"><svg id="altimetro" viewBox="0 0 160 200" aria-hidden="true"></svg><span class="etq" id="nAlt"></span></div>
+      <svg class="t-lapiz" viewBox="0 0 220 24" aria-hidden="true"><polygon points="0,12 22,4 22,20" fill="#E9C9A0" stroke="#22212B" stroke-width="1.2"/><polygon points="0,12 7,9.5 7,14.5" fill="#22212B"/><rect x="22" y="4" width="160" height="16" fill="#E3B95A" stroke="#22212B" stroke-width="1.2"/><rect x="22" y="4" width="160" height="5" fill="#F0CC72"/><rect x="22" y="15" width="160" height="5" fill="#C99A3E"/><rect x="182" y="3.5" width="16" height="17" fill="#B9BDC6" stroke="#22212B" stroke-width="1.2"/><rect x="198" y="4" width="20" height="16" rx="4" fill="#E39A84" stroke="#22212B" stroke-width="1.2"/></svg>
+    </div></div>
+
+    <div class="levantada" id="levantada" hidden>
+      <button class="cerrar" id="cerrar" hidden>×</button>
+      <div class="hoja sombra cinta" id="hojaArriba" aria-live="polite">
+        <div id="tarjeta">
+          <div class="eti" id="tarjetaT"></div>
+          <p id="tarjetaQ"></p>
+          <div class="ops" id="ops" role="group"></div>
+          <button class="btn" id="irEscena" hidden style="margin-top:12px;width:100%"></button>
+        </div>
+        <div id="resultado" hidden><div class="eti" id="eResultado"></div><p class="retro" id="retro"></p></div>
+      </div>
+      <div class="milimetrico sombra cinta" id="pausa" hidden aria-live="polite">
+        <div class="eti" id="pausaN"></div>
+        <p class="mano" id="pausaT"></p>
+        <div id="grafica" hidden><svg viewBox="0 0 230 180" width="230" height="180" role="img"></svg></div>
+        <p id="pausaQ" style="margin:6px 0 10px;line-height:1.35"></p>
+        <div class="ops" id="pausaOps" style="grid-template-columns:repeat(3,1fr)"></div>
+        <p class="retro" id="pausaR" hidden></p>
+        <button class="btn" id="pausaSeguir" hidden style="margin-top:10px;width:100%"></button>
+      </div>
+    </div>
+  </section>
+
+  <details class="tomas sombra"><summary class="eti" id="storyboard"></summary><ol class="lista" id="lista"></ol></details>
+  <div hidden><span id="c4"></span></div>
+  <footer><span class="eti" id="pie"></span></footer>
+</div>
+<script type="module" src="taller.js"></script>
+</body>
+</html>
