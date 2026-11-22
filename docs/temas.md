@@ -100,6 +100,15 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   controles (ids) van al modo compacto. Aplicarla a prensa y tiro. Idea para vertical: zoom ~2×
   siguiendo la pieza que se mueve.
 - [ ] Menor: salida `.svg` fija en el generador de tiro (6b), como ya la tiene leyes-de-newton-1.
+- [ ] Modelos 3D «taller» de caída libre · El salto (`plantilla/modelos/caida-libre/`, un .glb por modelo, script bpy
+  en `fuentes/` que lo regenera con `blender -b --factory-startup -P`, PNG de vista previa y `ver.html` con toon de
+  2 tonos + contorno). `.blend` fuera del repo (`Documents\codice-blender\caida-libre\`).
+  - [x] avioneta (22-nov-2026): 2 036 triángulos, hélice/puerta/interior aparte, origen en centro de masa.
+  - [ ] paracaidista · [ ] tándem · [ ] paracaídas
+- [ ] Unificar three.js para los modelos de caída libre: las láminas usan `assets/js/vendor/three.min.js` (r187, sin
+  módulos ni GLTFLoader) y `plantilla/modelos/caida-libre/ver.html` usa three r187 por CDN fijado (importmap, módulos).
+  Al hacer la lámina final: vendorizar `three.module.js` + `GLTFLoader` (o un bundle) y llevar el toon de 2 tonos +
+  contorno de `ver.html` a una pieza compartida.
 - [x] Láminas 2.0, piloto tiro parabólico (17-nov-2026, ronda 1, **en espera de OK de Gato**). Diseño: `docs/diseno-laminas-2.md`.
   Piezas compartidas en `plantilla/laminas2/` (módulos ES + `laminas2.css` + `fuentes/caveat-700.woff2`): `tiempo.js`,
   `prediccion.js`, `cuaderno.js`, `herramientas.js`, `escenas.js` (selector + ayudantes de tinta), `practica.js` (motor de retos
