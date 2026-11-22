@@ -35,6 +35,7 @@
   <span class="sep"></span>
   <button id="vArriba">Iso arriba</button>
   <button id="vAbajo">Iso abajo</button>
+  <button id="vDebajo">Debajo</button>
   <span class="sep"></span>
   <button id="helice" aria-pressed="false">Girar hélice</button>
   <span id="acciones"></span>
@@ -47,12 +48,13 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { clone as clonarEsqueleto } from "three/addons/utils/SkeletonUtils.js";
 
-const MODELOS = [
-  { id: "avioneta", nombre: "Avioneta" },
-  { id: "paracaidista", nombre: "Paracaidista" },
-  { id: "tandem", nombre: "Tándem" },
-  { id: "paracaidas", nombre: "Paracaídas" },
+const MODELOS = [   // vista inicial: la avioneta desde abajo (desde arriba el ala tapa la puerta)
+  { id: "avioneta", nombre: "Avioneta", vista: "abajo" },
+  { id: "paracaidista", nombre: "Paracaidista", vista: "arriba" },
+  { id: "tandem", nombre: "Tándem", vista: "arriba" },
+  { id: "paracaidas", nombre: "Paracaídas", vista: "arriba" },
 ];
 const TINTA = 0x2a2a33, FONDO = 0xf4f4f1;
 const GROSOR_PX = 2.2;                     // contorno en píxeles CSS
@@ -181,14 +183,26 @@ function estilizar(raiz) {
 
 // ---------- carga y vistas
 const loader = new GLTFLoader();
-let actual = null, mixer = null, helice = null, girar = false;
+let actual = null, mixers = [], helice = null, girar = false, cache = {};
 const caja = new THREE.Box3(), centro = new THREE.Vector3(), tam = new THREE.Vector3();
 
-function encuadrar(abajo) {
-  caja.setFromObject(actual); caja.getCenter(centro); caja.getSize(tam);
+function cajaPosada(obj) {
+  // Las mallas con esqueleto guardan la caja de la pose de reposo: se recalcula con la pose actual.
+  obj.updateMatrixWorld(true);
+  obj.traverse(o => { if (o.isSkinnedMesh) o.computeBoundingBox(); });
+  return new THREE.Box3().setFromObject(obj);
+}
+
+const VISTAS = {   // dirección hacia la cámara (glTF: frente del modelo = +Z, derecha = -X)
+  arriba: [-1, 1, 1], abajo: [-1, -1, 1],
+  debajo: [0, -1, 0.35],   // contrapicado frontal (tomas 3-4, bullet time): el arco se ve de frente
+};
+function encuadrar(vista) {
+  vista = VISTAS[vista] ? vista : "arriba";
+  caja.copy(cajaPosada(actual)); caja.getCenter(centro); caja.getSize(tam);
   const r = tam.length() / 2;
   // Isométrica: frente-derecha del modelo (glTF: nariz hacia +Z, derecha hacia -X).
-  const dir = new THREE.Vector3(-1, abajo ? -1 : 1, 1).normalize();
+  const dir = new THREE.Vector3(...VISTAS[vista]).normalize();
   camara.position.copy(centro).addScaledVector(dir, r * 4);
   camara.up.set(0, 1, 0);
   camara.lookAt(centro);
@@ -205,8 +219,8 @@ function encuadrar(abajo) {
   camara.zoom = 1; camara.userData.mx = mx * 1.1; camara.userData.my = my * 1.1;
   controles.target.copy(centro);
   ajustar(); controles.update();
-  document.getElementById("vArriba").setAttribute("aria-pressed", String(!abajo));
-  document.getElementById("vAbajo").setAttribute("aria-pressed", String(abajo));
+  for (const [id, v] of [["vArriba", "arriba"], ["vAbajo", "abajo"], ["vDebajo", "debajo"]])
+    document.getElementById(id).setAttribute("aria-pressed", String(v === vista));
 }
 
 function ajustar() {
@@ -220,30 +234,59 @@ function ajustar() {
   camara.updateProjectionMatrix();
 }
 
-async function cargar(id) {
-  const gltf = await loader.loadAsync(`${id}.glb`);
+// modo: nombre de una acción, "todas" (las poses lado a lado) o vacío (la primera acción).
+async function cargar(id, modo) {
+  const gltf = cache[id] || (cache[id] = await loader.loadAsync(`${id}.glb`));
+  const clips = gltf.animations;
+  const todas = modo === "todas" && clips.length > 1;
+  const lista = todas ? clips : [clips.find(c => c.name === modo) || clips[0] || null];
   if (actual) escena.remove(actual);
-  actual = gltf.scene;
-  const tris = estilizar(actual);
+  actual = new THREE.Group();
+  mixers = [];
+  let tris = 0, x = 0;
+  for (const clip of lista) {
+    const o = clonarEsqueleto(gltf.scene);          // el original queda limpio para recargar
+    if (clip) {
+      const m = new THREE.AnimationMixer(o);
+      m.clipAction(clip).play(); m.update(0); mixers.push(m);
+    }
+    tris = estilizar(o);
+    actual.add(o);
+    if (todas) {
+      // Fila de poses a lo largo de (1, 0, 1): es la horizontal de pantalla en las dos isométricas.
+      const c = cajaPosada(o), ancho = Math.max(c.max.x - c.min.x, c.max.z - c.min.z);
+      const d = x + ancho / 2;
+      o.position.set(d / Math.SQRT2, 0, d / Math.SQRT2);
+      x += ancho + 0.3;
+    }
+  }
   escena.add(actual);
   helice = actual.getObjectByName("Helice");
   document.getElementById("helice").disabled = !helice;
-  mixer = new THREE.AnimationMixer(actual);
   const acc = document.getElementById("acciones");
   acc.innerHTML = "";
-  for (const clip of gltf.animations) {
+  for (const clip of clips) {
     const b = document.createElement("button");
     b.textContent = clip.name;
-    b.onclick = () => { mixer.stopAllAction(); mixer.clipAction(clip).reset().play(); };
+    b.setAttribute("aria-pressed", String(!todas && clip === lista[0]));
+    b.onclick = () => cargar(id, clip.name);
     acc.append(b);
   }
-  caja.setFromObject(actual); caja.getSize(tam);
+  if (clips.length > 1) {
+    const b = document.createElement("button");
+    b.textContent = "Todas las poses";
+    b.setAttribute("aria-pressed", String(todas));
+    b.onclick = () => cargar(id, "todas");
+    acc.append(b);
+  }
+  cajaPosada(actual.children[0]).getSize(tam);
+  const modelo = MODELOS.find(m => m.id === id);
   document.getElementById("info").textContent =
-    `${MODELOS.find(m => m.id === id).nombre} · ${tris} triángulos\n` +
-    `${tam.x.toFixed(1)} × ${tam.y.toFixed(1)} × ${tam.z.toFixed(1)} m`;
+    `${modelo.nombre} · ${tris} triángulos` + (todas ? "" : clips.length ? ` · pose «${lista[0].name}»` : "") +
+    `\n${tam.x.toFixed(2)} × ${tam.y.toFixed(2)} × ${tam.z.toFixed(2)} m`;
   for (const b of document.querySelectorAll("#modelos button"))
     b.setAttribute("aria-pressed", String(b.dataset.id === id));
-  encuadrar(q.get("vista") !== "arriba");
+  encuadrar(q.get("vista") || modelo.vista);
 }
 
 const cont = document.getElementById("modelos");
@@ -254,8 +297,9 @@ for (const m of MODELOS) {
   cont.append(b);
   fetch(`${m.id}.glb`, { method: "HEAD" }).then(r => { b.disabled = !r.ok; }).catch(() => {});
 }
-document.getElementById("vArriba").onclick = () => encuadrar(false);
-document.getElementById("vAbajo").onclick = () => encuadrar(true);
+document.getElementById("vArriba").onclick = () => encuadrar("arriba");
+document.getElementById("vAbajo").onclick = () => encuadrar("abajo");
+document.getElementById("vDebajo").onclick = () => encuadrar("debajo");
 document.getElementById("helice").onclick = e => {
   girar = !girar; e.currentTarget.setAttribute("aria-pressed", String(girar));
 };
@@ -265,12 +309,12 @@ const reloj = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = reloj.getDelta();
   if (girar && helice) helice.rotation.z += dt * 40;   // eje de la hélice = Z local en glTF
-  mixer?.update(dt);
+  for (const m of mixers) m.update(dt);
   controles.update();
   renderer.render(escena, camara);
 });
 
-cargar(q.get("modelo") || "avioneta").catch(e => {
+cargar(q.get("modelo") || "avioneta", q.get("poses") === "todas" ? "todas" : q.get("accion")).catch(e => {
   document.getElementById("info").textContent = "No se pudo cargar: " + e.message;
 });
 </script>
