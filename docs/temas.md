@@ -112,7 +112,12 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
     `enganche`) y alumna (`alu_*`, #E3B95A) en un esqueleto; raíz «centro» en el centro de masa de los dos.
     Acciones «arco» (piernas de la alumna entre las del instructor) y «vertical» (instructor en los
     mandos, alumna sujeta la pechera).
-  - [ ] paracaídas
+  - [x] paracaídas (22-nov-2026): 1 164 triángulos, vela de 9 celdas en arco (4.8 m), cuerdas A/B/C, bandas,
+    frenos y mandos. Origen = punto de enganche (se cuelga del hueso «enganche»). Celdas en materiales
+    `vela_1/2/3` (recolorear con `colorearVela()` de `ver.html`). Acción «abrir» 1.5 s con morph targets:
+    bolsa (0 s) → haz largo con cuerdas estiradas (0.5 s) → vela inflada (1.5 s). `ver.html`: «Montaje»
+    (paracaidista + tándem con sus paracaídas, el del tándem 1.3× y azul) y `?t=` para congelar un instante.
+  - Nota para la lámina: la vela se alinea al cuerpo con la rotación de reposo de `enganche` (ver `montaje()`).
 - [ ] Unificar three.js para los modelos de caída libre: las láminas usan `assets/js/vendor/three.min.js` (r187, sin
   módulos ni GLTFLoader) y `plantilla/modelos/caida-libre/ver.html` usa three r187 por CDN fijado (importmap, módulos).
   Al hacer la lámina final: vendorizar `three.module.js` + `GLTFLoader` (o un bundle) y llevar el toon de 2 tonos +
