@@ -118,10 +118,18 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
     bolsa (0 s) → haz largo con cuerdas estiradas (0.5 s) → vela inflada (1.5 s). `ver.html`: «Montaje»
     (paracaidista + tándem con sus paracaídas, el del tándem 1.3× y azul) y `?t=` para congelar un instante.
   - Nota para la lámina: la vela se alinea al cuerpo con la rotación de reposo de `enganche` (ver `montaje()`).
-- [ ] Unificar three.js para los modelos de caída libre: las láminas usan `assets/js/vendor/three.min.js` (r187, sin
-  módulos ni GLTFLoader) y `plantilla/modelos/caida-libre/ver.html` usa three r187 por CDN fijado (importmap, módulos).
-  Al hacer la lámina final: vendorizar `three.module.js` + `GLTFLoader` (o un bundle) y llevar el toon de 2 tonos +
-  contorno de `ver.html` a una pieza compartida.
+- [x] Lámina «Caída libre · El salto» (taller, boceto 9 con modelos reales, 22-nov-2026, **en espera de OK de Gato**):
+  `plantilla/interactivos/caida-libre/taller/` (`index.html`, `estilos.css`, `taller.js` director, `datos.js` evaluador
+  de `plus/`, `mesa.js` mesa e instrumentos, `escena.js` 3D, `toon.js`, `etiquetas.js`, `respaldo.webp`). El 3D
+  (three + .glb) se carga al tocar «Ver la escena»; antes, imagen fija de la escena inicial. Números: bloque nuevo
+  `taller` del JSON + `lecturas.formulas` + `prediccion` (n = 3). Etiquetas en HTML que no se enciman; en las pausas la
+  cámara sube lo que tapa la hoja. three r187 en `assets/js/vendor/three-r187/`; fuentes Geist, Geist Mono y Bricolage
+  en `assets/fuentes/` (Caveat de `laminas2/`). Peso: 218 KB gzip al abrir + 380 KB al tocar. En la lámina la avioneta
+  vuela sin la hoja de la puerta y las personas van al 92 % de la escala de la avioneta (caben en el estribo).
+  Pendiente menor: aligerar fuentes (Bricolage 77 KB y Caveat 51 KB son casi todo el peso inicial).
+- [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
+  taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
+  Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.
 - [x] Láminas 2.0, piloto tiro parabólico (17-nov-2026, ronda 1, **en espera de OK de Gato**). Diseño: `docs/diseno-laminas-2.md`.
   Piezas compartidas en `plantilla/laminas2/` (módulos ES + `laminas2.css` + `fuentes/caveat-700.woff2`): `tiempo.js`,
   `prediccion.js`, `cuaderno.js`, `herramientas.js`, `escenas.js` (selector + ayudantes de tinta), `practica.js` (motor de retos
