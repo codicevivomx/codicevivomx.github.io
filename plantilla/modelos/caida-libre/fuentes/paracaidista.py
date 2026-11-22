@@ -12,6 +12,7 @@ Origen = cadera = centro de masa aproximado.
 """
 import bpy, os, sys, importlib
 
+sys.dont_write_bytecode = True     # sin __pycache__ junto a las fuentes
 try:
     AQUI = os.path.dirname(os.path.abspath(__file__))
 except NameError:
