@@ -341,7 +341,9 @@
       "tituloDe": 0.3,
       "tituloA": 3.6,
       "mezclaPose": 0.4,
-      "abrirCruce": 1.0
+      "abrirCruce": 1.0,
+      "notaVelocidadAvioneta": "velocidadAvioneta es un dato visual (solo para que la avioneta salga de cuadro), no un dato de física",
+      "llenadoRevelacion": 0.86
     },
     "textos": {
       "etiqueta": "Códice Vivo · Física UNAM · Caída libre",

@@ -118,11 +118,13 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
     bolsa (0 s) → haz largo con cuerdas estiradas (0.5 s) → vela inflada (1.5 s). `ver.html`: «Montaje»
     (paracaidista + tándem con sus paracaídas, el del tándem 1.3× y azul) y `?t=` para congelar un instante.
   - Nota para la lámina: la vela se alinea al cuerpo con la rotación de reposo de `enganche` (ver `montaje()`).
-- [x] Lámina «Caída libre · El salto» (taller, boceto 9 con modelos reales, 22-nov-2026, **en espera de OK de Gato**):
+- [x] Lámina «Caída libre · El salto» (taller, boceto 9 con modelos reales, 22-nov-2026, aprobada por Gato con 3
+  arreglos de encuadre hechos: toma 5 encuadrada por fórmula (`llenadoRevelacion`), compensación de la hoja en
+  pausas solo en celular, título «3 500 m» arriba de la avioneta):
   `plantilla/interactivos/caida-libre/taller/` (`index.html`, `estilos.css`, `taller.js` director, `datos.js` evaluador
   de `plus/`, `mesa.js` mesa e instrumentos, `escena.js` 3D, `toon.js`, `etiquetas.js`, `respaldo.webp`). El 3D
   (three + .glb) se carga al tocar «Ver la escena»; antes, imagen fija de la escena inicial. Números: bloque nuevo
-  `taller` del JSON + `lecturas.formulas` + `prediccion` (n = 3). Etiquetas en HTML que no se enciman; en las pausas la
+  `taller` del JSON + `lecturas.formulas` + `prediccion` (n = 3). Etiquetas en HTML que no se enciman; en las pausas (solo celular) la
   cámara sube lo que tapa la hoja. three r187 en `assets/js/vendor/three-r187/`; fuentes Geist, Geist Mono y Bricolage
   en `assets/fuentes/` (Caveat de `laminas2/`). Peso: 218 KB gzip al abrir + 380 KB al tocar. En la lámina la avioneta
   vuela sin la hoja de la puerta y las personas van al 92 % de la escala de la avioneta (caben en el estribo).
