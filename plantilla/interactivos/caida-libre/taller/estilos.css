@@ -25,7 +25,7 @@ canvas#borde{position:absolute;inset:-2px;width:calc(100% + 4px);height:calc(100
 .claqueta::before{content:"";display:block;height:10px;border-radius:6px 6px 0 0;background:repeating-linear-gradient(-45deg,#fff 0 8px,#22212B 8px 16px);margin-bottom:6px}
 .claqueta .eti{color:#BFC3D6;padding:0 10px}.claqueta b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:16px;padding:0 10px}
 .cuenta{position:absolute;inset:0;display:grid;place-items:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:min(32vw,170px);color:#fff;text-shadow:0 6px 30px rgba(20,30,80,.3);pointer-events:none;z-index:4}
-.titulo3d{position:absolute;left:0;right:0;top:28%;text-align:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(42px,10vw,90px);color:#fff;text-shadow:0 6px 30px rgba(20,30,80,.3);pointer-events:none;z-index:4}
+.titulo3d{position:absolute;left:0;right:0;top:5%;text-align:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(42px,10vw,90px);color:#fff;text-shadow:0 6px 30px rgba(20,30,80,.3);pointer-events:none;z-index:4}
 .titulo3d small{display:block;font-family:"Geist Mono",monospace;font-weight:500;font-size:13px;letter-spacing:.12em}
 #carga{position:absolute;right:36px;top:36px;font:12px "Geist Mono",monospace;background:#fff;padding:6px 10px;border-radius:8px;z-index:4}
 @media (max-width:700px){.claqueta{left:20px;bottom:22px;min-width:0}.claqueta b{font-size:14px}#carga{right:22px;top:22px}}

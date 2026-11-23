@@ -201,7 +201,8 @@ let fps = { n: 0, t: 0, min: 1e9 };
 function dibuja(dt) {
   const t = D.fisica(S), v = D.calc({ t }), f = D.fmt(v);
   const tapado = (() => {                       // cuánto del lienzo tapa la hoja levantada (px desde abajo)
-    if (!pausa || $("levantada").hidden) return 0;
+    // solo en celular: ahí la hoja es fija sobre la escena; en PC sube sobre la mesa
+    if (!pausa || $("levantada").hidden || !matchMedia("(max-width:700px)").matches) return 0;
     const a = $("maqueta").getBoundingClientRect(), b = $("levantada").getBoundingClientRect();
     return b.top >= a.bottom ? 0 : Math.max(0, a.bottom - Math.max(a.top, b.top));
   })();

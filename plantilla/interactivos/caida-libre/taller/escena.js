@@ -178,6 +178,18 @@ export async function crearEscena({ lienzo, maqueta, D, rutaModelos, reducido = 
   lienzo.addEventListener("pointerup", () => (arrastre = null));
   lienzo.addEventListener("wheel", (e) => { if (!libre) return; e.preventDefault(); orbita.r = clamp(orbita.r + e.deltaY * .05, 25, 120); }, { passive: false });
 
+  // Toma 5: la cinta, las 3 fotos y las dos velas llenan `llenadoRevelacion` de la altura del lienzo,
+  // en PC y en celular (la distancia se calcula con el fov y el aspecto, no con un número fijo).
+  // En pantalla vertical la claqueta ocupa la franja de abajo: el encuadre usa solo el resto.
+  function revelacion() {
+    const y0 = YP - HT - 1.4, y1 = YP + .6, x0 = XT - 3.5, x1 = XC + 4.5;
+    const c = V((x0 + x1) / 2, (y0 + y1) / 2, (Z0 + ZT) / 2), t = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
+    const lleno = E.llenadoRevelacion ?? .86, libre = cam.aspect < 1 ? .8 : 1;
+    const dist = Math.max((y1 - y0) / (lleno * libre) / (2 * t), (x1 - x0) / .92 / (2 * t * cam.aspect));
+    c.y -= (1 - libre) / 2 * 2 * t * dist;             // sube el contenido sobre la franja de la claqueta
+    return [c.clone().add(V(.62, .04, .78).normalize().multiplyScalar(dist)), c];
+  }
+
   function camara(S, d, est, W, H) {
     cam.clearViewOffset();
     if (est.respaldo) {                                  // imagen fija: avioneta entera con la paracaidista en la puerta
@@ -209,7 +221,7 @@ export async function crearEscena({ lienzo, maqueta, D, rutaModelos, reducido = 
       }
       return [p, o];
     };
-    const i = tomaDe(S); let [p, o] = vertical(i, S);
+    const i = tomaDe(S); let [p, o] = i === TOMAS.length - 1 ? revelacion() : vertical(i, S);
     const ent = S - TOMAS[i].de;                         // fundido de cámara de 0.9 s entre tomas (corte si hay movimiento reducido)
     if (!reducido && i > 0 && ent < 0.9) { const [p0, o0] = vertical(i - 1, TOMAS[i].de - 0.001), k = ease(ent / 0.9); p = p0.lerp(p, k); o = o0.lerp(o, k); }
     cam.position.copy(p); cam.lookAt(o);
