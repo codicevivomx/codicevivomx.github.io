@@ -10,6 +10,7 @@ Licencia MIT (`LICENSE`).
 | `addons/loaders/GLTFLoader.js` | `examples/jsm/loaders/GLTFLoader.js` |
 | `addons/utils/SkeletonUtils.js` | `examples/jsm/utils/SkeletonUtils.js` |
 | `addons/utils/BufferGeometryUtils.js` | `examples/jsm/utils/BufferGeometryUtils.js` (lo usa GLTFLoader) |
+| `addons/libs/meshopt_decoder.module.js` | `examples/jsm/libs/meshopt_decoder.module.js` (meshoptimizer 1.1, MIT): descomprime los .glb hechos con `gltfpack -cc` |
 
 Uso, con un importmap de rutas relativas a la página:
 

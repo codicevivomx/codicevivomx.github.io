@@ -31,7 +31,11 @@ PALETA = {
     "menta": "8FD3B0", "menta_oscuro": "5FAE8C", "coral": "E39A84",
     "coral_oscuro": "C77964", "azul": "6F93C9", "vidrio": "A8C4E6", "tinta": "2A2A33",
     "llanta": "3B3E4A",   # hule: más suave que la tinta para que el contorno siga leyéndose
+    # Detalle sin contorno en la lámina (líneas de panel, remaches, luces):
+    "panel": "C3C5C1", "remache": "B2B6BC", "franja_coral": "E39A84",
+    "luz_roja": "E5533D", "luz_verde": "37C77F", "luz_blanca": "FFF4D6",
 }
+Y_ESTRIBO = 2.74        # centro del estribo; la paracaidista se para en y = 2.66, delante del montante
 
 # ---------------------------------------------------------------- medidas
 # Fuselaje: estaciones (y, medio ancho, z abajo, z arriba, exponente de superelipse).
@@ -92,7 +96,7 @@ def material(nombre):
     m.diffuse_color = col
     m.roughness = 1.0
     m.metallic = 0.0
-    m.use_backface_culling = True   # glTF de una cara: más ligero y el interior se ve bien
+    m.use_backface_culling = nombre not in ("panel", "remache", "franja_coral")   # tiras finas: dos caras
     return m
 
 
@@ -424,13 +428,114 @@ def tren(col):
 def estribo(col):
     """Estribo de salto bajo la puerta, apoyado en el montante derecho: aquí se para la paracaidista."""
     P = Pieza()
-    caja(P, (-0.98, 3.00, 0.92), (0.34, 0.26, 0.035), "gris_oscuro")
-    tubo(P, (-0.56, 3.00, 0.98), (-0.85, 3.00, 0.92), 0.02, 0.02, 6, "gris_oscuro")
+    caja(P, (-0.98, Y_ESTRIBO, 0.92), (0.36, 0.48, 0.035), "gris_oscuro")
+    tubo(P, (-0.56, Y_ESTRIBO, 0.98), (-0.85, Y_ESTRIBO, 0.92), 0.02, 0.02, 6, "gris_oscuro")
     tubo(P, (-0.98, 3.00, 0.94), (-0.98, 2.99, 1.355), 0.018, 0.018, 6, "gris_oscuro")
     P.normales()
     ob = P.objeto("Estribo", col, suave=50)
     bisel(ob, 0.006, 50)
     return ob
+
+
+# ---------------------------------------------------------------- detalle (librea y acabados)
+def en_estacion(y):
+    """Medidas del fuselaje interpoladas en y: (medio ancho, z abajo, z arriba, exponente)."""
+    for a, b in zip(EST, EST[1:]):
+        if a[0] <= y <= b[0]:
+            k = (y - a[0]) / (b[0] - a[0])
+            return tuple(a[i] * (1 - k) + b[i] * k for i in range(1, 5))
+    return EST[-1][1:]
+
+
+def sup(y, ang, sale=0.004):
+    """Punto de la piel del fuselaje en y y ángulo del anillo (0 abajo, 90° = +X, 270° = -X), 'sale' hacia fuera."""
+    hw, zb, zt, p = en_estacion(y)
+    zc, hh, e, a = (zb + zt) / 2, (zt - zb) / 2, 2 / p, radians(ang)
+    sa, ca = sin(a), cos(a)
+    x, z = hw * math.copysign(abs(sa) ** e, sa), zc - hh * math.copysign(abs(ca) ** e, ca)
+    n = Vector((x / max(hw, 1e-3) ** 2, 0, (z - zc) / max(hh, 1e-3) ** 2)).normalized()
+    return Vector((x, y, z)) + n * sale
+
+
+def tira_larga(P, a0, a1, y0, y1, mat, paso=0.25, saltar=None):
+    """Franja a lo largo del fuselaje entre los ángulos a0..a1 (grados)."""
+    ys = [y0 + (y1 - y0) * k / max(1, round((y1 - y0) / paso)) for k in range(round((y1 - y0) / paso) + 1)]
+    for ya, yb in zip(ys, ys[1:]):
+        if saltar and saltar[0] < (ya + yb) / 2 < saltar[1]:
+            continue
+        P.f([P.v(sup(ya, a0)), P.v(sup(yb, a0)), P.v(sup(yb, a1)), P.v(sup(ya, a1))], mat)
+
+
+def anillo_panel(P, y, ancho=0.012, n=24):
+    for k in range(n):
+        a0, a1 = 360 * k / n, 360 * (k + 1) / n
+        P.f([P.v(sup(y - ancho / 2, a0)), P.v(sup(y - ancho / 2, a1)), P.v(sup(y + ancho / 2, a1)), P.v(sup(y + ancho / 2, a0))], "panel")
+
+
+def remache(P, y, ang, t=0.016):
+    c = sup(y, ang, 0.005)
+    hw, zb, zt, p = en_estacion(y)
+    n = (c - Vector((0, y, (zb + zt) / 2))); n.y = 0; n.normalize()
+    u = Vector((0, 1, 0)); w = n.cross(u)
+    P.f([P.v(c + (-u - w) * t / 2), P.v(c + (u - w) * t / 2), P.v(c + (u + w) * t / 2), P.v(c + (-u + w) * t / 2)], "remache")
+
+
+SUP_ALA = [(0.0, 0.0), (0.05, 0.55), (0.25, 1.0), (0.6, 0.72), (1.0, 0.04)]
+INF_ALA = [(0.0, 0.0), (0.05, -0.25), (0.25, -0.3), (0.6, -0.12), (1.0, 0.04)]
+
+
+def ala_en(x):
+    secs = [(0.0, 2.20, 1.62, 0.26), (2.6, 2.20, 1.62, 0.26), (6.5, 2.40, 1.16, 0.17)]
+    ax = abs(x)
+    for a, b in zip(secs, secs[1:]):
+        if a[0] <= ax <= b[0]:
+            k = (ax - a[0]) / (b[0] - a[0])
+            return tuple(a[i] * (1 - k) + b[i] * k for i in range(1, 4))
+    return secs[-1][1:]
+
+
+def pt_ala(x, u, cara, sale=0.005):
+    le, c, t = ala_en(x)
+    tabla = SUP_ALA if cara > 0 else INF_ALA
+    for (u0, w0), (u1, w1) in zip(tabla, tabla[1:]):
+        if u0 <= u <= u1:
+            w = w0 + (w1 - w0) * (u - u0) / (u1 - u0)
+            break
+    return Vector((x, le + u * c, Z_ALA + abs(x) * tan(DIEDRO) + w * t + cara * sale))
+
+
+def detalles_librea(col):
+    P = Pieza()
+    # Franja coral fina bajo la menta, en los dos costados (del lado de la puerta se interrumpe en el hueco).
+    tira_larga(P, 62, 66.5, 0.6, 9.3, "franja_coral")
+    tira_larga(P, 293.5, 298, 0.6, 9.3, "franja_coral", saltar=(2.15, 3.75))
+    # Líneas de paneles en el fuselaje, con remaches a los costados.
+    for y in (1.40, 4.75, 6.50, 8.00):
+        anillo_panel(P, y)
+        for ang in list(range(40, 141, 9)) + list(range(220, 321, 9)):
+            remache(P, y + 0.03, ang)
+    # Ala: juntas de cuerda en ±2.6 m y línea de alerón/flap, arriba y abajo.
+    for cara in (1, -1):
+        for x in (2.6, -2.6):
+            us = [0.0, 0.05, 0.25, 0.6, 1.0]
+            for u0, u1 in zip(us, us[1:]):
+                P.f([P.v(pt_ala(x - .006, u0, cara)), P.v(pt_ala(x + .006, u0, cara)),
+                     P.v(pt_ala(x + .006, u1, cara)), P.v(pt_ala(x - .006, u1, cara))], "panel")
+        for sx in (1, -1):
+            xs = [sx * (0.8 + k * 1.375) for k in range(5)]
+            for xa, xb in zip(xs, xs[1:]):
+                P.f([P.v(pt_ala(xa, .715, cara)), P.v(pt_ala(xb, .715, cara)),
+                     P.v(pt_ala(xb, .73, cara)), P.v(pt_ala(xa, .73, cara))], "panel")
+    # Antena de lámina sobre el lomo, detrás del ala.
+    caja(P, (0, 4.95, 2.395), (0.05, 0.12, 0.02), "gris_oscuro")
+    tubo(P, (0, 4.93, 2.40), (0, 5.12, 2.74), 0.022, 0.008, 4, "gris_oscuro", arriba=(0, 1, 0))
+    # Luces de navegación: roja en la punta izquierda (+X), verde en la derecha (-X), blanca en la cola.
+    zt = Z_ALA + 6.5 * tan(DIEDRO)
+    caja(P, (6.53, 2.56, zt), (0.05, 0.20, 0.05), "luz_roja")
+    caja(P, (-6.53, 2.56, zt), (0.05, 0.20, 0.05), "luz_verde")
+    caja(P, (0, 9.58, 3.27), (0.03, 0.06, 0.05), "luz_blanca")
+    P.normales()
+    return P.objeto("Librea", col, suave=0)
 
 
 def asiento(col):
@@ -635,7 +740,7 @@ def main():
     if n >= 5:
         moviles += [puerta(col), interior(col)]
     if n >= 6:
-        fijas += [estribo(col), asiento(col)]
+        fijas += [estribo(col), asiento(col), detalles_librea(col)]
     vl.update()
     info = {"etapa": etapa}
     if n == len(ETAPAS) - 1:

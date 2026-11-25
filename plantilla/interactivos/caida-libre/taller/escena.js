@@ -5,6 +5,7 @@
 // de maqueta (escena3d.escalaMaqueta) para que se lean junto a 45 m de caída. La tierra es decorado lejano.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";   // .glb comprimidos (gltfpack -cc)
 import { clone as clonar } from "three/addons/utils/SkeletonUtils.js";
 import { estilizar, pieza, ajustarContorno, agregarContorno, contornoPropio } from "./toon.js";
 import { crearEtiquetas } from "./etiquetas.js";
@@ -12,13 +13,62 @@ import { crearTierra } from "./tierra.js";
 
 const C = { blanco: 0xf4f4f1, gris: 0xd6d7d5, grisO: 0x9fa3aa, menta: 0x8fd3b0, azul: 0x6f93c9,
   coral: 0xe39a84, coralO: 0xc77964, alumna: 0xe3b95a, tinta: 0x2a2a33, nube: 0xffffff };
-// Estribo de la avioneta en ejes del .glb (avioneta.py: estribo menos centro de masa, +Y arriba).
-const ESTRIBO = new THREE.Vector3(-0.98, -0.926, 0.472);
-const CADERA = 0.95;                         // persona.Z0: de los pies al origen (centro de masa)
+// Punto del estribo donde se para, en ejes del .glb (avioneta.py: x −0.98, y = 2.66 delante del montante,
+// z 0.955; menos el centro de masa (0, 3.468, 1.871); +Y arriba).
+const ESTRIBO = new THREE.Vector3(-0.98, -0.916, 0.808);
+// De las suelas a la cadera en la pose «parada» agachada (sonda de persona.py: tobillo a 0.369 m → suela ≈ 0.28).
+const CADERA = 0.67;
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const ease = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const CAEN = new Set(["salto", "picado", "persecucion", "abrir"]);
 const LEJOS = { travelling: .75, puerta: .7, salto: 1, picado: 1, persecucion: 1, abrir: 1 };   // retroceso en vertical
+
+// Librea «Aerocódice» (calcas): canvas dibujados una vez con las fuentes de la página y el ícono del logo.
+// Medidas en metros de avioneta.py (Blender: x a la izquierda del piloto, y hacia la cola, z arriba).
+const CM_AV = [0, 3.468, 1.871];                                      // centro de masa de la avioneta (avioneta.py)
+const deBlender = (x, y, z) => new THREE.Vector3(x - CM_AV[0], z - CM_AV[2], -(y - CM_AV[1]));
+async function librea(avM, P, rutaLogo) {
+  await Promise.all(['800 120px "Bricolage Grotesque"', '700 80px "Bricolage Grotesque"'].map((f) => document.fonts.load(f).catch(() => {})));
+  const logo = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = rutaLogo; });
+  const lienzo = (w, h, pinta) => {
+    const c = document.createElement("canvas"); c.width = w; c.height = h; pinta(c.getContext("2d"), w, h);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+  };
+  const tinta = P.css("#2A2A33"), coral = P.css("#E39A84"), menta = P.css("#3FA581");
+  const nombre = lienzo(1024, 192, (x, w, h) => {
+    x.font = '800 132px "Bricolage Grotesque", sans-serif'; x.textBaseline = "middle"; x.textAlign = "center";
+    x.fillStyle = tinta; x.fillText("AEROCÓDICE", w / 2, h / 2 + 6, w - 16);
+  });
+  const matricula = lienzo(512, 128, (x, w, h) => {
+    x.font = '700 92px "Bricolage Grotesque", sans-serif'; x.textBaseline = "middle"; x.textAlign = "center";
+    x.fillStyle = tinta; x.fillText("XB-CDV", w / 2, h / 2 + 4, w - 12);
+  });
+  const capitular = lienzo(256, 256, (x, w, h) => {
+    if (logo) x.drawImage(logo, 100, 100, 318, 318, 6, 6, w - 12, h - 12);   // la loseta roja con la «C» del ícono
+    else { x.fillStyle = coral; x.fillRect(0, 0, w, h); }
+  });
+  if (P.activa && logo) {                                     // el ícono también pasa por la paleta
+    const c = capitular.image, x = c.getContext("2d"), d = x.getImageData(0, 0, c.width, c.height), cache = new Map();
+    for (let i = 0; i < d.data.length; i += 4) {
+      if (!d.data[i + 3]) continue;
+      const k = (d.data[i] << 16) | (d.data[i + 1] << 8) | d.data[i + 2];
+      let n = cache.get(k); if (n === undefined) { n = P.num(k); cache.set(k, n); }
+      d.data[i] = n >> 16; d.data[i + 1] = (n >> 8) & 255; d.data[i + 2] = n & 255;
+    }
+    x.putImageData(d, 0, 0); capitular.needsUpdate = true;
+  }
+  const calca = (tex, w, h, pos, giro) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true,
+      depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }));
+    m.position.copy(pos); m.rotation.y = giro; m.userData.propio = true; avM.add(m); return m;
+  };
+  const conicidad = Math.atan2(0.58 - 0.36, 6.5 - 4.6);         // el costado se estrecha hacia la cola
+  for (const lado of [-1, 1]) {                                   // -1: derecho (la puerta, hacia la cámara); 1: izquierdo
+    calca(nombre, 1.74, 0.36, deBlender(lado * 0.497, 5.60, 1.87), lado * Math.PI / 2 + lado * conicidad);
+    calca(matricula, 0.96, 0.24, deBlender(lado * 0.288, 7.62, 1.88), lado * Math.PI / 2 + lado * Math.atan2(0.36 - 0.22, 8.5 - 6.5));
+    calca(capitular, 0.56, 0.56, deBlender(lado * 0.06, 9.02, 2.48), lado * Math.PI / 2);
+  }
+}
 
 export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido = false, alCargar = () => {} }) {
   const E = D.esc, CI = D.cine, ESC = E.escalaMaqueta, TC = D.TC, K = D.v0.masaTandem;
@@ -35,13 +85,25 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   const esc = new THREE.Scene();
   const CIELO = ["#BFDDEC", "#DCEEF5", "#EEF6F3"];
   esc.fog = new THREE.Fog(0xffffff, CI.tierra.nieblaDe, CI.tierra.nieblaA);
-  function pintaCielo() {                      // cielo en degradado, dentro del lienzo (también para la imagen fija)
+  // Cielo pintado: degradado + pinceladas suaves (acuarela) en un canvas que se pinta UNA vez
+  // (también para la imagen fija). La niebla toma el color de abajo para que el horizonte no se corte.
+  function pintaCielo() {
     const cielo = CIELO.map(P.css);
     esc.fog.color.setStyle(cielo[2]);
-    const c = document.createElement("canvas"); c.width = 2; c.height = 256;
-    const x = c.getContext("2d"), g = x.createLinearGradient(0, 0, 0, 256);
+    const c = document.createElement("canvas"); c.width = c.height = 512;
+    const x = c.getContext("2d"), g = x.createLinearGradient(0, 0, 0, 512);
     g.addColorStop(0, cielo[0]); g.addColorStop(.6, cielo[1]); g.addColorStop(1, cielo[2]);
-    x.fillStyle = g; x.fillRect(0, 0, 2, 256);
+    x.fillStyle = g; x.fillRect(0, 0, 512, 512);
+    let sem = 21; const az = () => (sem = (sem * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < 140; i++) {                               // pinceladas largas y horizontales
+      const yy = az() * 430, claro = az() < .62;
+      x.globalAlpha = .05 + az() * .08;
+      x.fillStyle = claro ? "#ffffff" : cielo[0];
+      x.beginPath(); x.ellipse(az() * 512, yy, 40 + az() * 120, 4 + az() * 10, (az() - .5) * .12, 0, 6.283); x.fill();
+    }
+    x.globalAlpha = .07; x.strokeStyle = "#ffffff"; x.lineWidth = 1.2;     // pincel seco
+    for (let i = 0; i < 60; i++) { const yy = az() * 400, x0 = az() * 512; x.beginPath(); x.moveTo(x0, yy); x.lineTo(x0 + 30 + az() * 90, yy + (az() - .5) * 4); x.stroke(); }
+    x.globalAlpha = 1;
     esc.background?.dispose();
     const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; esc.background = tex;
   }
@@ -52,7 +114,7 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   const et = crearEtiquetas(maqueta);
 
   // ---------- modelos ----------
-  const cargador = new GLTFLoader();
+  const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   let n = 0;
   const cargar = (nombre) => cargador.loadAsync(rutaModelos + nombre + ".glb").then((g) => { alCargar(++n, 4); return g; });
   const [gAv, gP, gT, gV] = await Promise.all(["avioneta", "paracaidista", "tandem", "paracaidas"].map(cargar));
@@ -64,6 +126,7 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   const avM = gAv.scene; avM.scale.setScalar(ESC); avM.rotation.y = Math.PI / 2; av.add(avM);
   tris += estilizar(avM);
   const helice = avM.getObjectByName("Helice");
+  await librea(avM, P, rutaModelos + "../../../assets/logo/codice-vivo-icono.svg");
   const hojaPuerta = avM.getObjectByName("Puerta"); if (hojaPuerta) hojaPuerta.visible = false;   // vuela sin puerta, como los aviones de salto
   const enEstribo = ESTRIBO.clone().add(new THREE.Vector3(0, CADERA * ESCP / ESC, 0));   // origen de la persona parada
   av.updateMatrixWorld(true);
@@ -89,17 +152,25 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
     for (const c of g.animations) { const a = mp.clipAction(c); a.play(); a.paused = true; a.setEffectiveWeight(0); A[c.name] = a; }
     const mv = new THREE.AnimationMixer(vela), abre = mv.clipAction(clip(gV, "abrir"));
     abre.setLoop(THREE.LoopOnce); abre.clampWhenFinished = true; abre.play(); abre.paused = true;
-    return { o, vela, mp, A, mv, abre };
+    return { o, vela, mp, A, mv, abre, velaQ0: vela.quaternion.clone() };
   }
   const yo = persona(gP, 1, null);
   const tan = persona(gT, D.T.escalaVelaTandem, C.azul);
+  // Luces de navegación: siempre del lado iluminado del toon (se leen encendidas).
+  avM.traverse((m) => { if (m.isMesh) for (const x of [].concat(m.material)) if (/^luz_/.test(x.name)) x.uniforms.umbral.value = -2; });
   const contornoYo = contornoPropio(yo.o);                                     // se tiñe con el color de cada segundo
+  // LOD de detalle: costuras, hebillas y reloj solo cuando la cámara está cerca (ahorra llamadas de dibujo).
+  const DETALLE = /costura|hebilla|reloj_/;
+  const detalleDe = (raiz) => { const l = []; raiz.traverse((m) => { if (m.isMesh && m.name !== "contorno" && [].concat(m.material).some((x) => DETALLE.test(x.name))) l.push(m); }); return l; };
+  const detYo = detalleDe(yo.o), detTan = detalleDe(tan.o);
+  const verDetalle = (lista, centro, cerca) => { const v = cam.position.distanceTo(centro) < cerca; lista.forEach((m) => (m.visible = v)); };
 
   // «Fotos» de cada segundo: la paracaidista en arco, translúcida, donde estaba a los 1, 2, 3 s.
   const fotos = D.tramos.map((_, i) => {
     const k = i + 1, f = clonar(gP.scene); f.scale.setScalar(ESCP); esc.add(f);
     const m = new THREE.AnimationMixer(f); m.clipAction(clip(gP, "arco")).play(); m.update(0);
     estilizar(f, { opacidad: 0.3 });
+    f.traverse((m) => { if (m.isMesh && [].concat(m.material).some((x) => /costura|hebilla|reloj_/.test(x.name))) m.visible = false; });   // las fotos no llevan detalle
     f.rotation.y = Math.PI / 2; f.position.set(X0, YP - h(k), Z0); f.visible = false;
     f.userData.et = et.nueva(D.texto(D.T.textos.segundo, {}, { k }), { lado: "izq", prioridad: 2 });
     f.userData.et.pos.set(X0 - 2.2, YP - h(k), Z0);
@@ -293,19 +364,58 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   }
   new ResizeObserver(tam).observe(lienzo); tam();
 
+  // ---------- efectos baratos: vetas de viento y líneas de velocidad (44 tiras instanciadas, 1 llamada) ----------
+  const NV = 44, vetas = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ color: 0x343a52, transparent: true, opacity: 0, depthWrite: false, fog: false, side: THREE.DoubleSide }), NV);   // tinta translúcida (como en el cómic): sobre cielo y tierra claros se lee
+  vetas.frustumCulled = false; vetas.userData.propio = true; vetas.renderOrder = 2; esc.add(vetas);
+  const semVeta = (() => { let s0 = 7; const az = () => (s0 = (s0 * 16807) % 2147483647) / 2147483647; return Array.from({ length: NV }, () => [az(), az(), az(), az()]); })();
+  const mVeta = new THREE.Matrix4(), qVeta = new THREE.Quaternion(), pVeta = new THREE.Vector3(), eVeta = new THREE.Vector3(), yEje = new THREE.Vector3(0, 1, 0);
+  function vetasDe(S, lec, d) {
+    const tau = D.tauDe(S), v = lec.v, hT = lec.h;
+    const viento = S < SALTO + 0.4, caida = S >= SALTO && S < ABRIR + 0.3 && v > 2;
+    vetas.visible = !reducido && (viento || caida);
+    if (!vetas.visible) return;
+    if (caida) {                                  // líneas de velocidad: suben tanto como ella cae (h), largas según v
+      const c = V((X0 + XT) / 2, d.y, (Z0 + ZT) / 2), H = 26, L = 0.4 + v * 0.09;
+      vetas.material.opacity = clamp(v / 20) * 0.32;
+      semVeta.forEach(([a, b, e], i) => {
+        const ang = a * 6.283, rad = 3 + b * 7;
+        pVeta.set(c.x + Math.cos(ang) * rad * 1.4, c.y - H / 2 + ((e * H + hT) % H), c.z + Math.sin(ang) * rad);
+        qVeta.setFromAxisAngle(yEje, Math.atan2(cam.position.x - pVeta.x, cam.position.z - pVeta.z));
+        mVeta.compose(pVeta, qVeta, eVeta.set(0.07, L, 1)); vetas.setMatrixAt(i, mVeta);
+      });
+    } else {                                      // viento: vetas horizontales que pasan junto a la avioneta
+      const a0 = av.position, rel = tau * E.velocidadAvioneta * 2.2;
+      vetas.material.opacity = 0.22;
+      semVeta.forEach(([a, b, e, f], i) => {
+        pVeta.set(a0.x + 18 - ((a * 36 + rel) % 36), a0.y + (b - .5) * 8, a0.z - 8 + e * 12);
+        qVeta.identity(); mVeta.compose(pVeta, qVeta, eVeta.set(1.2 + f * 2.6, 0.05, 1)); vetas.setMatrixAt(i, mVeta);
+      });
+    }
+    vetas.instanceMatrix.needsUpdate = true;
+  }
+  // Aleteo leve (en tiempo físico): la vela se mece y el cuerpo vibra un poco al caer.
+  const qAle = new THREE.Quaternion(), eAle = new THREE.Euler();
+  function aleteo(p, S, fase) {
+    const tau = D.tauDe(S), cae = S >= SALTO && !reducido;
+    p.o.rotation.z = cae ? Math.sin(tau * 6.5 + fase) * 0.012 : 0;
+    if (p.vela.visible && !reducido) { eAle.set(Math.sin(tau * 1.1 + fase) * 0.025, 0, Math.sin(tau * 0.8 + fase) * 0.02); p.vela.quaternion.copy(p.velaQ0).multiply(qAle.setFromEuler(eAle)); }
+  }
+
   // ---------- un cuadro ----------
   const qAux = new THREE.Vector3(), dirCam = new THREE.Vector3();
   const TAU_ABRIR = SALTO + TC;
   function posar(p, S, conParada) {
     const tau = D.tauDe(S);                                                // poses en tiempo físico
-    const k1 = conParada ? clamp((tau - SALTO) / E.mezclaPose) : 1;        // parada → arco al salir
+    // parada → arco al salir; cine.mezclaPose (0.8 s): los brazos abren cuando la avioneta ya se alejó
+    const k1 = conParada ? clamp((tau - SALTO) / (CI.mezclaPose ?? E.mezclaPose)) : 1;
     const tAbre = clamp(tau - TAU_ABRIR, 0, p.abre.getClip().duration);
     const k2 = clamp((tAbre - 0.5) / E.abrirCruce);                        // arco → vertical con la vela inflándose
     if (p.A.parada) p.A.parada.setEffectiveWeight(1 - k1);
     p.A.arco.setEffectiveWeight(k1 * (1 - k2));
     p.A.vertical.setEffectiveWeight(k2);
     p.mp.update(0);
-    p.vela.visible = S > ABRIR;                                            // en la pausa de los 3 s aún no sale
+    p.vela.visible = tAbre > 0.08;                                         // en la pausa de los 3 s aún no sale; tampoco el primer cuadro (la bolsa asoma en la espalda)
     p.abre.time = tAbre; p.mv.update(0);
     // de frente en la puerta → de lado al caer (se ve el arco) → en diagonal colgando (vela de 3/4)
     p.o.rotation.y = (conParada ? Math.PI / 2 * ease(k1) : Math.PI / 2) * (1 - k2) + Math.PI / 4 * k2;
@@ -314,7 +424,8 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
 
   function dibuja(S, est) {
     libre = est.libre;
-    const t = D.fisica(S), y = YP - h(t), r = D.ritmo(S), dtF = est.dt * r;  // dtF: tiempo físico del cuadro
+    const t = D.fisica(S), lec = D.calc({ t }), hT = lec.h, y = YP - hT;   // fórmulas evaluadas UNA vez por cuadro
+    const r = D.ritmo(S), dtF = est.dt * r;                                  // dtF: tiempo físico del cuadro
     av.position.set(avX(S), avBase.y, avBase.z);
     if (helice) helice.rotation.z += dtF * (reducido ? 10 : 40);
     av.updateMatrixWorld(true);
@@ -329,7 +440,7 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
     // segundo en curso (1, 2, 3) mientras cae; 0 en la puerta y desde que abre
     const seg = S >= SALTO && t < TC - 1e-6 ? Math.floor(t + 1e-6) + 1 : 0;
     tramos.forEach((b, i) => {
-      const { a, b: fin } = b.userData, k = clamp((h(t) - a) / (fin - a));
+      const { a, b: fin } = b.userData, k = clamp((hT - a) / (fin - a));
       b.visible = S >= SALTO && k > .02; b.scale.y = Math.max(k, .02);
       const activo = seg === i + 1; b.scale.x = b.scale.z = activo ? 1.7 : 1;
       b.userData.et.visible = t >= i + 1 - 1e-6;
@@ -346,7 +457,10 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
       pesoSola.position.set(X0, y - .6, Z0); pesoTan.position.set(XT, y - .6, ZT);
       etP.pos.set(X0 + .5, y - .6 - LP * .6, Z0); etKP.pos.set(XT + .5, y - .6 - LP * K * .6, ZT);
     }
+    aleteo(yo, S, 0); aleteo(tan, S, 1.7);
     camara(S, d, est, W, H);
+    vetasDe(S, lec, d); if (est.respaldo || est.pausa) vetas.visible = false;
+    verDetalle(detYo, d, 16); verDetalle(detTan, tan.o.position, 16);   // en el bullet time no: con la órbita parecerían lluvia
     halo.visible = !!seg && !est.respaldo;
     if (seg) {                                                             // detrás de ella, visto desde la cámara
       halo.material.color.copy(colSeg[seg - 1]);
@@ -357,5 +471,5 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   }
 
   tris += tierra.userData.tris;
-  return { dibuja, tam, tris: () => tris, renderer: ren };
+  return { dibuja, tam, tris: () => tris, renderer: ren, piezas: { av: avM, yo, tan } };
 }

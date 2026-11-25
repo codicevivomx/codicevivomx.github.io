@@ -28,7 +28,7 @@ importlib.reload(persona)
 SALIDA = os.path.dirname(AQUI)
 NOMBRE = "tandem"
 ALU = "alu_"
-DY, DZ = -0.34, -0.10      # alumna: 34 cm delante y 10 cm más abajo que el instructor
+DY, DZ = -0.42, -0.10      # alumna: 42 cm delante y 10 cm más abajo que el instructor
 
 
 def leer_args():
@@ -41,9 +41,10 @@ def leer_args():
 def conectores(P):
     """Ganchos del arnés de la alumna al del instructor (hombros y cadera)."""
     for s, _ in persona.LADOS:
-        persona.tubo(P, [(s * .11, -.15, 1.40), (s * .10, DY + .15, 1.40 + DZ)], .018, 6, "gris_oscuro",
+        # Cada gancho termina justo en la superficie del arnés de la alumna (sin meterse).
+        persona.tubo(P, [(s * .11, -.15, 1.40), (s * .10, DY + .19, 1.40 + DZ)], .018, 6, "gris_oscuro",
                      lambda p: {"pecho": 1})
-        persona.tubo(P, [(s * .12, -.13, .95), (s * .12, DY + .13, .95 + DZ)], .018, 6, "gris_oscuro",
+        persona.tubo(P, [(s * .12, -.13, .95), (s * .12, DY + .16, .95 + DZ)], .018, 6, "gris_oscuro",
                      lambda p: {"cadera": 1})
 
 
@@ -66,6 +67,10 @@ def juego_poses():
                 inst[f"muslo_{l}"] = [("Y", -s * 18), ("X", 15)]
                 alu[f"muslo_{l}"] = [("Y", s * 2), ("X", 10)]
                 alu[f"pierna_{l}"] = [("X", 40)]
+            # La alumna no echa la cabeza atrás: con el cuello de la paracaidista sola, su casco se
+            # metía en el pecho del instructor (lo detectó ?colisiones=1 en la lámina).
+            alu["cuello"] = [("X", 0)]
+            alu["cabeza"] = [("X", 10)]
         if nombre == "vertical":
             # La alumna sujeta la pechera con las dos manos; los mandos los lleva el instructor.
             for s, l in persona.LADOS:

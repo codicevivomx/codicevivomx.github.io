@@ -46,10 +46,14 @@ export function crearDatos(J) {
   const base = { ...J.valoresIniciales, tMax: J.rangos.t.max, altitud: T.altitud, masaTandem: T.masaTandem, k: 1 };
 
   // Valores en un instante: fórmulas de lecturas y del taller (las que dependen de k usan k = 1 si no se da).
+  let ultT = NaN, ultV = null;                        // memo: escena, mesa y director piden el mismo t en cada cuadro
   function calc(ent = {}) {
+    const soloT = "t" in ent && Object.keys(ent).length === 1;
+    if (soloT && ent.t === ultT) return ultV;
     const v = { ...base, ...ent };
     for (const [q, e] of Object.entries(J.lecturas.formulas)) v[q] = evalua(e, v);
     for (const [q, e] of Object.entries(T.formulas)) v[q] = evalua(e, v);
+    if (soloT) { ultT = ent.t; ultV = v; }
     return v;
   }
   const porK = (nombre, k) => evalua(T.formulas[nombre], { ...calc(), k });

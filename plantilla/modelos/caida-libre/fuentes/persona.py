@@ -22,7 +22,12 @@ PALETA = {
     "llanta": "3B3E4A", "traje_alumna": "E3B95A",
     # Paracaídas: las celdas usan tres materiales propios para poder recolorearlas desde three.js.
     "vela_1": "8FD3B0", "vela_2": "F4F4F1", "vela_3": "E39A84", "cuerda": "3B3E4A", "boca": "9FA3AA",
+    # Detalle (sin contorno en la lámina: el nombre empieza con costura_, hebilla, reloj_ o slider_borde).
+    "costura_coral": "B86A55", "costura_menta": "4F9A7A", "costura_traje_alumna": "B88E35",
+    "costura_guante": "6E727C", "costura_vela": "8A8E98", "hebilla": "C9CED6",
+    "reloj_negro": "16171C", "reloj_bisel": "3FA581", "reloj_lcd": "C9DCC2", "slider_borde": "9FA3AA",
 }
+DOS_CARAS = ("costura_", "reloj_")   # tiras abiertas: se ven por las dos caras
 Z0 = 0.95          # altura de la cadera = centro de masa aproximado (≈55 % de la estatura)
 DXH = 0.02         # hombros 2 cm más afuera (pecho más ancho)
 GT, GB, GP, GC = 1.10, 1.22, 1.20, 1.18  # grosor: tronco, brazos, piernas, casco (más forma que un maniquí)
@@ -60,7 +65,7 @@ def material(nombre):
     m.diffuse_color = col
     m.roughness = 1.0
     m.metallic = 0.0
-    m.use_backface_culling = True
+    m.use_backface_culling = not nombre.startswith(DOS_CARAS)
     return m
 
 
@@ -187,6 +192,65 @@ def aro(P, c, rx, ry, r, m, n, mat, pesos):
     loft(P, rings, mat, cerrado=True)
 
 
+# ---------------------------------------------------------------- detalle (pocos triángulos)
+def cuad(P, pts, mat, pesos):
+    P.f([P.v(Vector(p), pesos) for p in pts], mat)
+
+
+def banda(P, c, eje, ex, ey, rx, ry, n, ancho, mat, pesos, p=2.4, sale=0.004):
+    """Costura: tira de 'ancho' alrededor de un anillo superelíptico, 'sale' por fuera de la tela."""
+    c, eje = Vector(c), Vector(eje)
+    r0 = anillo(P, c - eje * ancho / 2, ex, ey, rx + sale, ry + sale, n, pesos, p)
+    r1 = anillo(P, c + eje * ancho / 2, ex, ey, rx + sale, ry + sale, n, pesos, p)
+    for i in range(n):
+        j = (i + 1) % n
+        P.f([r0[i], r0[j], r1[j], r1[i]], mat)
+
+
+def cajita(P, c, t, mat, pesos):
+    c = Vector(c)
+    hx, hy, hz = t[0] / 2, t[1] / 2, t[2] / 2
+    v = [P.v(c + Vector((sx * hx, sy * hy, sz * hz)), pesos) for sz in (-1, 1) for sy in (-1, 1) for sx in (-1, 1)]
+    for q in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
+        P.f([v[k] for k in q], mat)
+
+
+def detalle(P, V, traje, s_reloj=1):
+    """Costuras del traje, hebillas del arnés, dedos insinuados y altímetro de muñeca (el de la mesa)."""
+    cos_ = "costura_" + traje
+    # Tronco: cintura y canesú, y costuras laterales.
+    for z, rx, ry in ((1.05, .140, .100), (1.37, .215, .125)):
+        banda(P, V(0, 0, z), Z, X, Y, rx * GT, ry * GT, 16, .012, cos_, peso_torso(z))
+    T = [(0.86, .155), (0.93, .165), (1.05, .140), (1.15, .148), (1.27, .195), (1.37, .215), (1.44, .200)]
+    for s, _ in LADOS:
+        for (z0, r0), (z1, r1) in zip(T, T[1:]):
+            x0, x1 = s * (r0 * GT + .004), s * (r1 * GT + .004)
+            P.f([P.v(V(x0, -.006, z0), peso_torso(z0)), P.v(V(x0, .006, z0), peso_torso(z0)),
+                 P.v(V(x1, .006, z1), peso_torso(z1)), P.v(V(x1, -.006, z1), peso_torso(z1))], cos_)
+    for s, l in LADOS:
+        b, a, mu, pn = f"brazo_{l}", f"antebrazo_{l}", f"muslo_{l}", f"pierna_{l}"
+        banda(P, V(s * (0.45 + DXH), 0, 1.42), X, Y, Z, .053 * GB, .053 * GB, 10, .012, cos_, {b: .5, a: .5})   # codo
+        banda(P, V(s * 0.10, 0, 0.49), Z, X, Y, .066 * GP, .071 * GP, 10, .012, cos_, {mu: .5, pn: .5})          # rodilla
+        # Hebillas: perneras y ajustes de los tirantes.
+        cajita(P, V(s * 0.10, -.136, 0.84), (.045, .014, .032), "hebilla", {"cadera": .3, mu: .7})
+        cajita(P, V(s * 0.12, -.162, 1.38), (.034, .012, .040), "hebilla", peso_torso(1.38))
+        # Guante: tres ranuras sobre el dorso = dedos insinuados.
+        m = f"mano_{l}"
+        for dy in (-.016, 0.0, .016):
+            x0, x1 = s * (0.765 + DXH), s * (0.825 + DXH)
+            cuad(P, [V(x0, dy - .0016, 1.4525), V(x1, dy - .0016, 1.4525), V(x1, dy + .0016, 1.4525), V(x0, dy + .0016, 1.4525)],
+                 "costura_guante", {m: 1})
+    cajita(P, V(0, -.172, 1.30), (.062, .014, .044), "hebilla", peso_torso(1.30))                  # pechera
+    # Altímetro de muñeca (izquierda): correa, caja negra, bisel menta y pantalla LCD, como en la mesa.
+    s, l = s_reloj, ("izq" if s_reloj > 0 else "der")
+    a, xr = f"antebrazo_{l}", s_reloj * (0.62 + DXH)
+    banda(P, V(xr, 0, 1.42), X, Y, Z, .044 * GB, .044 * GB, 8, .026, "reloj_negro", {a: 1}, p=2.0, sale=.003)
+    zr = 1.42 + .044 * GB + .003
+    cajita(P, V(xr, 0, zr + .009), (.050, .042, .018), "reloj_negro", {a: 1})
+    cuad(P, [V(xr - .022, -.019, zr + .0185), V(xr + .022, -.019, zr + .0185), V(xr + .022, .019, zr + .0185), V(xr - .022, .019, zr + .0185)], "reloj_bisel", {a: 1})
+    cuad(P, [V(xr - .016, -.013, zr + .0195), V(xr + .016, -.013, zr + .0195), V(xr + .016, .013, zr + .0195), V(xr - .016, .013, zr + .0195)], "reloj_lcd", {a: 1})
+
+
 # ---------------------------------------------------------------- cuerpo
 def cuerpo(P, traje, acento, mochila="azul", casco="blanco", arnes="gris_oscuro", dy=0.0, dz=0.0, mochila_escala=1.0):
     """Arma una persona en P. dy/dz la desplazan (para el tándem)."""
@@ -279,6 +343,7 @@ def cuerpo(P, traje, acento, mochila="azul", casco="blanco", arnes="gris_oscuro"
              (V(0, .138 + .057 * k, 1.47), {"pecho": 1}, mochila))
         for s, _ in LADOS:   # salidas de las bandas (aquí se unen las bandas del paracaídas)
             tubo(P, [V(s * .085, .195, 1.45), V(s * .085, .195, 1.50)], .02, 6, arnes, lambda p: {"pecho": 1})
+    detalle(P, V, traje)
 
 
 # ---------------------------------------------------------------- esqueleto
@@ -337,20 +402,26 @@ def brazo(s, levantar=0, adelante=0):
     return [("Y", -s * levantar), ("Z", -s * adelante)]
 
 
+PARADA = {"columna": 22, "pecho": 10, "cuello": -20, "cabeza": -12, "muslo": -60, "rodilla": 95, "pie": -35, "abre": 8,
+          "brazo_der": (-0.10, -0.75, -0.55), "antebrazo_der": (-0.05, -0.78, 0.62)}
+
+
 def poses():
     """Por hueso: giros ("X"|"Y"|"Z", grados) en ejes del cuerpo y relativos al padre, o ("dir", vector):
     hacia dónde apunta el hueso, en ejes del pecho (brazos) o de la cadera (piernas).
     s=+1 izquierda, -1 derecha. El cuerpo mira a -Y; +Z arriba."""
     P = {}
-    # Parada (toma 2): en el estribo, lista para saltar. Rodillas flexionadas, cuerpo inclinado hacia
-    # afuera (al frente), mano derecha arriba al marco, izquierda en la pechera. v = 0.
-    p = {"columna": [("X", 10)], "pecho": [("X", 6)], "cuello": [("X", -10)], "cabeza": [("X", -6)],
-         "brazo_der": [("dir", (-0.62, -0.35, 0.70))], "antebrazo_der": [("dir", (-0.35, -0.25, 0.90))],
+    # Parada (tomas de la puerta): agachada en el estribo, bajo el ala, lista para saltar. Cadera y
+    # rodillas muy flexionadas y tronco inclinado al frente (el casco libra el ala); la mano derecha
+    # sujeta el montante y la izquierda la pechera. v = 0.
+    p = {"columna": [("X", PARADA["columna"])], "pecho": [("X", PARADA["pecho"])],
+         "cuello": [("X", PARADA["cuello"])], "cabeza": [("X", PARADA["cabeza"])],
+         "brazo_der": [("dir", PARADA["brazo_der"])], "antebrazo_der": [("dir", PARADA["antebrazo_der"])],
          "brazo_izq": [("dir", (0.35, -0.45, -0.82))], "antebrazo_izq": [("dir", (-0.95, -0.15, 0.27))]}
     for s, l in LADOS:
-        p[f"muslo_{l}"] = [("Y", -s * 5), ("X", -30)]
-        p[f"pierna_{l}"] = [("X", 45)]
-        p[f"pie_{l}"] = [("X", -15)]
+        p[f"muslo_{l}"] = [("Y", -s * PARADA["abre"]), ("X", PARADA["muslo"])]
+        p[f"pierna_{l}"] = [("X", PARADA["rodilla"])]
+        p[f"pie_{l}"] = [("X", PARADA["pie"])]
     P["parada"] = p
     # Arco (tomas 3-4 y pausa): boca abajo, espalda arqueada, brazos en «cactus» simétricos
     # (brazo a los lados, codo a ~90°, antebrazo al frente a la altura de la cabeza), piernas atrás.

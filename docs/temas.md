@@ -129,8 +129,7 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   en `assets/fuentes/` (Caveat de `laminas2/`). Peso: 218 KB gzip al abrir + 380 KB al tocar. En la lámina la avioneta
   vuela sin la hoja de la puerta y las personas van al 92 % de la escala de la avioneta (caben en el estribo).
   Pendiente menor: aligerar fuentes (Bricolage 77 KB y Caveat 51 KB son casi todo el peso inicial).
-- [x] Lámina «El salto» versión cine (rama `lamina/caida-libre-cine`, 25-nov-2026, **en espera de OK de Gato y de
-  que elija paleta**): guion de 9 tomas en el bloque nuevo `taller.cine` del JSON (~45 s sin pausas; establecimiento
+- [x] Lámina «El salto» versión cine (rama `lamina/caida-libre-cine`, 25-nov-2026, **en espera de OK de Gato**): guion de 9 tomas en el bloque nuevo `taller.cine` del JSON (~45 s sin pausas; establecimiento
   desde la tierra, travelling, rampas tiempo real → cámara lenta ×⅓ → real, tilt down con la tierra al fondo, grúa
   final y órbita libre). Reloj de cine en `datos.js` (tiempo de escena → tiempo físico; la física y el cronómetro
   van en tiempo físico). Aviso «Cámara lenta ×⅓», botón «Ir al salto», línea de tiempo de 45 s. `tierra.js`
@@ -140,7 +139,19 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   Pendiente: cuando Gato elija paleta, dejarla como predeterminada y regenerar `respaldo.webp`.
   Ronda 2 (25-nov): a y b no convencieron. `?paleta=c` (sat +70 %, contraste +25 %, verde 60 %, cielo y coral +40 %)
   y `?paleta=ajuste` (panel flotante con saturación 0–120 %, contraste 0–50 % y verde 0–100 %; arranca en la c,
-  aplica al soltar ~4 ms, muestra la línea para dictar). Esperando los valores que dicte Gato.
+  aplica al soltar ~4 ms, muestra la línea para dictar).
+  Ronda 3 (25-nov): paleta predeterminada en OKLCH (croma +55 % sin subir L, contraste +20 % con pivote 0.8, verde
+  +40 %, cielo +30 %, coral +40 %; recorte a la gama sRGB); `?paleta=neutra` = originales; panel quitado.
+  `respaldo.webp` regenerado (29 KB). Pose «parada» agachada con la mano en el montante y estribo movido delante
+  del montante (el casco ya no atraviesa el ala); tándem separado 42 cm. `colisiones.js` (`?colisiones=1`):
+  300 muestras del guion, 0 choques persona↔avioneta, persona↔velas, sola↔tándem e instructor↔alumna.
+  Librea «Aerocódice» (calcas de canvas: «C» del ícono en la cola, AEROCÓDICE, XB-CDV) + franja coral, líneas de
+  paneles, remaches, antena y luces en `avioneta.py`. Personas: costuras, hebillas, dedos y altímetro de muñeca;
+  vela: costuras y slider; tierra: más verdes, caminos, granjas, huertos. Efectos: tramado en la sombra del toon,
+  cielo pintado, líneas de velocidad y viento (44 tiras instanciadas), aleteo leve. Triángulos: avioneta 2 670,
+  paracaidista 2 536, tándem 5 024, vela 1 320; escena 19 196. Modelos con meshopt (`fuentes/comprimir.sh`,
+  decodificador en `assets/js/vendor/three-r187/addons/libs/`): 657 → 175 KB (gzip 161 → 74 KB).
+  fps: 178 escritorio / 128 emulación de celular. Pendiente: medir en celular real y decidir si suben los topes (LOD).
 - [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
   taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
   Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.

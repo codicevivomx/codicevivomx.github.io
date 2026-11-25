@@ -13,9 +13,8 @@ const RUTA_MODELOS = "../../../modelos/caida-libre/";
 
 const D = await cargarDatos(RUTA_JSON);
 const X = D.T.textos, CI = D.cine, XC = CI.textos, DUR = D.DUR, N = D.N;
-// ?paleta=a | b | c, o ?paleta=ajuste (panel con deslizadores; arranca en la c). Sin parámetro: la de siempre.
-const AJUSTE = q.get("paleta") === "ajuste";
-const P = crearPaleta(AJUSTE ? CI.paletas[CI.paletas.ajuste.base] : CI.paletas[q.get("paleta")]);
+// Paleta predeterminada (OKLCH); ?paleta=neutra muestra los colores originales para comparar.
+const P = crearPaleta(q.get("paleta") === "neutra" ? null : CI.paletas.predeterminada);
 const vN = D.calc({ n: N });                                   // valores de la predicción (segundo n)
 
 // ---------- textos fijos de la página ----------
@@ -52,7 +51,6 @@ const mueveInstrumentos = instrumentos(D);
 mueveInstrumentos(0);
 avivarDOM(P);
 P.alCambiar(() => { if (pausa?.id === "grafica") $("grafica").querySelector("svg").innerHTML = graficaVT(); });
-if (AJUSTE) panelAjuste();
 const hoja = hojaLevantada({ mesa: $("mesa3d"), lev: $("levantada"), reduce: reducido, origenDe: (id) => $(id) || $("mCuaderno") });
 
 // ---------- estado ----------
@@ -73,30 +71,6 @@ function actualizaHoja() {
   hoja.poner(quiere, enPausa ? $("mMili") : $("mCuaderno"));
 }
 camaraMesa(document.querySelector(".plano"), () => (hoja.visible ? "plana" : corre ? "inclinada" : "casi"));
-
-// ---------- panel de ajuste de color (?paleta=ajuste) ----------
-// Los deslizadores solo mueven el número mientras se arrastran; los colores se recalculan al soltar.
-function panelAjuste() {
-  const A = CI.paletas.ajuste, XA = A.textos, v = P.valores, caja = document.createElement("div");
-  caja.className = "ajuste"; caja.setAttribute("role", "group"); caja.setAttribute("aria-label", XA.titulo);
-  caja.innerHTML = `<b>${XA.titulo}</b>`;
-  caja.firstChild.onclick = () => caja.classList.toggle("plegado");                 // se pliega tocando el título
-  const salida = document.createElement("output");
-  const dic = () => A.deslizadores.map((d) => D.tpl(d.dicta, { x: D.num(d.aPct(P.valores[d.clave]), 0) })).join(" · ")
-    + " · " + D.tpl(XA.fijos, { cielo: D.num((P.valores.cielo) * 100, 0), coral: D.num((P.valores.coral) * 100, 0) });
-  A.deslizadores.forEach((d) => {
-    d.aPct = (x) => (d.clave === "verde" ? x : x - 1) * 100;                 // verde va de 0 a 1; los otros son factores
-    const desdePct = (x) => (d.clave === "verde" ? x / 100 : 1 + x / 100);
-    const fila = document.createElement("label"), r = document.createElement("input"), n = document.createElement("span");
-    r.type = "range"; r.min = d.min; r.max = d.max; r.step = d.paso; r.value = d.aPct(v[d.clave]);
-    const pinta = () => (n.textContent = D.tpl(d.formato, { x: D.num(+r.value, 0) }));
-    r.oninput = pinta;
-    r.onchange = () => { P.fijar({ ...P.valores, [d.clave]: desdePct(+r.value) }); salida.textContent = dic(); };
-    fila.append(document.createTextNode(d.nombre), r, n); pinta(); caja.appendChild(fila);
-  });
-  salida.textContent = dic(); caja.appendChild(salida);
-  document.body.appendChild(caja);
-}
 
 // ---------- predicción (bloque prediccion del JSON, segundo n) ----------
 const ops = $("ops");
@@ -281,7 +255,7 @@ actualizaHoja();
 requestAnimationFrame(bucle);
 
 // ---------- capturas y medición ----------
-// ?paleta=a|b (paletas más vivas) · ?pred=25 (elige la predicción) · ?S=8.6 (congela un instante) · ?pausa=tandem|grafica · ?fin=1 (resultado)
+// ?paleta=neutra (colores originales) · ?pred=25 (elige la predicción) · ?S=8.6 (congela un instante) · ?pausa=tandem|grafica · ?fin=1 (resultado)
 // ?respaldo=1 (encuadre de la imagen fija, a pantalla completa) · ?medir=15000 (corre sin pausas y escribe FPS en consola)
 // ?reducido=1 (como prefers-reduced-motion) · ?anchos=1 (lista en consola lo que se sale de la pantalla)
 window.taller = {
@@ -303,10 +277,21 @@ if (q.has("pred") || q.has("S") || q.has("respaldo")) {
     if (p) { irA(p.en); abrePausa(p); }
     if (q.has("fin")) { irA(DUR); libre = true; fin(); }
     if (q.has("corre") || q.has("medir")) arrancar();
+    if (q.has("colisiones")) {                    // recorre el guion y reporta piezas que se atraviesan
+      const { revisar } = await import("./colisiones.js");
+      const muestras = [];
+      for (let s = 0; s < D.salto; s += 0.5) muestras.push([s, {}]);
+      for (let s = D.salto; s <= DUR; s += 0.1) muestras.push([s, {}]);
+      pausas.forEach((p) => muestras.push([p.en, { pausa: p.id }]));
+      const t0 = performance.now(), r = revisar(escena, D, muestras);
+      r.ms = Math.round(performance.now() - t0);
+      console.log("COLISIONES", JSON.stringify(r));
+      const m = $("medida"); m.hidden = false; m.textContent = JSON.stringify(r.pares) + " · " + r.muestras + " muestras · " + r.ms + " ms";
+    }
     if (q.has("medir")) {                         // corre la escena sin detenerse en las pausas y reporta fps
       pausas.forEach((x) => (x.hecha = true));
       setTimeout(() => {
-        const r = { ...window.taller.fps(), tris: window.taller.tris(), ancho: innerWidth, dpr: devicePixelRatio,
+        const r = { ...window.taller.fps(), tris: window.taller.tris(), llamadas: escena.renderer.info.render.calls, ancho: innerWidth, dpr: devicePixelRatio,
           gpu: (() => { const g = $("esc").getContext("webgl2"); const e = g?.getExtension("WEBGL_debug_renderer_info"); return e ? g.getParameter(e.UNMASKED_RENDERER_WEBGL) : "?"; })() };
         console.log("FPS", JSON.stringify(r));
         const m = $("medida"); m.hidden = false;                // también en pantalla, para leerlo en el celular
