@@ -7,9 +7,11 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";   // .glb comprimidos (gltfpack -cc)
 import { clone as clonar } from "three/addons/utils/SkeletonUtils.js";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { estilizar, pieza, ajustarContorno, agregarContorno, contornoPropio } from "./toon.js";
 import { crearEtiquetas } from "./etiquetas.js";
 import { crearTierra } from "./tierra.js";
+import { crearPaleta } from "./paleta.js";
 
 const C = { blanco: 0xf4f4f1, gris: 0xd6d7d5, grisO: 0x9fa3aa, menta: 0x8fd3b0, azul: 0x6f93c9,
   coral: 0xe39a84, coralO: 0xc77964, alumna: 0xe3b95a, tinta: 0x2a2a33, nube: 0xffffff };
@@ -83,7 +85,8 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   ren.setPixelRatio(Math.min(devicePixelRatio, 2));
   ren.outputColorSpace = THREE.SRGBColorSpace;
   const esc = new THREE.Scene();
-  const CIELO = ["#BFDDEC", "#DCEEF5", "#EEF6F3"];
+  // Perspectiva atmosférica: lo lejano se aclara y azulea; la niebla y el pie del cielo son el mismo azul claro.
+  const CIELO = ["#BFDDEC", "#D8EAF4", "#DDE9F0"];
   esc.fog = new THREE.Fog(0xffffff, CI.tierra.nieblaDe, CI.tierra.nieblaA);
   // Cielo pintado: degradado + pinceladas suaves (acuarela) en un canvas que se pinta UNA vez
   // (también para la imagen fija). La niebla toma el color de abajo para que el horizonte no se corte.
@@ -108,7 +111,7 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
     const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; esc.background = tex;
   }
   pintaCielo();
-  const cam = new THREE.PerspectiveCamera(34, 1, 0.5, 1600);
+  const cam = new THREE.PerspectiveCamera(34, 1, 0.5, 2800);
   esc.add(new THREE.HemisphereLight(0xffffff, 0xcfd8dc, 1.6));
   const sol = new THREE.DirectionalLight(0xffffff, 2.2); sol.position.set(-6, 10, 4); esc.add(sol);
   const et = crearEtiquetas(maqueta);
@@ -233,23 +236,64 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   const etSola = et.nueva(D.texto(D.T.textos.sola), { prioridad: 4, clase: "chip" });
 
   // ---------- nubes y tierra ----------
-  const nubes = [], geoNube = new THREE.IcosahedronGeometry(1, 1), matNube = new THREE.MeshLambertMaterial({ color: C.nube, flatShading: true });
+  // Una nube = 5 esferas low-poly unidas en UNA geometría compartida (1 malla + 1 contorno por nube).
+  const geoNube = new THREE.IcosahedronGeometry(1, 1);
+  const unir = (bolas) => mergeGeometries(bolas.map(([a, b, c, r]) => geoNube.clone().scale(r, r, r).translate(a, b, c)));
+  const geoCumulo = unir([[0, 0, 0, 1.6], [1.6, .3, .2, 1.3], [-1.5, -.1, .1, 1.2], [.5, .9, -.3, 1.1], [2.8, -.2, 0, .9]]);
+  const nubes = [], matNube = new THREE.MeshLambertMaterial({ color: C.nube, flatShading: true });
   function nube(x, y, z, s) {
-    const g = new THREE.Group(); g.position.set(x, y, z); g.scale.setScalar(s); esc.add(g);
-    [[0, 0, 0, 1.6], [1.6, .3, .2, 1.3], [-1.5, -.1, .1, 1.2], [.5, .9, -.3, 1.1], [2.8, -.2, 0, .9]].forEach(([a, b, c, r]) => {
-      const m = new THREE.Mesh(geoNube, matNube); m.scale.setScalar(r);
-      m.position.set(a, b, c); g.add(m); agregarContorno(m);
-    });
+    const g = new THREE.Mesh(geoCumulo, matNube); g.position.set(x, y, z); g.scale.setScalar(s); esc.add(g);
+    agregarContorno(g);
     g.userData = { casa: x, desliza: 0 };
     nubes.push(g);
   }
   // junto a la cinta (como antes) · en la ruta de la avioneta · abajo, entre la caída y la tierra
-  nube(-30, 30, -6, 1.3); nube(22, 36, -14, 1.1); nube(-22, 26, -8, 1.6); nube(24, 16, -10, 1.2);
-  nube(-20, 8, -12, 1.2); nube(20, 2, -16, 1.4); nube(-10, -16, -24, 1.5);
+  nube(-30, 30, -6, 1.3); nube(22, 36, -14, 1.1); nube(-30, 24, -20, 1.6); nube(24, 16, -10, 1.2);
+  nube(-34, 8, -22, 1.2); nube(22, 2, -18, 1.4); nube(-32, -16, -34, 1.5);   // fuera de la línea de la toma 6
   nube(-250, 64, -40, 2.2); nube(-185, 34, -60, 2.6); nube(-125, 72, -34, 1.8); nube(-75, 44, -75, 2.8); nube(-220, 30, 70, 2);
   nube(-30, -70, -50, 3.2); nube(40, -105, 20, 3.6); nube(-80, -140, 40, 4); nube(70, -160, -90, 4.4);
-  const tierra = crearTierra({ y: YT, hex: P.css });   // tierra.userData.recolorea(hex) la repinta
+  // Capa baja (entre la caída y la tierra) y capa alta: el cielo tiene profundidad.
+  [[-60, -32, -40, 2.8], [-15, -38, -70, 3.2], [35, -30, -45, 2.6], [70, -42, -20, 3.4], [-90, -36, 10, 3], [10, -45, 30, 3.6],
+   [-40, 88, -90, 3.4], [60, 96, -120, 4], [-150, 92, -60, 3.6]].forEach(([x, y, z, k]) => nube(x, y, z, k));
+  // Velo que la cámara atraviesa al caer (toma 5): nube translúcida en su camino, sin contorno.
+  const matVelo = new THREE.MeshLambertMaterial({ color: C.nube, flatShading: true, transparent: true, opacity: .28, depthWrite: false });
+  const velo = new THREE.Mesh(unir([[0, 0, 0, 1.6], [1.5, .3, .2, 1.2], [-1.4, -.1, .1, 1.1], [.4, .8, -.3, 1]]), matVelo);
+  velo.position.set(5.9, 41.7, 12.9); velo.scale.setScalar(.85); esc.add(velo);
+  // La tierra usa la paleta con menos croma y sin empujón al verde: viva pero natural (no verde limón).
+  const pT = P.activa ? crearPaleta({ ...D.cine.paletas.predeterminada, croma: 1.25, verde: 0 }) : P;
+  const tierra = crearTierra({ y: YT, hex: pT.css });   // tierra.userData.recolorea(hex) la repinta
   esc.add(tierra);
+  // Sombras de nubes sobre la tierra: manchas suaves que se deslizan despacio (textura de 64 px, 10 planos).
+  const texMancha = (() => {
+    const c = document.createElement("canvas"); c.width = c.height = 64;
+    const x = c.getContext("2d"), g = x.createRadialGradient(32, 32, 4, 32, 32, 32);
+    g.addColorStop(0, "rgba(255,255,255,1)"); g.addColorStop(.6, "rgba(255,255,255,.6)"); g.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c);
+  })();
+  const matSombra = new THREE.MeshBasicMaterial({ map: texMancha, color: 0x1d3524, transparent: true, opacity: .2, depthWrite: false });
+  const NS_ = 10, sombras = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), matSombra, NS_);
+  sombras.userData.propio = true; sombras.frustumCulled = false; esc.add(sombras);
+  const datoSombra = Array.from({ length: NS_ }, (_, k) => ({ x: -650 + (k * 431) % 1300, z: -700 + (k * 283) % 1000, sx: 160 + (k * 37) % 120, sz: 110 + (k * 53) % 90 }));
+  const mSom = new THREE.Matrix4(), pSom = new THREE.Vector3(), qSom = new THREE.Quaternion(), eSom = new THREE.Vector3();
+  function moverSombras(tau) {                  // se deslizan con el tiempo de la escena (reproducible)
+    datoSombra.forEach((o, k) => {
+      const x = o.x - 500 + ((tau * (3 + k % 3) * 4 + 500) % 1000);
+      sombras.setMatrixAt(k, mSom.compose(pSom.set(x, YT + 1.5, o.z), qSom, eSom.set(o.sx, 1, o.sz)));
+    });
+    sombras.instanceMatrix.needsUpdate = true;
+  }
+  moverSombras(0);
+  // Sol: resplandor suave con un sprite, arriba a la izquierda, siempre a la misma distancia de la cámara.
+  const SOL = new THREE.Vector3(-0.62, 0.5, -0.6).normalize();
+  const sol_ = (() => {
+    const c = document.createElement("canvas"); c.width = c.height = 128;
+    const x = c.getContext("2d"), g = x.createRadialGradient(64, 64, 2, 64, 64, 64);
+    g.addColorStop(0, "rgba(255,252,236,1)"); g.addColorStop(.12, "rgba(255,248,222,.95)"); g.addColorStop(.35, "rgba(255,240,205,.35)"); g.addColorStop(1, "rgba(255,240,205,0)");
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, fog: false }));
+    sp.scale.setScalar(420); sp.userData.propio = true; esc.add(sp); return sp;
+  })();
 
   // ---------- paleta: pasada por los materiales al cargar y al soltar un deslizador (nunca por cuadro) ----------
   const colores = [], vistos = new Set();                      // [color de three, original]
@@ -311,7 +355,8 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
     salto: (l, d) => { const k = ease(clamp(l * 1.3)); return [d.clone().add(V(4, -.2 + 2.2 * k, 6 + 18 * k)), d.clone().add(V(-1.2 + 3.7 * k, .1 - 1.6 * k, -1 + k))]; },
     // tilt down: desde arriba, la mirada baja hasta tener la tierra de fondo
     picado: (l, d) => [d.clone().add(V(7, 6 + 3.5 * ease(l), 11)), d.clone().add(V(1, -1.5 - 2 * ease(l), -1))],
-    persecucion: (l, d) => [d.clone().add(V(5, 7, 8 - 1.5 * l)), d.clone().add(V(1, -2.5 - 2 * l, -2))],
+    // picado cercano: mira al punto medio entre ella y la cinta, para que el tramo coral entre completo
+    persecucion: (l, d) => [d.clone().add(V(4.4, 9, 13 - 1.5 * l)), d.clone().add(V(4.4, -3 - 2 * l, -1))],
     // apertura: desde abajo, la vela se infla contra el cielo
     abrir: (l, d) => [d.clone().add(V(9, -8 + 2 * l, 14)), d.clone().add(V(-1.5, 2.5 + 1.5 * l, 0))],
     revelacion: () => revelacion(),
@@ -325,8 +370,12 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   function plano(i, S, d, a) {
     const x = TOMAS[i], l = clamp((S - x.de) / (x.a - x.de));
     let [p, o] = TOMA[x.cam](l, d, a);
-    if (cam.aspect < 1 && LEJOS[x.cam]) {                // pantalla vertical: más lejos y, al caer, centrado entre la sola y el tándem
-      const k = Math.min(2.2, LEJOS[x.cam] / cam.aspect), dx = CAEN.has(x.cam) && S >= SALTO ? (XT - X0) / 2 : 0;
+    if (cam.aspect < 1.9 && LEJOS[x.cam]) {
+      // Las tomas se encuadraron para la lámina ancha (~2.4:1). Pantalla vertical: más lejos y, al caer, centrado
+      // entre la sola y el tándem. PC lado a lado (~1.2:1): solo un retroceso suave.
+      const vertical = cam.aspect < 1;
+      const k = vertical ? Math.min(2.2, LEJOS[x.cam] / cam.aspect) : 1 + (1.9 - cam.aspect) * 0.62;
+      const dx = vertical && CAEN.has(x.cam) && S >= SALTO ? (XT - X0) / 2 : 0;
       o = o.clone().add(V(dx, 0, 0)); p = o.clone().add(p.clone().sub(o).add(V(dx, 0, 0)).multiplyScalar(k));
     }
     return [p, o];
@@ -375,18 +424,18 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
     const viento = S < SALTO + 0.4, caida = S >= SALTO && S < ABRIR + 0.3 && v > 2;
     vetas.visible = !reducido && (viento || caida);
     if (!vetas.visible) return;
-    if (caida) {                                  // líneas de velocidad: suben tanto como ella cae (h), largas según v
-      const c = V((X0 + XT) / 2, d.y, (Z0 + ZT) / 2), H = 26, L = 0.4 + v * 0.09;
-      vetas.material.opacity = clamp(v / 20) * 0.32;
+    if (caida) {                                  // líneas de velocidad: blancas, cortas, solo alrededor de ella; suben lo que ella cae
+      const H = 7, L = 0.25 + v * 0.035;
+      vetas.material.color.setHex(0xffffff); vetas.material.opacity = clamp(v / 18) * 0.75;
       semVeta.forEach(([a, b, e], i) => {
-        const ang = a * 6.283, rad = 3 + b * 7;
-        pVeta.set(c.x + Math.cos(ang) * rad * 1.4, c.y - H / 2 + ((e * H + hT) % H), c.z + Math.sin(ang) * rad);
+        const ang = a * 6.283, rad = 1.3 + b * 2.4;
+        pVeta.set(d.x + Math.cos(ang) * rad, d.y - H / 2 + ((e * H + hT) % H), d.z + Math.sin(ang) * rad);
         qVeta.setFromAxisAngle(yEje, Math.atan2(cam.position.x - pVeta.x, cam.position.z - pVeta.z));
-        mVeta.compose(pVeta, qVeta, eVeta.set(0.07, L, 1)); vetas.setMatrixAt(i, mVeta);
+        mVeta.compose(pVeta, qVeta, eVeta.set(0.035, L, 1)); vetas.setMatrixAt(i, mVeta);
       });
     } else {                                      // viento: vetas horizontales que pasan junto a la avioneta
       const a0 = av.position, rel = tau * E.velocidadAvioneta * 2.2;
-      vetas.material.opacity = 0.22;
+      vetas.material.color.setHex(0x343a52); vetas.material.opacity = 0.22;
       semVeta.forEach(([a, b, e, f], i) => {
         pVeta.set(a0.x + 18 - ((a * 36 + rel) % 36), a0.y + (b - .5) * 8, a0.z - 8 + e * 12);
         qVeta.identity(); mVeta.compose(pVeta, qVeta, eVeta.set(1.2 + f * 2.6, 0.05, 1)); vetas.setMatrixAt(i, mVeta);
@@ -447,7 +496,13 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
     });
     contornoYo.uniforms.color.value.copy(seg ? colSeg[seg - 1] : tintaYo);
     contornoYo.uniforms.grosor.value = seg ? grosor * 2 : grosor;
-    if (!reducido) nubes.forEach((nb, i) => { const u = nb.userData; u.desliza = (u.desliza + dtF * (0.6 + i % 3 * .3)) % 60; nb.position.x = u.casa - 30 + u.desliza; });
+    // las nubes se desplazan con el tiempo físico de la escena (reproducible: mismo instante, mismo cielo)
+    const tauN = D.tauDe(S);
+    // las cercanas a la caída apenas se mueven (±6 m): nunca cruzan el pasillo entre ella y la cinta
+    if (!reducido) nubes.forEach((nb, i) => {
+      const u = nb.userData, amp = Math.abs(u.casa) < 45 && Math.abs(nb.position.y) < 45 ? 6 : 30;
+      nb.position.x = u.casa + amp * (((tauN * (0.6 + i % 3 * .3) + i * 7.3) % 60) / 30 - 1);
+    });
     const abierto = S >= ABRIR;
     etTan.visible = S >= SALTO && !abierto; etTan.pos.set(XT, y + 3.2, ZT);
     etSola.visible = S >= SALTO && !abierto; etSola.pos.set(X0, y + 2.6, Z0);
@@ -459,6 +514,8 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
     }
     aleteo(yo, S, 0); aleteo(tan, S, 1.7);
     camara(S, d, est, W, H);
+    sol_.position.copy(cam.position).addScaledVector(SOL, 1500);
+    if (!reducido) moverSombras(D.tauDe(S));
     vetasDe(S, lec, d); if (est.respaldo || est.pausa) vetas.visible = false;
     verDetalle(detYo, d, 16); verDetalle(detTan, tan.o.position, 16);   // en el bullet time no: con la órbita parecerían lluvia
     halo.visible = !!seg && !est.respaldo;

@@ -152,6 +152,15 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   paracaidista 2 536, tándem 5 024, vela 1 320; escena 19 196. Modelos con meshopt (`fuentes/comprimir.sh`,
   decodificador en `assets/js/vendor/three-r187/addons/libs/`): 657 → 175 KB (gzip 161 → 74 KB).
   fps: 178 escritorio / 128 emulación de celular. Pendiente: medir en celular real y decidir si suben los topes (LOD).
+  Ronda 4 (25-nov): tierra natural (parcelas irregulares, bosque y olivo, paleta de la tierra con croma 1.25 y sin
+  empujón al verde); volcán al horizonte con bruma horneada; líneas de velocidad blancas, cortas y solo alrededor de
+  ella; toma 6 sin nubes encima y con la cinta coral completa a lo ancho (nubes cercanas se mueven ±6 m, en tiempo
+  de escena). Clima: perspectiva atmosférica (niebla y pie del cielo azul claro, niebla a 2 300 m), capa de nubes
+  baja y alta, velo translúcido que la cámara atraviesa en la toma 5, sombras de nubes (instanciadas) y sprite del
+  sol. Nubes unidas en una geometría (2 llamadas por nube). Mesa: lámpara articulada SVG arriba a la izquierda (la
+  luz y las sombras salen de ahí). PC ≥ 1000 px: lámina (58 %, sticky) y mesa (42 %, retícula de 6 columnas) lado a
+  lado; hoja levantada del ancho de la mesa; celular apilado. `respaldo.webp` regenerado. 0 choques; 178 / 128 fps.
+  - [ ] Pendiente: cambiar el ícono de la cola de la avioneta (la «C» del logo no convenció a Gato).
 - [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
   taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
   Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.
