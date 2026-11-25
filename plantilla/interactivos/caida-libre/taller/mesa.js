@@ -216,7 +216,11 @@ export function camaraMesa(plano, estado) {
 // ---------- hoja levantada (FLIP de la miniatura a la hoja de frente) ----------
 export function hojaLevantada({ mesa, lev, reduce, origenDe }) {
   let visible = false;
-  function fija() { if (innerWidth > 700) { const w = Math.min(innerWidth * .94, 520); lev.style.left = (mesa.clientWidth - w) / 2 + "px"; } }
+  function fija() {
+    if (innerWidth <= 700) { lev.style.width = ""; return; }
+    const w = Math.min(innerWidth * .94, 520, mesa.clientWidth - 16);         // en PC lado a lado, la mesa mide ~42 %
+    lev.style.width = w + "px"; lev.style.left = (mesa.clientWidth - w) / 2 + "px";
+  }
   function delta(origen) {
     const a = origen.getBoundingClientRect(), b = lev.getBoundingClientRect();
     return `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${a.width / b.width}, ${a.height / Math.max(1, b.height)})`;

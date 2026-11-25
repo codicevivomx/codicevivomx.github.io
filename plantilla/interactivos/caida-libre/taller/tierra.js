@@ -4,12 +4,15 @@
 import * as THREE from "three";
 
 const COL = {
-  campos: ["#A9D77A", "#C9DD8F", "#93C96E", "#E2D39A", "#B6DC87", "#D7C77F", "#8CBF67", "#7DBA5C", "#6FAE52", "#BFE09A", "#9CCB6B"],
+  // Vivo pero natural: bosque y olivo oscuros, pastos medios, trigo y barbecho; poco verde limón.
+  campos: ["#4F7F45", "#5E8A4A", "#6F8F4C", "#7D9152", "#7FA35A", "#8FAF62", "#93B26B", "#A3B46E",
+           "#C9B97A", "#D2BE7E", "#B59A6A", "#A6B97A"],
+  pesos: [3, 3, 3, 2, 3, 3, 2, 2, 2, 1, 1, 1],
   camino: "#D8C9A6",
   techosGranja: ["#D9694F", "#5B8DD6", "#3FA581", "#E8894F", "#C9573F"],
   rio: "#6FB3D6", orilla: "#B9D9A0", carretera: "#D8D1C2", linea: "#F4F1EA",
   muro: ["#F2EBDD", "#E8DCC8", "#F6F1E6"], techo: ["#D9694F", "#C9573F", "#B95A48"],
-  arbol: "#5E9E5C", arbolO: "#4E8A50", volcanBase: "#9DB07F", volcanMedio: "#8E7F72", volcanAlto: "#A39589",
+  arbol: "#4C7F48", arbolO: "#3E6B3E", volcanBase: "#9DB07F", volcanMedio: "#8E7F72", volcanAlto: "#A39589",
   nieve: "#F7F7F4", crater: "#6E625A",
 };
 
@@ -22,13 +25,30 @@ export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
   const quad = (a, b, d, e, h) => { tri(a, b, d, h); tri(a, d, e, h); };
   const mezcla = (h1, h2, k) => "#" + new THREE.Color(h1).lerp(new THREE.Color(h2), k).getHexString();
 
-  // Campos: mosaico de parcelas con un poco de variación de tono.
+  // Campos irregulares: retícula de líneas con separación desigual y vértices desplazados (cuadriláteros
+  // de formas distintas); algunas parcelas vecinas comparten color (parcelas grandes de forma libre) y
+  // otras se parten en diagonal. Nada de tablero de ajedrez.
   const N = 40, L = 70, X0 = -1400, Z0 = -1700;
-  quad([-7000, -1, -7000], [-7000, -1, 7000], [7000, -1, 7000], [7000, -1, -7000], "#B5D38A");   // fondo hasta el horizonte
+  quad([-7000, -1, -7000], [-7000, -1, 7000], [7000, -1, 7000], [7000, -1, -7000], "#7E9A5C");   // fondo hasta el horizonte
+  const lineas = (n) => { const out = [0]; for (let k = 0; k < n; k++) out.push(out[k] + L * (.45 + azar() * 1.1)); const f = n * L / out[n]; return out.map((x) => x * f); };
+  const xs = lineas(N), zs = lineas(N);
+  const R = Array.from({ length: N + 1 }, (_, i) => Array.from({ length: N + 1 }, (_, j) => {
+    const borde = i === 0 || j === 0 || i === N || j === N;
+    return [X0 + xs[i] + (borde ? 0 : (azar() - .5) * L * .55), Z0 + zs[j] + (borde ? 0 : (azar() - .5) * L * .55)];
+  }));
+  const total = COL.pesos.reduce((a, b) => a + b, 0);
+  const sortea = () => { let r = azar() * total; for (let k = 0; k < COL.pesos.length; k++) if ((r -= COL.pesos[k]) < 0) return k; return 0; };
+  const idx = [];
+  for (let i = 0; i < N; i++) { idx.push([]); for (let j = 0; j < N; j++) {
+    const r = azar();
+    idx[i].push(r < .3 && i ? idx[i - 1][j] : r < .5 && j ? idx[i][j - 1] : sortea());
+  } }
+  const tono = (k) => mezcla(COL.campos[k], azar() < .5 ? "#FFFFFF" : "#3E5A34", azar() * .08);
   for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
-    const x = X0 + i * L, z = Z0 + j * L, base = COL.campos[Math.floor(azar() * COL.campos.length)];
-    const h = mezcla(base, azar() < .5 ? "#FFFFFF" : "#6E8F4E", azar() * .12);
-    quad([x, 0, z], [x, 0, z + L], [x + L, 0, z + L], [x + L, 0, z], h);
+    const [a, b, c2, d] = [R[i][j], R[i][j + 1], R[i + 1][j + 1], R[i + 1][j]].map(([x, z]) => [x, 0, z]);
+    const h = tono(idx[i][j]);
+    if (azar() < .18) { tri(a, b, c2, h); tri(a, c2, d, tono(sortea())); }       // parcela partida en diagonal
+    else quad(a, b, c2, d, h);
   }
   // Tira a lo largo de una curva (río y carretera).
   function tira(f, ancho, alto, h, n = 60) {
@@ -46,9 +66,11 @@ export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
   // Caminos de terracería: siguen algunas líneas del mosaico (entre parcelas).
   for (let k = 0; k < 14; k++) {
     const vertical = k % 2, linea = 4 + Math.floor(azar() * (N - 8)), desde = Math.floor(azar() * (N - 12)), largo = 6 + Math.floor(azar() * 10);
-    const fija = (vertical ? X0 : Z0) + linea * L, a0 = desde * L, a1 = Math.min(N, desde + largo) * L;
-    const f = (u) => vertical ? [fija, Z0 + a0 + (a1 - a0) * u] : [X0 + a0 + (a1 - a0) * u, fija];
-    tira(f, 5, .6, COL.camino, 2);
+    const hasta = Math.min(N, desde + largo);
+    for (let k = desde; k < hasta; k++) {
+      const p0 = vertical ? R[linea][k] : R[k][linea], p1 = vertical ? R[linea][k + 1] : R[k + 1][linea];
+      tira((u) => [p0[0] + (p1[0] - p0[0]) * u, p0[1] + (p1[1] - p0[1]) * u], 5, .6, COL.camino, 1);
+    }
   }
 
   // Caja con techo de otro color (sin cara de abajo).
@@ -99,8 +121,9 @@ export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
   }
 
   // Volcán al fondo: cono truncado con anillos de color, cráter y nieve.
-  const VX = -620, VZ = -1350, SEG = 18;
-  const anillos = [[300, 0, COL.volcanBase], [190, 120, COL.volcanMedio], [95, 215, COL.volcanAlto], [52, 262, COL.nieve], [30, 250, COL.crater]];
+  // Volcán en el horizonte (a ~1.3 km de la caída): grande y medio perdido en la niebla, no un cerrito bajo ella.
+  const VX = -1000, VZ = -3500, SEG = 18, EV = 2.6;
+  const anillos = [[300 * EV, 0, COL.volcanBase], [190 * EV, 120 * EV, COL.volcanMedio], [95 * EV, 215 * EV, COL.volcanAlto], [52 * EV, 262 * EV, COL.nieve], [30 * EV, 250 * EV, COL.crater]];
   const jit = Array.from({ length: SEG }, () => .88 + azar() * .24);
   for (let r = 0; r < anillos.length - 1; r++) {
     const [r0, y0, h0] = anillos[r], [r1, y1] = anillos[r + 1];
@@ -108,7 +131,8 @@ export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
       const a = k / SEG * 6.283, b = (k + 1) / SEG * 6.283, ja = jit[k], jb = jit[(k + 1) % SEG];
       const p = (rr, yy, ang, j) => [VX + rr * j * Math.cos(ang), yy, VZ + rr * j * Math.sin(ang)];
       const hh = r === 2 && k % 3 === 0 ? COL.nieve : h0;                           // lenguas de nieve
-      quad(p(r0, y0, a, ja), p(r1, y1, a, ja), p(r1, y1, b, jb), p(r0, y0, b, jb), k % 2 ? hh : mezcla(hh, "#000000", .08));
+      const bruma = mezcla(k % 2 ? hh : mezcla(hh, "#000000", .08), "#C9D8E4", .5);       // perspectiva atmosférica horneada: medio en niebla
+      quad(p(r0, y0, a, ja), p(r1, y1, a, ja), p(r1, y1, b, jb), p(r0, y0, b, jb), bruma);
     }
   }
 

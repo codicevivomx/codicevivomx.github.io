@@ -85,7 +85,11 @@ footer{display:flex;align-items:center;gap:10px}footer .eti{color:#3A2A14}
   background-image:linear-gradient(rgba(255,255,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.10) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.22) 1px,transparent 1px);
   background-size:20px 20px,20px 20px,100px 100px,100px 100px;box-shadow:0 30px 50px rgba(40,20,5,.45),inset 0 0 0 3px rgba(255,255,255,.08)}
 .tapete::after{content:"CÓDICE VIVO · TALLER";position:absolute;right:18px;bottom:10px;font:500 12px "Geist Mono",monospace;letter-spacing:.2em;color:rgba(255,255,255,.35)}
-.lampara{position:absolute;inset:0;border-radius:14px;pointer-events:none;z-index:0;background:radial-gradient(70% 60% at 8% 0%,rgba(255,236,190,.28),transparent 70%),radial-gradient(120% 90% at 100% 100%,rgba(0,0,0,.22),transparent 60%)}
+/* la luz de la mesa viene de la lámpara (arriba a la izquierda): resplandor cálido bajo la pantalla y
+   sombra hacia abajo a la derecha; las sombras de papeles e instrumentos ya caen hacia allá */
+.lampara{position:absolute;inset:0;border-radius:14px;pointer-events:none;z-index:0;background:radial-gradient(55% 45% at 22% 12%,rgba(255,236,190,.34),transparent 72%),radial-gradient(120% 90% at 100% 100%,rgba(0,0,0,.24),transparent 60%)}
+.t-lampara{position:absolute;left:-34px;top:-92px;width:180px;z-index:4;pointer-events:none;filter:drop-shadow(1px 2px 1px rgba(0,0,0,.45)) drop-shadow(16px 22px 10px rgba(0,0,0,.35))}
+@media (max-width:700px){.t-lampara{width:120px;left:-8px;top:-52px}}
 .obj{position:relative;z-index:1}
 .obj .sombra3d{box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 1px 1.5px rgba(0,0,0,.55),10px 14px 16px -4px rgba(0,0,0,.42)}
 .t-cuaderno{grid-column:span 4}.t-mili{grid-column:span 3}.t-postit{grid-column:span 2}.t-ficha{grid-column:span 3}
@@ -113,6 +117,24 @@ footer{display:flex;align-items:center;gap:10px}footer .eti{color:#3A2A14}
 .t-lapiz{position:absolute;right:4%;bottom:14px;width:210px;z-index:2;transform:rotate(-14deg);filter:drop-shadow(1px 2px 1px rgba(0,0,0,.5)) drop-shadow(8px 12px 6px rgba(0,0,0,.4))}
 @media (max-width:700px){.t-lapiz{width:130px;bottom:8px}}
 
+/* PC (≥ 1000 px): lámina y mesa lado a lado. El video queda fijo (sticky) mientras se recorre la mesa;
+   la mesa (~42 %) usa la retícula de 6 columnas para que nada se encime; la hoja se lee sobre la mesa. */
+@media (min-width:1000px){
+  .wrap{max-width:1500px;grid-template-columns:minmax(0,58fr) minmax(0,42fr);align-items:start;column-gap:26px}
+  .lamina{position:sticky;top:12px;align-self:start}
+  .maqueta{height:min(calc(100vh - 230px),620px);min-height:340px}
+  h1{font-size:clamp(26px,2.5vw,40px)}
+  .mesa3d{margin-top:64px;padding:0 34px 150px 0}
+  .plano.casi{--rz:-.8deg}.plano.inclinada{--rz:-1deg}   /* la mesa inclinada se dibuja más allá de su caja: margen abajo y a la derecha */
+  .etq{font-size:11px;padding:3px 6px;max-width:100%}   /* en la columna de 42 % se parte en dos renglones antes que salirse */
+  details.tomas,footer{grid-column:1/-1}
+  .plano{grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;padding:64px 20px 46px}   /* arriba, espacio para la base de la lámpara */
+  .t-cuaderno,.t-mili{grid-column:span 6}.t-postit,.t-ficha{grid-column:span 3}.t-crono,.t-velo,.t-alti{grid-column:span 2}
+  .t-crono{grid-column:1/span 2}
+  .levantada{top:6px}
+  .t-lapiz{width:160px}
+}
+
 /* hoja levantada (de frente para leer) */
 .levantada{position:absolute;z-index:20;left:50%;top:-40px;width:min(94vw,520px);transform-origin:top left;will-change:transform;filter:drop-shadow(0 28px 30px rgba(0,0,0,.35))}
 .levantada .cerrar{position:absolute;right:10px;top:8px;border:0;background:#22212B;color:#fff;border-radius:999px;width:34px;height:34px;font-size:18px;cursor:pointer;z-index:2}
@@ -122,5 +144,5 @@ footer{display:flex;align-items:center;gap:10px}footer .eti{color:#3A2A14}
 /* captura de la imagen fija: solo la escena, sin capas de texto */
 .captura-respaldo .lenta,.captura-respaldo .claqueta,.captura-respaldo .cuenta,.captura-respaldo .titulo3d,.captura-respaldo #carga,.captura-respaldo #borde,.captura-respaldo .capa-etiquetas{display:none!important}
 .captura-respaldo .mesa3d,.captura-respaldo details,.captura-respaldo footer,.captura-respaldo .lamina header,.captura-respaldo .controles{display:none!important}
-.captura-respaldo .wrap{padding:0;max-width:none}.captura-respaldo .lamina{transform:none;padding:0}
+.captura-respaldo .wrap{padding:0;max-width:none;display:block}.captura-respaldo .lamina{position:static}.captura-respaldo .lamina{transform:none;padding:0}
 .captura-respaldo .maqueta{height:100vh;min-height:0}

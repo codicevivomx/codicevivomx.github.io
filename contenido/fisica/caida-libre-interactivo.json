@@ -446,7 +446,7 @@
       "cuentaPaso": 1,
       "ritmo": { "lenta": "1/3", "etiqueta": "⅓", "realTras": 0.25, "rampaEntrada": 0.8, "rampaSalida": 1.2, "avisoBajo": 0.95 },
       "pausas": { "tandem": 0.75, "grafica": 3 },
-      "tierra": { "profundidad": 420, "nieblaDe": 200, "nieblaA": 1500 },
+      "tierra": { "profundidad": 420, "nieblaDe": 220, "nieblaA": 2300 },
       "paletas": {
         "nota": "OKLCH: croma × sin subir la luminosidad; contraste estira L alrededor de pivote; verde, cielo y coral empujan esos tonos. ?paleta=neutra = colores originales.",
         "predeterminada": { "croma": 1.55, "contraste": 1.2, "pivote": 0.8, "verde": 0.4, "cielo": 0.3, "coral": 0.4 }
