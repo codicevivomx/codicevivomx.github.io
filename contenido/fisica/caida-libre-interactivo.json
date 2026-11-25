@@ -454,7 +454,9 @@
       "textos": {
         "irAlSalto": "Ir al salto ⏭",
         "lenta": "Cámara lenta ×{ritmo}",
-        "lentaAria": "La escena va en cámara lenta; el cronómetro marca el tiempo físico real."
+        "lentaAria": "La escena va en cámara lenta; el cronómetro marca el tiempo físico real.",
+        "pestanas": ["Instrumentos", "Cuaderno", "Datos"],
+        "pestanasAria": "Estaciones de la mesa"
       },
       "tomas": [
         { "de": 0, "cam": "establecimiento", "n": "Toma 1 · plano de establecimiento", "t": "Desde la tierra", "d": "La cámara mira el suelo, a {altitud} m, y sube hasta la avioneta." },
