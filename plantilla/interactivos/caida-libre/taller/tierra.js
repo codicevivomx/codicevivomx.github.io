@@ -14,9 +14,9 @@ const COL = {
 // escala: el mapa se arma en unidades «de plano» y se encoge para que los campos se lean lejanos.
 export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
   let s = 11; const azar = () => (s = (s * 16807) % 2147483647) / 2147483647;
-  const pos = [], col = [], c = new THREE.Color();
+  const pos = [], col = [], orig = [], c = new THREE.Color();
   const pon = (h) => c.setStyle(hex(h), THREE.SRGBColorSpace);
-  const tri = (a, b, d, h) => { pon(h); for (const p of [a, b, d]) { pos.push(p[0], p[1], p[2]); col.push(c.r, c.g, c.b); } };
+  const tri = (a, b, d, h) => { pon(h); orig.push(h); for (const p of [a, b, d]) { pos.push(p[0], p[1], p[2]); col.push(c.r, c.g, c.b); } };
   const quad = (a, b, d, e, h) => { tri(a, b, d, h); tri(a, d, e, h); };
   const mezcla = (h1, h2, k) => "#" + new THREE.Color(h1).lerp(new THREE.Color(h2), k).getHexString();
 
@@ -91,5 +91,13 @@ export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
   const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, side: THREE.DoubleSide }));
   m.position.y = y; m.scale.setScalar(escala); m.matrixAutoUpdate = false; m.updateMatrix();
   m.userData.tris = pos.length / 9;
+  m.userData.recolorea = (nuevoHex) => {               // al cambiar de paleta (una vez, no por cuadro)
+    const a = geo.attributes.color, cache = new Map();
+    orig.forEach((h, i) => {
+      let k = cache.get(h); if (!k) { c.setStyle(nuevoHex(h), THREE.SRGBColorSpace); k = [c.r, c.g, c.b]; cache.set(h, k); }
+      for (let j = 0; j < 3; j++) a.setXYZ(i * 3 + j, k[0], k[1], k[2]);
+    });
+    a.needsUpdate = true;
+  };
   return m;
 }

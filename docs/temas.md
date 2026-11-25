@@ -138,6 +138,9 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   `?paleta=a` (+20 %) y `?paleta=b` (+40 %) aplicadas una vez al cargar (sin filtros). Instrumentos nuevos con
   biseles, cristal y sombra de agujas. 179 fps escritorio / 127 fps con emulación de celular (GPU de escritorio).
   Pendiente: cuando Gato elija paleta, dejarla como predeterminada y regenerar `respaldo.webp`.
+  Ronda 2 (25-nov): a y b no convencieron. `?paleta=c` (sat +70 %, contraste +25 %, verde 60 %, cielo y coral +40 %)
+  y `?paleta=ajuste` (panel flotante con saturación 0–120 %, contraste 0–50 % y verde 0–100 %; arranca en la c,
+  aplica al soltar ~4 ms, muestra la línea para dictar). Esperando los valores que dicte Gato.
 - [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
   taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
   Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.
