@@ -27,8 +27,12 @@ canvas#borde{position:absolute;inset:-2px;width:calc(100% + 4px);height:calc(100
 .cuenta{position:absolute;inset:0;display:grid;place-items:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:min(32vw,170px);color:#fff;text-shadow:0 6px 30px rgba(20,30,80,.3);pointer-events:none;z-index:4}
 .titulo3d{position:absolute;left:0;right:0;top:5%;text-align:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(42px,10vw,90px);color:#fff;text-shadow:0 6px 30px rgba(20,30,80,.3);pointer-events:none;z-index:4}
 .titulo3d small{display:block;font-family:"Geist Mono",monospace;font-weight:500;font-size:13px;letter-spacing:.12em}
+/* aviso de cámara lenta (arriba a la derecha, como el REC de una cámara) */
+.lenta{position:absolute;right:34px;top:34px;display:flex;align-items:center;gap:8px;background:#22212B;color:#fff;border-radius:6px;padding:6px 11px;font:600 12px "Geist Mono",monospace;letter-spacing:.1em;text-transform:uppercase;pointer-events:none;z-index:4}
+.lenta i{width:9px;height:9px;border-radius:50%;background:#E5533D;box-shadow:0 0 0 3px rgba(229,83,61,.25)}
+.medida{position:absolute;left:34px;top:34px;margin:0;background:rgba(255,255,255,.92);border-radius:8px;padding:8px 10px;font:12px/1.4 "Geist Mono",monospace;z-index:5;white-space:pre-wrap;max-width:70%}
 #carga{position:absolute;right:36px;top:36px;font:12px "Geist Mono",monospace;background:#fff;padding:6px 10px;border-radius:8px;z-index:4}
-@media (max-width:700px){.claqueta{left:20px;bottom:22px;min-width:0}.claqueta b{font-size:14px}#carga{right:22px;top:22px}}
+@media (max-width:700px){.claqueta{left:20px;bottom:22px;min-width:0}.claqueta b{font-size:14px}#carga{right:22px;top:22px}.lenta{right:20px;top:20px;font-size:10px;padding:5px 8px}.medida{left:20px;top:20px}}
 
 /* etiquetas de la escena (HTML sobre el lienzo, sin encimarse) */
 .capa-etiquetas{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
@@ -116,7 +120,7 @@ footer{display:flex;align-items:center;gap:10px}footer .eti{color:#3A2A14}
 @media (prefers-reduced-motion:reduce){.levantada{transition:none!important}}
 
 /* captura de la imagen fija: solo la escena, sin capas de texto */
-.captura-respaldo .claqueta,.captura-respaldo .cuenta,.captura-respaldo .titulo3d,.captura-respaldo #carga,.captura-respaldo #borde,.captura-respaldo .capa-etiquetas{display:none!important}
+.captura-respaldo .lenta,.captura-respaldo .claqueta,.captura-respaldo .cuenta,.captura-respaldo .titulo3d,.captura-respaldo #carga,.captura-respaldo #borde,.captura-respaldo .capa-etiquetas{display:none!important}
 .captura-respaldo .mesa3d,.captura-respaldo details,.captura-respaldo footer,.captura-respaldo .lamina header,.captura-respaldo .controles{display:none!important}
 .captura-respaldo .wrap{padding:0;max-width:none}.captura-respaldo .lamina{transform:none;padding:0}
 .captura-respaldo .maqueta{height:100vh;min-height:0}

@@ -129,6 +129,15 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   en `assets/fuentes/` (Caveat de `laminas2/`). Peso: 218 KB gzip al abrir + 380 KB al tocar. En la lámina la avioneta
   vuela sin la hoja de la puerta y las personas van al 92 % de la escala de la avioneta (caben en el estribo).
   Pendiente menor: aligerar fuentes (Bricolage 77 KB y Caveat 51 KB son casi todo el peso inicial).
+- [x] Lámina «El salto» versión cine (rama `lamina/caida-libre-cine`, 25-nov-2026, **en espera de OK de Gato y de
+  que elija paleta**): guion de 9 tomas en el bloque nuevo `taller.cine` del JSON (~45 s sin pausas; establecimiento
+  desde la tierra, travelling, rampas tiempo real → cámara lenta ×⅓ → real, tilt down con la tierra al fondo, grúa
+  final y órbita libre). Reloj de cine en `datos.js` (tiempo de escena → tiempo físico; la física y el cronómetro
+  van en tiempo físico). Aviso «Cámara lenta ×⅓», botón «Ir al salto», línea de tiempo de 45 s. `tierra.js`
+  (paisaje low-poly en 1 malla), halo y contorno del color de cada segundo, tramos que crecen. `paleta.js`:
+  `?paleta=a` (+20 %) y `?paleta=b` (+40 %) aplicadas una vez al cargar (sin filtros). Instrumentos nuevos con
+  biseles, cristal y sombra de agujas. 179 fps escritorio / 127 fps con emulación de celular (GPU de escritorio).
+  Pendiente: cuando Gato elija paleta, dejarla como predeterminada y regenerar `respaldo.webp`.
 - [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
   taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
   Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.

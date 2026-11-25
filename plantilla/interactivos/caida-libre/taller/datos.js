@@ -58,10 +58,41 @@ export function crearDatos(J) {
   const v0 = calc();
   const N = v0.n, TC = v0.t;                         // segundo de la predicción y tiempo de caída antes de abrir
   const tramos = Array.from({ length: Math.floor(TC + 1e-9) }, (_, i) => porK("sk", i + 1));
-  const tomas = T.tomas, esc = T.escena3d;
-  const salto = tomas[2].de, abrir = tomas[4].de;
+  const esc = T.escena3d, CI = T.cine, DUR = CI.duracion, salto = CI.salto;
+
+  // ---------- reloj de cine ----------
+  // S = tiempo de escena (lo que corre en pantalla); τ = tiempo físico. dτ/dS = ritmo: 1 en tiempo real,
+  // cine.ritmo.lenta en cámara lenta, con rampas suaves. La caída se mide en τ, así que g no cambia.
+  const RIT = CI.ritmo, LENTA = evalua(RIT.lenta, {}), PASO = 1 / 240, NP = Math.ceil(DUR / PASO) + 2;
+  const suave = (x) => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
+  const tau = new Float64Array(NP), rit = new Float64Array(NP);
+  let sIn = null, sOut = null;
+  for (let i = 0; i < NP; i++) {
+    const S = i * PASO, tf = tau[i] - salto;
+    let r = 1;
+    if (S >= salto) {
+      if (sIn === null && tf >= RIT.realTras) sIn = S;
+      if (sOut === null && tf >= TC) sOut = S;
+      r = sOut !== null ? LENTA + (1 - LENTA) * suave((S - sOut) / RIT.rampaSalida)
+        : sIn !== null ? 1 + (LENTA - 1) * suave((S - sIn) / RIT.rampaEntrada) : 1;
+    }
+    rit[i] = r; if (i + 1 < NP) tau[i + 1] = tau[i] + r * PASO;
+  }
+  const interp = (A, S) => { const x = Math.max(0, Math.min(NP - 1.001, S / PASO)), i = Math.floor(x); return A[i] + (A[i + 1] - A[i]) * (x - i); };
+  const tauDe = (S) => interp(tau, S), ritmo = (S) => interp(rit, S);
+  function escenaDe(tf) {                             // S en que la caída lleva tf segundos físicos
+    const obj = salto + tf; let a = 0, b = NP - 1;
+    while (b - a > 1) { const m = (a + b) >> 1; if (tau[m] < obj) a = m; else b = m; }
+    return (a + (obj - tau[a]) / Math.max(1e-9, tau[b] - tau[a])) * PASO;
+  }
+  const abrir = escenaDe(TC);
+  // Tomas del guion: «de» (escena), «enT» (tiempo físico de caída) o «deAbrir» (s de escena tras abrir).
+  const tomas = CI.tomas.map((x) => ({ ...x, de: x.de ?? (x.enT !== undefined ? (x.enT ? escenaDe(x.enT) : salto) : abrir + x.deAbrir) }));
+  tomas.forEach((x, i) => (x.a = i + 1 < tomas.length ? tomas[i + 1].de : DUR));
+  const pausas = T.pausas.map((p) => ({ ...p, en: escenaDe(CI.pausas[p.id]) }));
+
   const extras = {
-    lenta: num(tomas[2].a - tomas[2].de, 1),
+    lenta: num(1 / LENTA, 0), ritmo: RIT.etiqueta,
     nTomas: tomas.length, nPausas: T.pausas.length,
     tramos: lista(tramos.map((x) => num(x, 0))),
     tramosTri: lista(tramos.map((x) => num(x / v0.tri, 0))),
@@ -72,13 +103,9 @@ export function crearDatos(J) {
   // Texto de una plantilla con los valores de un instante (t por defecto el de valoresIniciales).
   const texto = (plantilla, ent = {}, mas = {}) => tpl(plantilla, { ...fmt(calc(ent)), ...extras, ...mas });
 
-  // Tiempo de escena S → tiempo físico t. Toma 3 = primer segundo en cámara lenta; toma 4 = del segundo 1 a TC.
-  function fisica(S) {
-    if (S < salto) return 0;
-    const t3 = tomas[2], t4 = tomas[3];
-    if (S < t3.a) return (S - t3.de) / (t3.a - t3.de);
-    return Math.min(TC, 1 + (S - t4.de) / (t4.a - t4.de) * (TC - 1));
-  }
+  // Tiempo de escena S → tiempo físico de caída t (0 antes del salto, TC al abrir).
+  const fisica = (S) => (S < salto ? 0 : S >= abrir ? TC : Math.min(TC, tauDe(S) - salto));
 
-  return { J, T, esc, tomas, pausas: T.pausas, DEC, calc, porK, fmt, texto, num, tpl, N, TC, tramos, salto, abrir, fisica, v0 };
+  return { J, T, esc, cine: CI, DUR, tomas, pausas, DEC, calc, porK, fmt, texto, num, tpl, N, TC, tramos, salto, abrir,
+    fisica, tauDe, ritmo, escenaDe, LENTA, v0 };
 }

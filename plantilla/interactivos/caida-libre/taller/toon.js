@@ -150,6 +150,13 @@ export function agregarContorno(m, opacidad = 1) {
   return c;
 }
 
+// Contorno propio de un objeto (opaco): para cambiarle color y grosor sin tocar a los demás.
+export function contornoPropio(raiz) {
+  const m = materialContorno(1);
+  raiz.traverse((o) => { if (o.name === "contorno" && !o.material.transparent) o.material = m; });
+  return m;
+}
+
 // Pieza simple (geometría de three) con toon y contorno: cinta de medir, flechas, tramos.
 export function pieza(geo, color, padre, { pos, rot, contorno = true, opacidad = 1 } = {}) {
   const m = new THREE.Mesh(geo, materialToon(color, { opacidad }));
