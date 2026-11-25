@@ -438,6 +438,7 @@
       "duracion": 45,
       "salto": 19,
       "irAlSalto": 15.2,
+      "mezclaPose": 0.8,
       "tituloDe": 3,
       "tituloA": 8.5,
       "cuentaDesde": 3,
@@ -447,18 +448,8 @@
       "pausas": { "tandem": 0.75, "grafica": 3 },
       "tierra": { "profundidad": 420, "nieblaDe": 200, "nieblaA": 1500 },
       "paletas": {
-        "a": { "saturacion": 1.2, "contraste": 1.2, "pivote": 0.6 },
-        "b": { "saturacion": 1.4, "contraste": 1.4, "pivote": 0.6 },
-        "c": { "saturacion": 1.7, "contraste": 1.25, "pivote": 0.6, "verde": 0.6, "cielo": 0.4, "coral": 0.4 },
-        "ajuste": {
-          "base": "c",
-          "deslizadores": [
-            { "clave": "saturacion", "nombre": "Saturación", "min": 0, "max": 120, "paso": 1, "formato": "+{x} %", "dicta": "saturación +{x} %" },
-            { "clave": "contraste", "nombre": "Contraste", "min": 0, "max": 50, "paso": 1, "formato": "+{x} %", "dicta": "contraste +{x} %" },
-            { "clave": "verde", "nombre": "Verde", "min": 0, "max": 100, "paso": 1, "formato": "{x} %", "dicta": "verde {x} %" }
-          ],
-          "textos": { "titulo": "Ajuste de color", "fijos": "cielo +{cielo} % · coral +{coral} % (de la paleta c)" }
-        }
+        "nota": "OKLCH: croma × sin subir la luminosidad; contraste estira L alrededor de pivote; verde, cielo y coral empujan esos tonos. ?paleta=neutra = colores originales.",
+        "predeterminada": { "croma": 1.55, "contraste": 1.2, "pivote": 0.8, "verde": 0.4, "cielo": 0.3, "coral": 0.4 }
       },
       "textos": {
         "irAlSalto": "Ir al salto ⏭",

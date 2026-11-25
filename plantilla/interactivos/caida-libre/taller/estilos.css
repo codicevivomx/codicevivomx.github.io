@@ -124,12 +124,3 @@ footer{display:flex;align-items:center;gap:10px}footer .eti{color:#3A2A14}
 .captura-respaldo .mesa3d,.captura-respaldo details,.captura-respaldo footer,.captura-respaldo .lamina header,.captura-respaldo .controles{display:none!important}
 .captura-respaldo .wrap{padding:0;max-width:none}.captura-respaldo .lamina{transform:none;padding:0}
 .captura-respaldo .maqueta{height:100vh;min-height:0}
-
-/* panel de ajuste de color (?paleta=ajuste): flotante, abajo a la derecha */
-.ajuste{position:fixed;right:12px;bottom:12px;z-index:50;width:min(300px,calc(100vw - 24px));background:#FFFEFA;border-radius:10px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.35);font:13px Geist,sans-serif;display:grid;gap:6px}
-.ajuste b{font:600 11px "Geist Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#6A6878}
-.ajuste label{display:grid;grid-template-columns:80px 1fr 52px;align-items:center;gap:6px}
-.ajuste label input{min-width:0;height:32px}
-.ajuste label span{font:500 12px "Geist Mono",monospace;text-align:right}
-.ajuste output{font:500 11px/1.4 "Geist Mono",monospace;background:#22212B;color:#fff;border-radius:6px;padding:6px 8px;user-select:all}
-.ajuste b{cursor:pointer}.ajuste.plegado label,.ajuste.plegado output{display:none}

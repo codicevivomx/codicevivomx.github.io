@@ -47,6 +47,7 @@
 // Ojo: las láminas usan three.min.js (r187, sin módulos); aquí three va por CDN fijado.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";   // los .glb van comprimidos con meshopt
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { clone as clonarEsqueleto } from "three/addons/utils/SkeletonUtils.js";
 
@@ -192,7 +193,7 @@ function estilizar(raiz) {
 }
 
 // ---------- carga y vistas
-const loader = new GLTFLoader();
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 let actual = null, mixers = [], helice = null, girar = false, cache = {};
 const caja = new THREE.Box3(), centro = new THREE.Vector3(), tam = new THREE.Vector3();
 

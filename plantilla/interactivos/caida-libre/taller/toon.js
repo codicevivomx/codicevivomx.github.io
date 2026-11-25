@@ -10,6 +10,9 @@ const tinte = (() => {
 })();
 const LUZ = new THREE.Vector3(-0.6, 1, 0.45).normalize();   // lámpara arriba-izquierda, como la mesa
 const UMBRAL = 0.12;
+// Tramado de grabado en la cara de sombra: líneas diagonales en espacio de pantalla (px de dispositivo).
+// Un uniforme compartido por todos los materiales: ajustarContorno lo escala con el devicePixelRatio.
+export const TRAMA = { paso: { value: 6 }, fuerza: { value: 0.16 } };
 
 const vert = /* glsl */`
   #include <common>
@@ -32,23 +35,28 @@ const vert = /* glsl */`
   }`;
 const frag = /* glsl */`
   uniform vec3 color; uniform vec3 tinte; uniform vec3 luz; uniform float umbral; uniform float opacidad;
+  uniform float pasoTrama; uniform float fuerzaTrama;
   varying vec3 vNormal;
   #include <fog_pars_fragment>
   void main() {
     float l = step(umbral, dot(normalize(vNormal), luz));
-    gl_FragColor = vec4(mix(color * tinte, color, l), opacidad);
+    float raya = 1.0 - step(0.22, fract((gl_FragCoord.x + gl_FragCoord.y) / pasoTrama));
+    vec3 sombra = color * tinte * (1.0 - fuerzaTrama * raya);
+    gl_FragColor = vec4(mix(sombra, color, l), opacidad);
     #include <colorspace_fragment>
     #include <fog_fragment>
   }`;
 
 export function materialToon(color, { opacidad = 1, lado = THREE.FrontSide, nombre = "" } = {}) {
-  return new THREE.ShaderMaterial({
+  const m = new THREE.ShaderMaterial({
     name: nombre, side: lado, vertexShader: vert, fragmentShader: frag, fog: true,
     transparent: opacidad < 1, depthWrite: opacidad >= 1,
     uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, {
       color: { value: new THREE.Color(color) }, tinte: { value: tinte }, luz: { value: LUZ },
       umbral: { value: UMBRAL }, opacidad: { value: opacidad } }]),
   });
+  m.uniforms.pasoTrama = TRAMA.paso; m.uniforms.fuerzaTrama = TRAMA.fuerza;   // compartidos (después del merge)
+  return m;
 }
 
 // Contorno: casco invertido empujado en pantalla (grosor parejo en px) con normales suavizadas.
@@ -104,6 +112,7 @@ export function ajustarContorno(renderer, grosorCss = 2) {
   renderer.getDrawingBufferSize(resolucion);
   // UniformsUtils.merge clona los valores: cada material tiene su copia de la resolución.
   for (const m of contornos) { m.uniforms.grosor.value = grosorCss * renderer.getPixelRatio(); m.uniforms.resolucion.value.copy(resolucion); }
+  TRAMA.paso.value = 6 * renderer.getPixelRatio();                // ~6 px de pantalla entre rayas
 }
 
 function normalesSuaves(geo) {
@@ -122,7 +131,8 @@ function normalesSuaves(geo) {
 
 // Convierte todas las mallas de un objeto: toon con su color glTF + contorno.
 // sinContorno: regex sobre nombre de malla, padre o material (cuerdas, interior de la cabina).
-export function estilizar(raiz, { opacidad = 1, sinContorno = /interior|cuerda/i } = {}) {
+// Sin contorno: interior de la cabina, cuerdas y el detalle fino (costuras, hebillas, reloj, paneles, remaches, luces).
+export function estilizar(raiz, { opacidad = 1, sinContorno = /interior|cuerda|costura|hebilla|reloj_|slider_borde|panel|remache|luz_|franja_coral/i } = {}) {
   const mallas = [];
   raiz.traverse((o) => { if (o.isMesh && o.name !== "contorno") mallas.push(o); });
   let tris = 0;

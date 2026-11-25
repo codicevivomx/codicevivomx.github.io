@@ -104,6 +104,35 @@ def vela(P):
     P.f(secciones[-1], PATRON[-1])
 
 
+def costuras(P):
+    """Costuras entre celdas: una tira fina sobre cada costilla, por la cara de arriba (sigue al haz)."""
+    w = 0.008 / (R + T)
+    for c in range(1, CELDAS):
+        phi = -PHI + 2 * PHI * c / CELDAS
+        for k in range(BOCA):
+            (u0, t0), (u1, t1) = PERFIL[k], PERFIL[k + 1]
+            q = [(phi - w, u0, t0), (phi + w, u0, t0), (phi + w, u1, t1), (phi - w, u1, t1)]
+            P.f([vd(P, punto(f, u, t, 0.008), haz(f, u, t)) for f, u, t in q], "costura_vela")
+
+
+def slider(P):
+    """Slider: cuadro de tela con cuatro ojales por donde pasan las cuerdas. Abierto, queda bajo sobre
+    las bandas; a los 0.5 s (cuerdas estiradas) está arriba, junto al haz, recogido."""
+    zc, hx, hy, yc = 1.00, 0.42, 0.24, -0.03
+    z_lin = (R + T) - LARGO_HAZ - 0.14
+    def pt(x, y, z):
+        return vd(P, (x, y, z), (x * 0.3, -0.2 + (y - yc) * 0.6, z_lin + (z - zc)))
+    v = [pt(sx * hx, yc + sy * hy, zc + sz * 0.006) for sz in (-1, 1) for sy in (-1, 1) for sx in (-1, 1)]
+    for q in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
+        P.f([v[k] for k in q], "vela_2")
+    for sx in (1, -1):
+        for sy in (1, -1):
+            c = (sx * (hx - .03), yc + sy * (hy - .03), zc)
+            o = [pt(c[0] + ax * .022, c[1] + ay * .022, c[2] + az * .012) for az in (-1, 1) for ay in (-1, 1) for ax in (-1, 1)]
+            for q in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
+                P.f([o[k] for k in q], "slider_borde")
+
+
 def cuerda(P, a, b, r, n, a2=None, b2=None):
     """Cuerda recta de a a b; en el estado «lineas» va de a2 a b2 (por defecto, las mismas puntas)."""
     a, b = Vector(a), Vector(b)
@@ -207,7 +236,9 @@ def main():
     P = persona.Pieza([])
     DESTINO.clear()
     vela(P)
+    costuras(P)
     aparejo(P)
+    slider(P)
     destinos = [DESTINO[v] for v in P.bm.verts]   # mismo orden que los vértices de la malla
     ob = P.objeto("Paracaidas_malla", col, suave=35)
     # La tela se dibuja por las dos caras: al plegarse (bolsa, haz) parte de la vela queda de espaldas

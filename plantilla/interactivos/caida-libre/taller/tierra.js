@@ -4,7 +4,9 @@
 import * as THREE from "three";
 
 const COL = {
-  campos: ["#A9D77A", "#C9DD8F", "#93C96E", "#E2D39A", "#B6DC87", "#D7C77F", "#8CBF67"],
+  campos: ["#A9D77A", "#C9DD8F", "#93C96E", "#E2D39A", "#B6DC87", "#D7C77F", "#8CBF67", "#7DBA5C", "#6FAE52", "#BFE09A", "#9CCB6B"],
+  camino: "#D8C9A6",
+  techosGranja: ["#D9694F", "#5B8DD6", "#3FA581", "#E8894F", "#C9573F"],
   rio: "#6FB3D6", orilla: "#B9D9A0", carretera: "#D8D1C2", linea: "#F4F1EA",
   muro: ["#F2EBDD", "#E8DCC8", "#F6F1E6"], techo: ["#D9694F", "#C9573F", "#B95A48"],
   arbol: "#5E9E5C", arbolO: "#4E8A50", volcanBase: "#9DB07F", volcanMedio: "#8E7F72", volcanAlto: "#A39589",
@@ -41,6 +43,14 @@ export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
   const carretera = (u) => [X0 + u * N * L, 320 - u * 1000 + 40 * Math.sin(u * 5)];
   tira(carretera, 8, 1.2, COL.carretera, 40); tira(carretera, 1.2, 1.4, COL.linea, 40);
 
+  // Caminos de terracería: siguen algunas líneas del mosaico (entre parcelas).
+  for (let k = 0; k < 14; k++) {
+    const vertical = k % 2, linea = 4 + Math.floor(azar() * (N - 8)), desde = Math.floor(azar() * (N - 12)), largo = 6 + Math.floor(azar() * 10);
+    const fija = (vertical ? X0 : Z0) + linea * L, a0 = desde * L, a1 = Math.min(N, desde + largo) * L;
+    const f = (u) => vertical ? [fija, Z0 + a0 + (a1 - a0) * u] : [X0 + a0 + (a1 - a0) * u, fija];
+    tira(f, 5, .6, COL.camino, 2);
+  }
+
   // Caja con techo de otro color (sin cara de abajo).
   function caja(x, z, w, d, h, muro, techo) {
     const a = [x - w / 2, 0, z - d / 2], b = [x + w / 2, 0, z - d / 2], e = [x + w / 2, 0, z + d / 2], f = [x - w / 2, 0, z + d / 2];
@@ -58,6 +68,14 @@ export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
   }
   caja(PX, PZ, 12, 22, 16, COL.muro[2], COL.techo[1]); caja(PX, PZ - 14, 7, 7, 30, COL.muro[2], COL.techo[0]);
 
+  // Granjas sueltas: casa + granero con techos de colores, junto a un camino imaginario.
+  const granjas = [];
+  for (let k = 0; k < 26; k++) {
+    const gx = X0 + 120 + azar() * (N * L - 240), gz = Z0 + 120 + azar() * (N * L - 240);
+    if (Math.hypot(gx - 150, gz + 330) < 160) continue;                   // lejos del pueblo
+    granjas.push([gx, gz]);
+  }
+
   // Árboles: conos de 5 lados en bosquecillos.
   function arbol(x, z, h) {
     const r = h * .32, cima = [x, h, z];
@@ -66,9 +84,19 @@ export function crearTierra({ y = -420, hex = (x) => x, escala = .45 } = {}) {
       tri([x + r * Math.cos(a), 0, z + r * Math.sin(a)], cima, [x + r * Math.cos(b), 0, z + r * Math.sin(b)], k % 2 ? COL.arbol : COL.arbolO);
     }
   }
-  [[-260, -120], [380, -60], [-80, -560], [520, -520], [-520, 160], [260, 220]].forEach(([bx, bz]) => {
-    for (let k = 0; k < 9; k++) arbol(bx + (azar() - .5) * 90, bz + (azar() - .5) * 70, 12 + azar() * 10);
+  [[-260, -120], [380, -60], [-80, -560], [520, -520], [-520, 160], [260, 220], [-760, -420], [700, 300], [-300, 560], [880, -900], [-980, 640]].forEach(([bx, bz]) => {
+    for (let k = 0; k < 10; k++) arbol(bx + (azar() - .5) * 110, bz + (azar() - .5) * 80, 12 + azar() * 10);
   });
+  granjas.forEach(([gx, gz], k) => {
+    const techo = COL.techosGranja[k % COL.techosGranja.length];
+    caja(gx, gz, 11, 8, 6, COL.muro[k % 3], techo);
+    caja(gx + 16, gz + 4, 14, 10, 8, mezcla(COL.muro[1], "#B98A5C", .35), techo);
+    for (let a = 0; a < 3; a++) arbol(gx - 10 - a * 7, gz + 12, 10 + a * 2);
+  });
+  for (let k = 0; k < 4; k++) {                                         // huertos: árboles en hilera
+    const hx = X0 + 300 + azar() * (N * L - 600), hz = Z0 + 300 + azar() * (N * L - 600);
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) arbol(hx + i * 12, hz + j * 12, 8);
+  }
 
   // Volcán al fondo: cono truncado con anillos de color, cráter y nieve.
   const VX = -620, VZ = -1350, SEG = 18;
