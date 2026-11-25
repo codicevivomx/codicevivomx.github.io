@@ -167,6 +167,12 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   (`plantilla/modelos/mesa/fuentes/mesa.py`, Cycles + Freestyle, fondo transparente con sombra, al doble de
   resolución): `lampara.webp` 33 KB, `estuche.webp` 39 KB. Celular: pestañas Instrumentos · Cuaderno · Datos (al
   levantar una hoja se abre Cuaderno). Sin bucle de «cámara de la mesa». 178 fps escritorio / 142 emulación.
+  Ronda 6 (25-nov): lámpara nueva de metal gris (reflejos con softbox), ~1.8× y base ancha con canto y bisel, apoyada
+  en el tapete con el brazo sobre la bandeja; luz cálida (spot) dentro de la pantalla renderizada como capa aparte
+  (`lampara-luz.webp`, alfa = intensidad) que en la página va sobre la bandeja con mezcla screen + multiply (fija).
+  Estuche hondo (huecos de 50 cm de modelo, sol más rasante) con tapa abierta 110° y espuma de huevera; versión
+  vertical `estuche-v.webp` para celular (instrumentos ~1.5× más grandes, etiquetas de 12 px junto a cada uno).
+  Pesos: lampara 58 KB, lampara-luz 23 KB, estuche 50 KB, estuche-v 38 KB. 178 fps escritorio / 137 emulación.
 - [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
   taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
   Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.
