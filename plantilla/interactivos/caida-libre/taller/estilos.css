@@ -91,6 +91,7 @@ footer{display:flex;align-items:center;gap:10px}footer .eti{color:#3A2A14}
    apoyada en la franja de arriba del tapete y el brazo sobre la bandeja. El charco es una capa fija con mezcla: aclara y entibia lo que queda debajo, sin costo por cuadro. */
 .t-lampara,.t-luz{position:absolute;left:0;width:100%;height:auto;aspect-ratio:6/4.2;pointer-events:none;top:calc(var(--base-y,74px) - 25.2cqw)}
 .t-lampara{z-index:6}
+.plano{overflow-x:clip}   /* el charco escalado no se sale a los lados (arriba sí asoma la lámpara) */
 /* dos pasadas de la misma capa: «screen» aclara lo oscuro (tapete, madera) y una normal tenue entibia el papel blanco */
 .t-luz{z-index:4;mix-blend-mode:screen;opacity:.6;transform:scale(1.45);transform-origin:64% 40%}   /* el charco se abre desde la pantalla */
 .t-luz+.t-luz{mix-blend-mode:multiply;opacity:.55}   /* el texto oscuro sigue legible */   /* sobre el papel blanco: tinte cálido */
