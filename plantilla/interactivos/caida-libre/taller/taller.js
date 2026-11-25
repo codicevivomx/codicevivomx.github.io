@@ -1,8 +1,9 @@
 // Lámina «Caída libre · El salto» (taller, boceto 9 con modelos reales).
-// Director de 5 tomas + 2 pausas de causa. Los textos y números salen del JSON y de sus fórmulas.
+// Director del guion de cine (taller.cine: tomas, rampas de velocidad) + 2 pausas de causa. Los textos y números salen del JSON y de sus fórmulas.
 // El 3D (three.js + modelos .glb) se importa solo al tocar «Ver la escena»; antes se ve la imagen fija.
 import { cargarDatos } from "./datos.js";
 import { bordePintado, instrumentos, regla, camaraMesa, hojaLevantada } from "./mesa.js";
+import { crearPaleta, avivarDOM } from "./paleta.js";
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -11,7 +12,8 @@ const RUTA_JSON = "../../../../contenido/fisica/caida-libre-interactivo.json";
 const RUTA_MODELOS = "../../../modelos/caida-libre/";
 
 const D = await cargarDatos(RUTA_JSON);
-const X = D.T.textos, E = D.esc, DUR = E.duracion, N = D.N;
+const X = D.T.textos, CI = D.cine, XC = CI.textos, DUR = D.DUR, N = D.N;
+const P = crearPaleta(CI.paletas[q.get("paleta")]);              // ?paleta=a | b (sin parámetro: la de siempre)
 const vN = D.calc({ n: N });                                   // valores de la predicción (segundo n)
 
 // ---------- textos fijos de la página ----------
@@ -25,6 +27,8 @@ $("respaldo").alt = D.texto(X.respaldo);
 html("tit3d", `${D.texto(X.altitudTitulo)}<small>${X.altitudSub}</small>`);
 txt("carga", X.cargando);
 txt("saltar", X.ver);
+txt("irSalto", XC.irAlSalto);
+txt("lentaT", D.texto(XC.lenta)); $("lenta").setAttribute("aria-label", XC.lentaAria);
 $("tiempo").max = DUR; $("tiempo").setAttribute("aria-label", X.lineaTiempo);
 txt("eCuaderno", X.cuaderno); txt("mCuadernoT", X.prediccionTitulo);
 txt("ePausas", X.pausasTitulo); txt("mMiliT", X.pausasEspera);
@@ -41,9 +45,10 @@ txt("eResultado", X.resultado);
 regla(D, $("regla"));
 
 // ---------- mesa ----------
-bordePintado($("borde"), $("maqueta"));
+bordePintado($("borde"), $("maqueta"), P);
 const mueveInstrumentos = instrumentos(D);
 mueveInstrumentos(0);
+avivarDOM(P);
 const hoja = hojaLevantada({ mesa: $("mesa3d"), lev: $("levantada"), reduce: reducido, origenDe: (id) => $(id) || $("mCuaderno") });
 
 // ---------- estado ----------
@@ -77,7 +82,7 @@ D.J.prediccion.opciones.forEach((o) => {
 function elegir(v) {
   pred = v;
   ops.querySelectorAll(".op").forEach((o) => o.setAttribute("aria-pressed", String(+o.dataset.v === v)));
-  $("saltar").disabled = false; $("tiempo").disabled = false; $("irEscena").hidden = false;
+  $("saltar").disabled = false; $("tiempo").disabled = false; $("irSalto").disabled = false; $("irEscena").hidden = false;
   txt("miPred", D.tpl(X.conPrediccion, { x: D.num(v, 0) }));
 }
 $("irEscena").onclick = () => $("saltar").click();
@@ -109,7 +114,7 @@ function graficaVT() {                           // v-t con franjas de trianguli
   s += `<line x1="${X0}" y1="${Y0}" x2="${X0 + W}" y2="${py(vMax)}" stroke="#3D6FCB" stroke-width="3"/>`;
   s += `<line x1="${X0}" y1="${Y0}" x2="${X0 + W + 8}" y2="${Y0}" stroke="#2A2A33" stroke-width="1.4"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y0 - Hh - 8}" stroke="#2A2A33" stroke-width="1.4"/>`;
   s += `<text x="${X0 + W - 14}" y="${Y0 + 26}">t (s)</text><text x="${X0 + 4}" y="${Y0 - Hh - 10}">v (m/s)</text></g>`;
-  return s;
+  return P.css(s);
 }
 function abrePausa(p) {
   pausa = p; corre = false;
@@ -163,7 +168,7 @@ async function cargar3D() {
   try {
     const { crearEscena } = await import("./escena.js");
     escena = await crearEscena({
-      lienzo: $("esc"), maqueta: $("maqueta"), D, rutaModelos: RUTA_MODELOS, reducido,
+      lienzo: $("esc"), maqueta: $("maqueta"), D, P, rutaModelos: RUTA_MODELOS, reducido,
       alCargar: (i, n) => txt("carga", `${X.cargando} ${i}/${n}`),
     });
     $("respaldo").hidden = true; $("esc").hidden = false;
@@ -185,6 +190,12 @@ $("saltar").onclick = () => {
   if (S >= DUR) { S = 0; libre = false; $("resultado").hidden = true; pausas.forEach((x) => (x.hecha = false)); actualizaHoja(); }
   if (corre) { corre = false; return; }
   arrancar();
+};
+// Ir al salto: se salta la intro (pone la escena justo antes de la cuenta regresiva).
+$("irSalto").onclick = () => {
+  if (pausa) return;
+  libre = false; $("resultado").hidden = true;
+  pausas.forEach((x) => (x.hecha = x.en < CI.irAlSalto)); irA(CI.irAlSalto); actualizaHoja(); arrancar();
 };
 const VELS = [1, 0.5, 0.25];
 $("vel").textContent = "×" + VELS[0];
@@ -212,8 +223,10 @@ function dibuja(dt) {
   $("toma").hidden = libre || !enEscena || !!pausa;
   txt("tomaN", D.tomas[i].n); txt("tomaT", D.tomas[i].t);
   D.tomas.forEach((x, k) => x.li.classList.toggle("on", !libre && k === i && !!pred));
-  $("tit3d").hidden = !(enEscena && S > E.tituloDe && S < E.tituloA);
-  const cta = S >= E.cuentaInicio && S < D.salto ? E.cuentaDesde - Math.floor((S - E.cuentaInicio) / E.cuentaPaso) : 0;
+  $("tit3d").hidden = !(enEscena && S > CI.tituloDe && S < CI.tituloA);
+  // aviso de cámara lenta: la escena va lenta, pero el cronómetro sigue el tiempo físico (g no cambia)
+  $("lenta").hidden = !enEscena || !!pausa || libre || D.ritmo(S) >= CI.ritmo.avisoBajo;
+  const cta = S >= CI.cuentaInicio && S < D.salto ? CI.cuentaDesde - Math.floor((S - CI.cuentaInicio) / CI.cuentaPaso) : 0;
   $("cuenta").hidden = !cta || !enEscena; if (cta) txt("cuenta", Math.max(1, cta));
   $("tiempo").value = S;
   if (t > 0) {
@@ -240,7 +253,7 @@ actualizaHoja();
 requestAnimationFrame(bucle);
 
 // ---------- capturas y medición ----------
-// ?pred=25 (elige la predicción) · ?S=8.6 (congela un instante) · ?pausa=tandem|grafica · ?fin=1 (resultado)
+// ?paleta=a|b (paletas más vivas) · ?pred=25 (elige la predicción) · ?S=8.6 (congela un instante) · ?pausa=tandem|grafica · ?fin=1 (resultado)
 // ?respaldo=1 (encuadre de la imagen fija, a pantalla completa) · ?medir=15000 (corre sin pausas y escribe FPS en consola)
 // ?reducido=1 (como prefers-reduced-motion) · ?anchos=1 (lista en consola lo que se sale de la pantalla)
 window.taller = {
@@ -264,8 +277,15 @@ if (q.has("pred") || q.has("S") || q.has("respaldo")) {
     if (q.has("corre") || q.has("medir")) arrancar();
     if (q.has("medir")) {                         // corre la escena sin detenerse en las pausas y reporta fps
       pausas.forEach((x) => (x.hecha = true));
-      setTimeout(() => console.log("FPS", JSON.stringify({ ...window.taller.fps(), tris: window.taller.tris(),
-        ancho: innerWidth, dpr: devicePixelRatio, gpu: (() => { const g = $("esc").getContext("webgl2"); const e = g?.getExtension("WEBGL_debug_renderer_info"); return e ? g.getParameter(e.UNMASKED_RENDERER_WEBGL) : "?"; })() })), +(q.get("medir") || 15000));
+      setTimeout(() => {
+        const r = { ...window.taller.fps(), tris: window.taller.tris(), ancho: innerWidth, dpr: devicePixelRatio,
+          gpu: (() => { const g = $("esc").getContext("webgl2"); const e = g?.getExtension("WEBGL_debug_renderer_info"); return e ? g.getParameter(e.UNMASKED_RENDERER_WEBGL) : "?"; })() };
+        console.log("FPS", JSON.stringify(r));
+        const m = $("medida"); m.hidden = false;                // también en pantalla, para leerlo en el celular
+        m.textContent = `fps ${r.promedio} · mín ${r.minimo} · ${r.cuadros} cuadros
+${r.tris} triángulos · ${r.ancho}px ×${r.dpr}
+${r.gpu}`;
+      }, +(q.get("medir") || 15000));
     }
   }
 }
