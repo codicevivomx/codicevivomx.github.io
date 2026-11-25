@@ -1,5 +1,5 @@
-// La mesa del taller (boceto 9): borde pintado de la lámina, instrumentos (cronómetro, velocímetro,
-// altímetro), regla, cámara de la mesa que se acomoda y hoja que se levanta para leer.
+// La mesa del taller: borde pintado de la lámina, instrumentos (cronómetro, velocímetro, altímetro) sobre
+// el estuche pre-renderizado, regla y hoja que se levanta para leer. La mesa es recta (cenital).
 // Sin three.js: se ve desde el primer momento, antes de cargar el 3D.
 const $ = (id) => document.getElementById(id);
 const NS = "http://www.w3.org/2000/svg", INK = "#1E1D25";
@@ -201,16 +201,6 @@ export function regla(D, cont) {
     cont.appendChild(s);
   }
   cont.style.setProperty("--div", n);
-}
-
-// ---------- cámara de la mesa: inclinada al correr, plana al leer, casi cenital en reposo ----------
-export function camaraMesa(plano, estado) {
-  let ant = "";
-  (function mira() {
-    const modo = estado();
-    if (modo !== ant) { plano.classList.remove("casi", "inclinada", "plana"); plano.classList.add(modo); ant = modo; }
-    requestAnimationFrame(mira);
-  })();
 }
 
 // ---------- hoja levantada (FLIP de la miniatura a la hoja de frente) ----------

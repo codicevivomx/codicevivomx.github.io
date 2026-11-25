@@ -2,7 +2,7 @@
 // Director del guion de cine (taller.cine: tomas, rampas de velocidad) + 2 pausas de causa. Los textos y números salen del JSON y de sus fórmulas.
 // El 3D (three.js + modelos .glb) se importa solo al tocar «Ver la escena»; antes se ve la imagen fija.
 import { cargarDatos } from "./datos.js";
-import { bordePintado, instrumentos, regla, camaraMesa, hojaLevantada } from "./mesa.js";
+import { bordePintado, instrumentos, regla, hojaLevantada } from "./mesa.js";
 import { crearPaleta, avivarDOM } from "./paleta.js";
 
 const $ = (id) => document.getElementById(id);
@@ -59,6 +59,12 @@ let escena = null, cargando = false;
 const pausas = D.pausas.map((p) => ({ ...p, hecha: false }));
 const tomaDe = (s) => { const i = D.tomas.findIndex((x) => s >= x.de && s < x.a); return i === -1 ? D.tomas.length - 1 : i; };
 
+// ---------- pestañas de la mesa (celular): una estación completa a todo el ancho ----------
+const pest = [...$("pestanas").children];
+$("pestanas").setAttribute("aria-label", XC.pestanasAria);
+pest.forEach((b, i) => { b.textContent = XC.pestanas[i]; b.onclick = () => pestana(b.dataset.tab); });
+function pestana(t) { $("mesa3d").dataset.tab = t; pest.forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === t))); }
+
 function actualizaHoja() {
   const enPausa = !$("pausa").hidden, tarjeta = !$("tarjeta").hidden, resultado = !$("resultado").hidden;
   const quiere = enPausa || tarjeta || resultado;
@@ -68,9 +74,9 @@ function actualizaHoja() {
   $("mMili").classList.toggle("vacia", enPausa);
   if (enPausa) txt("mMiliT", $("pausaT").textContent);
   if (resultado) txt("mCuadernoT", X.cuadernoAnotado); else if (!tarjeta) txt("mCuadernoT", X.cuadernoEspera);
+  if (quiere && innerWidth <= 700) pestana("cuaderno");          // la hoja sale del cuaderno o del milimétrico
   hoja.poner(quiere, enPausa ? $("mMili") : $("mCuaderno"));
 }
-camaraMesa(document.querySelector(".plano"), () => (hoja.visible ? "plana" : corre ? "inclinada" : "casi"));
 
 // ---------- predicción (bloque prediccion del JSON, segundo n) ----------
 const ops = $("ops");
@@ -267,6 +273,7 @@ if (q.has("anchos")) setTimeout(() => {            // diagnóstico: qué se sale
     .slice(0, 12).map((e) => `${e.tagName}#${e.id}.${e.className?.baseVal ?? e.className} ${Math.round(e.getBoundingClientRect().width)}px`);
   console.log("ANCHOS", innerWidth, document.documentElement.scrollWidth, JSON.stringify(fuera));
 }, 3000);
+if (q.has("pestana")) pestana(q.get("pestana"));                // capturas: ?pestana=instrumentos|cuaderno|datos
 if (q.has("pred") || q.has("S") || q.has("respaldo")) {
   elegir(+(q.get("pred") || vN.sn));
   $("tarjeta").hidden = true; actualizaHoja();

@@ -161,6 +161,12 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   luz y las sombras salen de ahí). PC ≥ 1000 px: lámina (58 %, sticky) y mesa (42 %, retícula de 6 columnas) lado a
   lado; hoja levantada del ancho de la mesa; celular apilado. `respaldo.webp` regenerado. 0 choques; 178 / 128 fps.
   - [ ] Pendiente: cambiar el ícono de la cola de la avioneta (la «C» del logo no convenció a Gato).
+  Ronda 5 (25-nov): mesa recta (cenital) también en PC, por estaciones: tapete con canto, bandeja de papeles
+  (cuaderno, milimétrico, post-it, ficha) y estuche de espuma con cronómetro, velocímetro y altímetro en sus huecos
+  (SVG animados encima), regla y lápiz en sus ranuras. Lámpara y estuche pre-renderizados en Blender
+  (`plantilla/modelos/mesa/fuentes/mesa.py`, Cycles + Freestyle, fondo transparente con sombra, al doble de
+  resolución): `lampara.webp` 33 KB, `estuche.webp` 39 KB. Celular: pestañas Instrumentos · Cuaderno · Datos (al
+  levantar una hoja se abre Cuaderno). Sin bucle de «cámara de la mesa». 178 fps escritorio / 142 emulación.
 - [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
   taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
   Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.
