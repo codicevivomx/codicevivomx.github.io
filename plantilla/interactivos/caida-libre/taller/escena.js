@@ -33,15 +33,19 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   ren.setPixelRatio(Math.min(devicePixelRatio, 2));
   ren.outputColorSpace = THREE.SRGBColorSpace;
   const esc = new THREE.Scene();
-  const cielo = ["#BFDDEC", "#DCEEF5", "#EEF6F3"].map(P.css);
-  esc.fog = new THREE.Fog(new THREE.Color().setStyle(cielo[2]), CI.tierra.nieblaDe, CI.tierra.nieblaA);
-  esc.background = (() => {                    // cielo en degradado, dentro del lienzo (también para la imagen fija)
+  const CIELO = ["#BFDDEC", "#DCEEF5", "#EEF6F3"];
+  esc.fog = new THREE.Fog(0xffffff, CI.tierra.nieblaDe, CI.tierra.nieblaA);
+  function pintaCielo() {                      // cielo en degradado, dentro del lienzo (también para la imagen fija)
+    const cielo = CIELO.map(P.css);
+    esc.fog.color.setStyle(cielo[2]);
     const c = document.createElement("canvas"); c.width = 2; c.height = 256;
     const x = c.getContext("2d"), g = x.createLinearGradient(0, 0, 0, 256);
     g.addColorStop(0, cielo[0]); g.addColorStop(.6, cielo[1]); g.addColorStop(1, cielo[2]);
     x.fillStyle = g; x.fillRect(0, 0, 2, 256);
-    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; return tex;
-  })();
+    esc.background?.dispose();
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; esc.background = tex;
+  }
+  pintaCielo();
   const cam = new THREE.PerspectiveCamera(34, 1, 0.5, 1600);
   esc.add(new THREE.HemisphereLight(0xffffff, 0xcfd8dc, 1.6));
   const sol = new THREE.DirectionalLight(0xffffff, 2.2); sol.position.set(-6, 10, 4); esc.add(sol);
@@ -173,23 +177,28 @@ export async function crearEscena({ lienzo, maqueta, D, P, rutaModelos, reducido
   nube(-20, 8, -12, 1.2); nube(20, 2, -16, 1.4); nube(-10, -16, -24, 1.5);
   nube(-250, 64, -40, 2.2); nube(-185, 34, -60, 2.6); nube(-125, 72, -34, 1.8); nube(-75, 44, -75, 2.8); nube(-220, 30, 70, 2);
   nube(-30, -70, -50, 3.2); nube(40, -105, 20, 3.6); nube(-80, -140, 40, 4); nube(70, -160, -90, 4.4);
-  const tierra = crearTierra({ y: YT, hex: P.css });
+  const tierra = crearTierra({ y: YT, hex: P.css });   // tierra.userData.recolorea(hex) la repinta
   esc.add(tierra);
 
-  // ---------- paleta: una sola pasada por los materiales (sin filtros por cuadro) ----------
-  if (P.activa) {
-    const vistos = new Set();
-    esc.traverse((o) => {
-      for (const m of [].concat(o.material || [])) {
-        if (vistos.has(m) || m.vertexColors || o.userData.propio) continue;
-        vistos.add(m);
-        const c = m.uniforms?.color?.value ?? m.color;
-        if (c?.isColor) c.setStyle(P.hex("#" + c.getHexString()));
-      }
-    });
+  // ---------- paleta: pasada por los materiales al cargar y al soltar un deslizador (nunca por cuadro) ----------
+  const colores = [], vistos = new Set();                      // [color de three, original]
+  esc.traverse((o) => {
+    for (const m of [].concat(o.material || [])) {
+      if (vistos.has(m) || m.vertexColors || o.userData.propio) continue;
+      vistos.add(m);
+      const c = m.uniforms?.color?.value ?? m.color;
+      if (c?.isColor) colores.push([c, "#" + c.getHexString()]);
+    }
+  });
+  const tintaYo = new THREE.Color(), colSeg = colTramo.map(() => new THREE.Color());
+  function aplicaPaleta(inicio) {
+    for (const [c, h0] of colores) c.setStyle(P.hex(h0));
+    tintaYo.copy(contornoYo.uniforms.color.value);
+    colTramo.forEach((c, i) => colSeg[i].setHex(P.num(c)));
+    if (!inicio) { pintaCielo(); tierra.userData.recolorea(P.css); }
   }
-  const tintaYo = contornoYo.uniforms.color.value.clone();
-  const colSeg = colTramo.map((c) => new THREE.Color(P.num(c)));
+  aplicaPaleta(true);
+  P.alCambiar(() => aplicaPaleta(false));
 
   // ---------- cámara ----------
   const V = (x, y, z) => new THREE.Vector3(x, y, z);

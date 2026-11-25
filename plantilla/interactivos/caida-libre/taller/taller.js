@@ -13,7 +13,9 @@ const RUTA_MODELOS = "../../../modelos/caida-libre/";
 
 const D = await cargarDatos(RUTA_JSON);
 const X = D.T.textos, CI = D.cine, XC = CI.textos, DUR = D.DUR, N = D.N;
-const P = crearPaleta(CI.paletas[q.get("paleta")]);              // ?paleta=a | b (sin parámetro: la de siempre)
+// ?paleta=a | b | c, o ?paleta=ajuste (panel con deslizadores; arranca en la c). Sin parámetro: la de siempre.
+const AJUSTE = q.get("paleta") === "ajuste";
+const P = crearPaleta(AJUSTE ? CI.paletas[CI.paletas.ajuste.base] : CI.paletas[q.get("paleta")]);
 const vN = D.calc({ n: N });                                   // valores de la predicción (segundo n)
 
 // ---------- textos fijos de la página ----------
@@ -45,10 +47,12 @@ txt("eResultado", X.resultado);
 regla(D, $("regla"));
 
 // ---------- mesa ----------
-bordePintado($("borde"), $("maqueta"), P);
+P.alCambiar(bordePintado($("borde"), $("maqueta"), P));
 const mueveInstrumentos = instrumentos(D);
 mueveInstrumentos(0);
 avivarDOM(P);
+P.alCambiar(() => { if (pausa?.id === "grafica") $("grafica").querySelector("svg").innerHTML = graficaVT(); });
+if (AJUSTE) panelAjuste();
 const hoja = hojaLevantada({ mesa: $("mesa3d"), lev: $("levantada"), reduce: reducido, origenDe: (id) => $(id) || $("mCuaderno") });
 
 // ---------- estado ----------
@@ -69,6 +73,30 @@ function actualizaHoja() {
   hoja.poner(quiere, enPausa ? $("mMili") : $("mCuaderno"));
 }
 camaraMesa(document.querySelector(".plano"), () => (hoja.visible ? "plana" : corre ? "inclinada" : "casi"));
+
+// ---------- panel de ajuste de color (?paleta=ajuste) ----------
+// Los deslizadores solo mueven el número mientras se arrastran; los colores se recalculan al soltar.
+function panelAjuste() {
+  const A = CI.paletas.ajuste, XA = A.textos, v = P.valores, caja = document.createElement("div");
+  caja.className = "ajuste"; caja.setAttribute("role", "group"); caja.setAttribute("aria-label", XA.titulo);
+  caja.innerHTML = `<b>${XA.titulo}</b>`;
+  caja.firstChild.onclick = () => caja.classList.toggle("plegado");                 // se pliega tocando el título
+  const salida = document.createElement("output");
+  const dic = () => A.deslizadores.map((d) => D.tpl(d.dicta, { x: D.num(d.aPct(P.valores[d.clave]), 0) })).join(" · ")
+    + " · " + D.tpl(XA.fijos, { cielo: D.num((P.valores.cielo) * 100, 0), coral: D.num((P.valores.coral) * 100, 0) });
+  A.deslizadores.forEach((d) => {
+    d.aPct = (x) => (d.clave === "verde" ? x : x - 1) * 100;                 // verde va de 0 a 1; los otros son factores
+    const desdePct = (x) => (d.clave === "verde" ? x / 100 : 1 + x / 100);
+    const fila = document.createElement("label"), r = document.createElement("input"), n = document.createElement("span");
+    r.type = "range"; r.min = d.min; r.max = d.max; r.step = d.paso; r.value = d.aPct(v[d.clave]);
+    const pinta = () => (n.textContent = D.tpl(d.formato, { x: D.num(+r.value, 0) }));
+    r.oninput = pinta;
+    r.onchange = () => { P.fijar({ ...P.valores, [d.clave]: desdePct(+r.value) }); salida.textContent = dic(); };
+    fila.append(document.createTextNode(d.nombre), r, n); pinta(); caja.appendChild(fila);
+  });
+  salida.textContent = dic(); caja.appendChild(salida);
+  document.body.appendChild(caja);
+}
 
 // ---------- predicción (bloque prediccion del JSON, segundo n) ----------
 const ops = $("ops");

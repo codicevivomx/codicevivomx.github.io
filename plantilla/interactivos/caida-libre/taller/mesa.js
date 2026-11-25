@@ -29,6 +29,7 @@ export function bordePintado(cv, maq, P = { css: (s) => s }) {
     }
   }
   new ResizeObserver(pinta).observe(maq);
+  return pinta;
 }
 
 function defs(svg, pre) {
