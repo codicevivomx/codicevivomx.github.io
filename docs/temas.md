@@ -173,6 +173,14 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   Estuche hondo (huecos de 50 cm de modelo, sol más rasante) con tapa abierta 110° y espuma de huevera; versión
   vertical `estuche-v.webp` para celular (instrumentos ~1.5× más grandes, etiquetas de 12 px junto a cada uno).
   Pesos: lampara 58 KB, lampara-luz 23 KB, estuche 50 KB, estuche-v 38 KB. 178 fps escritorio / 137 emulación.
+  Ronda 7 (25-nov): herramientas con cuerpo pre-renderizado (`fuentes/instrumentos.py`: crono con corona moleteada y
+  argolla, velocímetro, altímetro digital, altímetro analógico 0–4000 m y registrador de cinta; 3–17 KB cada uno) y
+  capa SVG animada encima. Crono: aguja principal + aguja de vueltas (1, 2, 3 s) y corona que se hunde al arrancar.
+  Altímetro analógico en la tapa del estuche con la nota «45 m ≈ 4° de aguja». Registrador: tira con un punto cada
+  0.1 s de tiempo físico (1:3:5 por segundo), escalada para que los 45 m quepan siempre. Cotas 0·5·20·45 m junto al
+  video (vertical en PC, franja en celular), cada tramo se llena con su color en su segundo. Todo del JSON
+  (`taller.cine.instrumentos`). La mesa solo se redibuja si se ve y en pasos de 0.02 s. fps sin cambio (178 / ~124
+  emulación; la versión anterior mide lo mismo hoy).
 - [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
   taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
   Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.

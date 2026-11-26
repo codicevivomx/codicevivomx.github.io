@@ -17,6 +17,7 @@
 <div class="wrap">
   <section class="lamina sombra">
     <header><div class="eti" id="etiqueta"></div><h1 id="titulo"></h1></header>
+    <div class="escena-fila">
     <div class="maqueta" id="maqueta">
       <img id="respaldo" src="respaldo.webp" alt="" width="1200" height="620" decoding="async">
       <canvas id="esc" role="img" hidden></canvas>
@@ -27,6 +28,8 @@
       <div class="titulo3d" id="tit3d" hidden></div>
       <div class="lenta" id="lenta" role="status" hidden><i></i><span id="lentaT"></span></div>
       <pre class="medida" id="medida" hidden></pre>
+    </div>
+    <aside class="cotas" id="cotas" aria-hidden="true"></aside>
     </div>
     <div class="controles">
       <button class="btn" id="saltar" disabled></button>
@@ -57,9 +60,11 @@
         <svg id="cronometro" class="i-crono" viewBox="0 0 160 190" aria-hidden="true"></svg><span class="etq e-crono" id="nCrono"></span>
         <svg id="velocimetro" class="i-velo" viewBox="0 0 160 190" aria-hidden="true"></svg><span class="etq e-velo" id="nVel"></span>
         <svg id="altimetro" class="i-alti" viewBox="0 0 160 200" aria-hidden="true"></svg><span class="etq e-alti" id="nAlt"></span>
+        <svg id="altimetroA" class="i-altiA" viewBox="0 0 160 160" aria-hidden="true"></svg><span class="etq e-altiA" id="nAltA"></span>
         <div class="t-regla" id="regla" aria-hidden="true"></div>
         <svg class="t-lapiz" viewBox="0 0 220 24" aria-hidden="true"><polygon points="0,12 22,4 22,20" fill="#E9C9A0" stroke="#22212B" stroke-width="1.2"/><polygon points="0,12 7,9.5 7,14.5" fill="#22212B"/><rect x="22" y="4" width="160" height="16" fill="#E3B95A" stroke="#22212B" stroke-width="1.2"/><rect x="22" y="4" width="160" height="5" fill="#F0CC72"/><rect x="22" y="15" width="160" height="5" fill="#C99A3E"/><rect x="182" y="3.5" width="16" height="17" fill="#B9BDC6" stroke="#22212B" stroke-width="1.2"/><rect x="198" y="4" width="20" height="16" rx="4" fill="#E39A84" stroke="#22212B" stroke-width="1.2"/></svg>
       </div></div>
+      <div class="estacion est-registro"><svg id="registro" viewBox="0 0 600 100" aria-hidden="true"></svg><span class="etq" id="nReg"></span></div>
     </div></div>
 
     <div class="levantada" id="levantada" hidden>
