@@ -2,7 +2,7 @@
 // Director del guion de cine (taller.cine: tomas, rampas de velocidad) + 2 pausas de causa. Los textos y números salen del JSON y de sus fórmulas.
 // El 3D (three.js + modelos .glb) se importa solo al tocar «Ver la escena»; antes se ve la imagen fija.
 import { cargarDatos } from "./datos.js";
-import { bordePintado, instrumentos, regla, hojaLevantada } from "./mesa.js";
+import { bordePintado, instrumentos, regla, hojaLevantada, cotas } from "./mesa.js";
 import { crearPaleta, avivarDOM } from "./paleta.js";
 
 const $ = (id) => document.getElementById(id);
@@ -47,7 +47,12 @@ regla(D, $("regla"));
 
 // ---------- mesa ----------
 P.alCambiar(bordePintado($("borde"), $("maqueta"), P));
-const mueveInstrumentos = instrumentos(D);
+const mueveInstrumentos = instrumentos(D, "../../../modelos/mesa/");
+const mueveCotas = cotas(D, $("cotas"));
+// La mesa solo se redibuja si se ve, y con t en pasos de 0.02 s (las agujas no necesitan más): sin costo cuando no se ve.
+let mesaVisible = true;
+new IntersectionObserver(([e]) => (mesaVisible = e.isIntersecting)).observe($("mesa3d"));
+const paso = (t) => Math.round(t * 50) / 50;
 mueveInstrumentos(0);
 avivarDOM(P);
 P.alCambiar(() => { if (pausa?.id === "grafica") $("grafica").querySelector("svg").innerHTML = graficaVT(); });
@@ -226,7 +231,9 @@ function dibuja(dt) {
     return b.top >= a.bottom ? 0 : Math.max(0, a.bottom - Math.max(a.top, b.top));
   })();
   if (escena) escena.dibuja(S, { pausa: pausa?.id ?? null, libre, dt, tapado, respaldo: q.has("respaldo") });
-  mueveInstrumentos(S < D.salto ? 0 : t);
+  const tq = S < D.salto ? 0 : (t >= D.TC ? t : paso(t));
+  if (mesaVisible) mueveInstrumentos(tq);
+  mueveCotas(tq);
   const i = tomaDe(S), enEscena = !!pred && !!escena;
   $("toma").hidden = libre || !enEscena || !!pausa;
   txt("tomaN", D.tomas[i].n); txt("tomaT", D.tomas[i].t);

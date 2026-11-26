@@ -451,6 +451,21 @@
         "nota": "OKLCH: croma × sin subir la luminosidad; contraste estira L alrededor de pivote; verde, cielo y coral empujan esos tonos. ?paleta=neutra = colores originales.",
         "predeterminada": { "croma": 1.55, "contraste": 1.2, "pivote": 0.8, "verde": 0.4, "cielo": 0.3, "coral": 0.4 }
       },
+      "instrumentos": {
+        "altimetroMax": 4000,
+        "altimetroPaso": 100,
+        "registro": { "intervalo": 0.1 },
+        "textos": {
+          "altimetroEscala": "×1000 m",
+          "altimetroNota": "{h} m ≈ {grados}° de aguja",
+          "registro": "registrador de cinta · un punto cada {dt} s",
+          "registroSeg": "seg {k}",
+          "cronoVuelta": "cronómetro · {t} s · vuelta {k} s",
+          "cotaSeg": "seg {k}",
+          "cotaTramo": "+{x} m",
+          "cotaMarca": "{x} m"
+        }
+      },
       "textos": {
         "irAlSalto": "Ir al salto ⏭",
         "lenta": "Cámara lenta ×{ritmo}",
