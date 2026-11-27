@@ -129,7 +129,7 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   en `assets/fuentes/` (Caveat de `laminas2/`). Peso: 218 KB gzip al abrir + 380 KB al tocar. En la lámina la avioneta
   vuela sin la hoja de la puerta y las personas van al 92 % de la escala de la avioneta (caben en el estribo).
   Pendiente menor: aligerar fuentes (Bricolage 77 KB y Caveat 51 KB son casi todo el peso inicial).
-- [x] Lámina «El salto» versión cine (rama `lamina/caida-libre-cine`, 25-nov-2026, **en espera de OK de Gato**): guion de 9 tomas en el bloque nuevo `taller.cine` del JSON (~45 s sin pausas; establecimiento
+- [x] Lámina «El salto» versión cine (rama `lamina/caida-libre-cine`, 25-nov-2026; **aprobada por Gato el 26-nov, lista para publicar**): guion de 9 tomas en el bloque nuevo `taller.cine` del JSON (~45 s sin pausas; establecimiento
   desde la tierra, travelling, rampas tiempo real → cámara lenta ×⅓ → real, tilt down con la tierra al fondo, grúa
   final y órbita libre). Reloj de cine en `datos.js` (tiempo de escena → tiempo físico; la física y el cronómetro
   van en tiempo físico). Aviso «Cámara lenta ×⅓», botón «Ir al salto», línea de tiempo de 45 s. `tierra.js`

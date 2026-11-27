@@ -25,3 +25,6 @@ Thumbs.db
 
 # Caché de ondas de audio de HyperFrames
 .waveform-cache/
+
+# renders intermedios de la mesa (las salidas son los .webp de plantilla/modelos/mesa/)
+plantilla/modelos/mesa/fuentes/*.png
