@@ -100,6 +100,90 @@ Pendiente: confirmar con otra lámina las reglas marcadas «nuevo» en estilo-pr
   controles (ids) van al modo compacto. Aplicarla a prensa y tiro. Idea para vertical: zoom ~2×
   siguiendo la pieza que se mueve.
 - [ ] Menor: salida `.svg` fija en el generador de tiro (6b), como ya la tiene leyes-de-newton-1.
+- [ ] Modelos 3D «taller» de caída libre · El salto (`plantilla/modelos/caida-libre/`, un .glb por modelo, script bpy
+  en `fuentes/` que lo regenera con `blender -b --factory-startup -P`, PNG de vista previa y `ver.html` con toon de
+  2 tonos + contorno). `.blend` fuera del repo (`Documents\codice-blender\caida-libre\`).
+  - [x] avioneta (22-nov-2026): 2 036 triángulos, hélice/puerta/interior aparte, origen en centro de masa.
+  - [x] paracaidista (22-nov-2026): 2 264 triángulos, 18 huesos (con `enganche` sobre la mochila para el
+    paracaídas), acciones «parada», «arco» (cactus) y «vertical» (solo rotación, LINEAR). Cuerpo, arnés,
+    esqueleto y poses en `fuentes/persona.py` (lo hereda el tándem). `ver.html`: botones por pose,
+    «Todas las poses» y vista «Debajo». `.blend` renombrado a `caida-libre.blend` (una escena por modelo).
+  - [x] tándem (22-nov-2026): 4 480 triángulos, 36 huesos. Instructor (menta, casco gris, mochila grande,
+    `enganche`) y alumna (`alu_*`, #E3B95A) en un esqueleto; raíz «centro» en el centro de masa de los dos.
+    Acciones «arco» (piernas de la alumna entre las del instructor) y «vertical» (instructor en los
+    mandos, alumna sujeta la pechera).
+  - [x] paracaídas (22-nov-2026): 1 164 triángulos, vela de 9 celdas en arco (4.8 m), cuerdas A/B/C, bandas,
+    frenos y mandos. Origen = punto de enganche (se cuelga del hueso «enganche»). Celdas en materiales
+    `vela_1/2/3` (recolorear con `colorearVela()` de `ver.html`). Acción «abrir» 1.5 s con morph targets:
+    bolsa (0 s) → haz largo con cuerdas estiradas (0.5 s) → vela inflada (1.5 s). `ver.html`: «Montaje»
+    (paracaidista + tándem con sus paracaídas, el del tándem 1.3× y azul) y `?t=` para congelar un instante.
+  - Nota para la lámina: la vela se alinea al cuerpo con la rotación de reposo de `enganche` (ver `montaje()`).
+- [x] Lámina «Caída libre · El salto» (taller, boceto 9 con modelos reales, 22-nov-2026, aprobada por Gato con 3
+  arreglos de encuadre hechos: toma 5 encuadrada por fórmula (`llenadoRevelacion`), compensación de la hoja en
+  pausas solo en celular, título «3 500 m» arriba de la avioneta):
+  `plantilla/interactivos/caida-libre/taller/` (`index.html`, `estilos.css`, `taller.js` director, `datos.js` evaluador
+  de `plus/`, `mesa.js` mesa e instrumentos, `escena.js` 3D, `toon.js`, `etiquetas.js`, `respaldo.webp`). El 3D
+  (three + .glb) se carga al tocar «Ver la escena»; antes, imagen fija de la escena inicial. Números: bloque nuevo
+  `taller` del JSON + `lecturas.formulas` + `prediccion` (n = 3). Etiquetas en HTML que no se enciman; en las pausas (solo celular) la
+  cámara sube lo que tapa la hoja. three r187 en `assets/js/vendor/three-r187/`; fuentes Geist, Geist Mono y Bricolage
+  en `assets/fuentes/` (Caveat de `laminas2/`). Peso: 218 KB gzip al abrir + 380 KB al tocar. En la lámina la avioneta
+  vuela sin la hoja de la puerta y las personas van al 92 % de la escala de la avioneta (caben en el estribo).
+  Pendiente menor: aligerar fuentes (Bricolage 77 KB y Caveat 51 KB son casi todo el peso inicial).
+- [x] Lámina «El salto» versión cine (rama `lamina/caida-libre-cine`, 25-nov-2026; **aprobada por Gato el 26-nov, lista para publicar**): guion de 9 tomas en el bloque nuevo `taller.cine` del JSON (~45 s sin pausas; establecimiento
+  desde la tierra, travelling, rampas tiempo real → cámara lenta ×⅓ → real, tilt down con la tierra al fondo, grúa
+  final y órbita libre). Reloj de cine en `datos.js` (tiempo de escena → tiempo físico; la física y el cronómetro
+  van en tiempo físico). Aviso «Cámara lenta ×⅓», botón «Ir al salto», línea de tiempo de 45 s. `tierra.js`
+  (paisaje low-poly en 1 malla), halo y contorno del color de cada segundo, tramos que crecen. `paleta.js`:
+  `?paleta=a` (+20 %) y `?paleta=b` (+40 %) aplicadas una vez al cargar (sin filtros). Instrumentos nuevos con
+  biseles, cristal y sombra de agujas. 179 fps escritorio / 127 fps con emulación de celular (GPU de escritorio).
+  Pendiente: cuando Gato elija paleta, dejarla como predeterminada y regenerar `respaldo.webp`.
+  Ronda 2 (25-nov): a y b no convencieron. `?paleta=c` (sat +70 %, contraste +25 %, verde 60 %, cielo y coral +40 %)
+  y `?paleta=ajuste` (panel flotante con saturación 0–120 %, contraste 0–50 % y verde 0–100 %; arranca en la c,
+  aplica al soltar ~4 ms, muestra la línea para dictar).
+  Ronda 3 (25-nov): paleta predeterminada en OKLCH (croma +55 % sin subir L, contraste +20 % con pivote 0.8, verde
+  +40 %, cielo +30 %, coral +40 %; recorte a la gama sRGB); `?paleta=neutra` = originales; panel quitado.
+  `respaldo.webp` regenerado (29 KB). Pose «parada» agachada con la mano en el montante y estribo movido delante
+  del montante (el casco ya no atraviesa el ala); tándem separado 42 cm. `colisiones.js` (`?colisiones=1`):
+  300 muestras del guion, 0 choques persona↔avioneta, persona↔velas, sola↔tándem e instructor↔alumna.
+  Librea «Aerocódice» (calcas de canvas: «C» del ícono en la cola, AEROCÓDICE, XB-CDV) + franja coral, líneas de
+  paneles, remaches, antena y luces en `avioneta.py`. Personas: costuras, hebillas, dedos y altímetro de muñeca;
+  vela: costuras y slider; tierra: más verdes, caminos, granjas, huertos. Efectos: tramado en la sombra del toon,
+  cielo pintado, líneas de velocidad y viento (44 tiras instanciadas), aleteo leve. Triángulos: avioneta 2 670,
+  paracaidista 2 536, tándem 5 024, vela 1 320; escena 19 196. Modelos con meshopt (`fuentes/comprimir.sh`,
+  decodificador en `assets/js/vendor/three-r187/addons/libs/`): 657 → 175 KB (gzip 161 → 74 KB).
+  fps: 178 escritorio / 128 emulación de celular. Pendiente: medir en celular real y decidir si suben los topes (LOD).
+  Ronda 4 (25-nov): tierra natural (parcelas irregulares, bosque y olivo, paleta de la tierra con croma 1.25 y sin
+  empujón al verde); volcán al horizonte con bruma horneada; líneas de velocidad blancas, cortas y solo alrededor de
+  ella; toma 6 sin nubes encima y con la cinta coral completa a lo ancho (nubes cercanas se mueven ±6 m, en tiempo
+  de escena). Clima: perspectiva atmosférica (niebla y pie del cielo azul claro, niebla a 2 300 m), capa de nubes
+  baja y alta, velo translúcido que la cámara atraviesa en la toma 5, sombras de nubes (instanciadas) y sprite del
+  sol. Nubes unidas en una geometría (2 llamadas por nube). Mesa: lámpara articulada SVG arriba a la izquierda (la
+  luz y las sombras salen de ahí). PC ≥ 1000 px: lámina (58 %, sticky) y mesa (42 %, retícula de 6 columnas) lado a
+  lado; hoja levantada del ancho de la mesa; celular apilado. `respaldo.webp` regenerado. 0 choques; 178 / 128 fps.
+  - [ ] Pendiente: cambiar el ícono de la cola de la avioneta (la «C» del logo no convenció a Gato).
+  Ronda 5 (25-nov): mesa recta (cenital) también en PC, por estaciones: tapete con canto, bandeja de papeles
+  (cuaderno, milimétrico, post-it, ficha) y estuche de espuma con cronómetro, velocímetro y altímetro en sus huecos
+  (SVG animados encima), regla y lápiz en sus ranuras. Lámpara y estuche pre-renderizados en Blender
+  (`plantilla/modelos/mesa/fuentes/mesa.py`, Cycles + Freestyle, fondo transparente con sombra, al doble de
+  resolución): `lampara.webp` 33 KB, `estuche.webp` 39 KB. Celular: pestañas Instrumentos · Cuaderno · Datos (al
+  levantar una hoja se abre Cuaderno). Sin bucle de «cámara de la mesa». 178 fps escritorio / 142 emulación.
+  Ronda 6 (25-nov): lámpara nueva de metal gris (reflejos con softbox), ~1.8× y base ancha con canto y bisel, apoyada
+  en el tapete con el brazo sobre la bandeja; luz cálida (spot) dentro de la pantalla renderizada como capa aparte
+  (`lampara-luz.webp`, alfa = intensidad) que en la página va sobre la bandeja con mezcla screen + multiply (fija).
+  Estuche hondo (huecos de 50 cm de modelo, sol más rasante) con tapa abierta 110° y espuma de huevera; versión
+  vertical `estuche-v.webp` para celular (instrumentos ~1.5× más grandes, etiquetas de 12 px junto a cada uno).
+  Pesos: lampara 58 KB, lampara-luz 23 KB, estuche 50 KB, estuche-v 38 KB. 178 fps escritorio / 137 emulación.
+  Ronda 7 (25-nov): herramientas con cuerpo pre-renderizado (`fuentes/instrumentos.py`: crono con corona moleteada y
+  argolla, velocímetro, altímetro digital, altímetro analógico 0–4000 m y registrador de cinta; 3–17 KB cada uno) y
+  capa SVG animada encima. Crono: aguja principal + aguja de vueltas (1, 2, 3 s) y corona que se hunde al arrancar.
+  Altímetro analógico en la tapa del estuche con la nota «45 m ≈ 4° de aguja». Registrador: tira con un punto cada
+  0.1 s de tiempo físico (1:3:5 por segundo), escalada para que los 45 m quepan siempre. Cotas 0·5·20·45 m junto al
+  video (vertical en PC, franja en celular), cada tramo se llena con su color en su segundo. Todo del JSON
+  (`taller.cine.instrumentos`). La mesa solo se redibuja si se ve y en pasos de 0.02 s. fps sin cambio (178 / ~124
+  emulación; la versión anterior mide lo mismo hoy).
+- [ ] Unificar three.js: las láminas anteriores usan `assets/js/vendor/three.min.js` (r187, sin módulos). La lámina del
+  taller y la copia de `ver.html` pueden usar `assets/js/vendor/three-r187/` (módulos); `ver.html` sigue con CDN.
+  Llevar `taller/toon.js` (toon de 2 tonos + contorno) a pieza compartida para las siguientes láminas 3D.
 - [x] Láminas 2.0, piloto tiro parabólico (17-nov-2026, ronda 1, **en espera de OK de Gato**). Diseño: `docs/diseno-laminas-2.md`.
   Piezas compartidas en `plantilla/laminas2/` (módulos ES + `laminas2.css` + `fuentes/caveat-700.woff2`): `tiempo.js`,
   `prediccion.js`, `cuaderno.js`, `herramientas.js`, `escenas.js` (selector + ayudantes de tinta), `practica.js` (motor de retos
