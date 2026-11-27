@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caída libre · modelos 3D (página de prueba)</title>
+<style>
+  :root { --fondo:#F4F4F1; --tinta:#2A2A33; --gris:#D6D7D5; --menta:#8FD3B0; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; background:var(--fondo); color:var(--tinta);
+    font:15px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #lienzo { position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+  #panel { position:fixed; left:12px; right:12px; bottom:12px; display:flex; flex-wrap:wrap; gap:6px;
+    align-items:center; pointer-events:none; }
+  #panel > * { pointer-events:auto; }
+  button { font:inherit; border:1.5px solid var(--tinta); background:#fff; color:var(--tinta);
+    border-radius:999px; padding:6px 12px; cursor:pointer; }
+  button[aria-pressed="true"] { background:var(--menta); }
+  button:disabled { opacity:.35; cursor:default; }
+  #info { position:fixed; left:12px; top:10px; font-size:13px; opacity:.75; white-space:pre-line; }
+  .sep { width:1px; height:24px; background:var(--gris); margin:0 4px; }
+</style>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<canvas id="lienzo"></canvas>
+<div id="info">Cargando…</div>
+<div id="panel">
+  <span id="modelos"></span>
+  <span class="sep"></span>
+  <button id="vArriba">Iso arriba</button>
+  <button id="vAbajo">Iso abajo</button>
+  <button id="vDebajo">Debajo</button>
+  <span class="sep"></span>
+  <button id="helice" aria-pressed="false">Girar hélice</button>
+  <span id="acciones"></span>
+</div>
+
+<script type="module">
+// Página de prueba de los .glb de la lámina «caída libre · El salto».
+// Toon de 2 tonos (sombra fría, luz de lado) + contorno de tinta (casco invertido en espacio de pantalla).
+// Ojo: las láminas usan three.min.js (r187, sin módulos); aquí three va por CDN fijado.
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";   // los .glb van comprimidos con meshopt
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { clone as clonarEsqueleto } from "three/addons/utils/SkeletonUtils.js";
+
+const MODELOS = [   // vista inicial: la avioneta desde abajo (desde arriba el ala tapa la puerta)
+  { id: "avioneta", nombre: "Avioneta", vista: "abajo" },
+  { id: "paracaidista", nombre: "Paracaidista", vista: "arriba" },
+  { id: "tandem", nombre: "Tándem", vista: "arriba" },
+  { id: "paracaidas", nombre: "Paracaídas", vista: "arriba", fin: true },   // fin: abre ya inflado
+];
+const TINTA = 0x2a2a33, FONDO = 0xf4f4f1;
+const GROSOR_PX = 2.2;                     // contorno en píxeles CSS
+const NO_CONTORNO = /interior|cuerda/i;    // sin contorno: la cabina por dentro y las cuerdas (líneas finas)
+const q = new URLSearchParams(location.search);
+
+const lienzo = document.getElementById("lienzo");
+const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NoToneMapping;
+
+const escena = new THREE.Scene();
+escena.background = new THREE.Color(FONDO);
+
+// Toon de 2 tonos propio: cara con luz = color exacto de la paleta; cara sin luz = color × tinte frío.
+// El tinte sale de blanco #F4F4F1 → sombra #C9CCD3 (en espacio lineal), así toda la paleta comparte sombra.
+const SOMBRA_DE_BLANCO = 0xc9ccd3, BLANCO = 0xf4f4f1;
+const tinte = (() => {
+  const a = new THREE.Color(SOMBRA_DE_BLANCO), b = new THREE.Color(BLANCO);
+  return new THREE.Vector3(a.r / b.r, a.g / b.g, a.b / b.b);
+})();
+// Luz de lado (izquierda del avión, arriba y algo atrás): un costado con luz, el otro en sombra, y el
+// borde de ataque del ala en sombra para que el ala muestre grosor vista desde arriba.
+const LUZ = new THREE.Vector3(1, 0.7, -0.35).normalize();
+const UMBRAL = 0.12;                        // n·l por encima = cara con luz
+
+const toonVert = /* glsl */`
+  #include <common>
+  #include <morphtarget_pars_vertex>
+  #include <skinning_pars_vertex>
+  varying vec3 vNormal;
+  void main() {
+    #include <beginnormal_vertex>
+    #include <morphnormal_vertex>
+    #include <skinbase_vertex>
+    #include <skinnormal_vertex>
+    #include <begin_vertex>
+    #include <morphtarget_vertex>
+    #include <skinning_vertex>
+    vNormal = normalize(mat3(modelMatrix) * objectNormal);   // normal en mundo
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+  }`;
+const toonFrag = /* glsl */`
+  uniform vec3 color; uniform vec3 tinte; uniform vec3 luz; uniform float umbral;
+  varying vec3 vNormal;
+  void main() {
+    float l = step(umbral, dot(normalize(vNormal), luz));
+    gl_FragColor = vec4(mix(color * tinte, color, l), 1.0);
+    #include <colorspace_fragment>
+  }`;
+function materialToon(old) {
+  return new THREE.ShaderMaterial({
+    name: old.name, side: old.side, vertexShader: toonVert, fragmentShader: toonFrag,
+    uniforms: { color: { value: old.color.clone() }, tinte: { value: tinte },
+                luz: { value: LUZ }, umbral: { value: UMBRAL } },
+  });
+}
+
+const camara = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 500);
+const controles = new OrbitControls(camara, lienzo);
+controles.enableDamping = true;
+
+// ---------- contorno: casco invertido empujado en pantalla por normales suavizadas
+const resolucion = new THREE.Vector2();
+const matContorno = new THREE.ShaderMaterial({
+  uniforms: { grosor: { value: GROSOR_PX }, resolucion: { value: resolucion },
+              color: { value: new THREE.Color(TINTA) } },
+  side: THREE.BackSide,
+  vertexShader: /* glsl */`
+    #include <common>
+    #include <morphtarget_pars_vertex>
+    #include <skinning_pars_vertex>
+    attribute vec3 normalContorno;
+    uniform float grosor; uniform vec2 resolucion;
+    void main() {
+      vec3 objectNormal = normalContorno;
+      #include <morphnormal_vertex>   // el empuje sigue a la vela plegada, no a la inflada
+      #include <skinbase_vertex>
+      #include <skinnormal_vertex>
+      #include <begin_vertex>
+      #include <morphtarget_vertex>
+      #include <skinning_vertex>
+      vec4 clip = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+      vec3 n = normalize(normalMatrix * objectNormal);
+      vec2 d = (projectionMatrix * vec4(n, 0.0)).xy;
+      float l = length(d);
+      if (l > 1e-5) clip.xy += (d / l) * grosor * 2.0 / resolucion * clip.w;
+      gl_Position = clip;
+    }`,
+  fragmentShader: /* glsl */`
+    uniform vec3 color;
+    void main() { gl_FragColor = vec4(color, 1.0); }`,
+});
+
+function normalesSuaves(geo) {
+  // Promedia normales de vértices que comparten posición (las aristas duras no abren huecos).
+  const pos = geo.attributes.position, nor = geo.attributes.normal;
+  const suma = new Map(), clave = i =>
+    `${Math.round(pos.getX(i) * 1e4)},${Math.round(pos.getY(i) * 1e4)},${Math.round(pos.getZ(i) * 1e4)}`;
+  const v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    const k = clave(i), s = suma.get(k) || new THREE.Vector3();
+    s.add(v.fromBufferAttribute(nor, i)); suma.set(k, s);
+  }
+  const out = new Float32Array(pos.count * 3);
+  for (let i = 0; i < pos.count; i++) {
+    v.copy(suma.get(clave(i))).normalize();
+    out.set([v.x, v.y, v.z], i * 3);
+  }
+  geo.setAttribute("normalContorno", new THREE.BufferAttribute(out, 3));
+}
+
+function estilizar(raiz) {
+  let tris = 0;
+  const mallas = [];
+  raiz.traverse(o => { if (o.isMesh) mallas.push(o); });
+  for (const m of mallas) {
+    const g = m.geometry;
+    tris += (g.index ? g.index.count : g.attributes.position.count) / 3;
+    m.material = Array.isArray(m.material) ? m.material.map(materialToon) : materialToon(m.material);
+    const nombre = [m.name, m.parent?.name || "", ...[].concat(m.material).map(x => x.name)].join(" ");
+    if (NO_CONTORNO.test(nombre)) continue;
+    normalesSuaves(g);
+    const c = m.isSkinnedMesh ? new THREE.SkinnedMesh(g, matContorno) : new THREE.Mesh(g, matContorno);
+    if (m.isSkinnedMesh) c.bind(m.skeleton, m.bindMatrix);
+    if (m.morphTargetInfluences) {        // el contorno se deforma igual que la malla (paracaídas)
+      c.morphTargetInfluences = m.morphTargetInfluences;
+      c.morphTargetDictionary = m.morphTargetDictionary;
+    }
+    c.name = "contorno"; c.renderOrder = -1;
+    m.add(c);
+  }
+  return Math.round(tris);
+}
+
+// ---------- carga y vistas
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+let actual = null, mixers = [], helice = null, girar = false, cache = {};
+const caja = new THREE.Box3(), centro = new THREE.Vector3(), tam = new THREE.Vector3();
+
+function cajaPosada(obj) {
+  // Caja exacta con la pose y los morphs actuales (la de la geometría es la del reposo, o suma los morphs).
+  obj.updateMatrixWorld(true);
+  return new THREE.Box3().setFromObject(obj, true);
+}
+
+const VISTAS = {   // dirección hacia la cámara (glTF: frente del modelo = +Z, derecha = -X)
+  arriba: [-1, 1, 1], abajo: [-1, -1, 1],
+  debajo: [0, -1, 0.35],   // contrapicado frontal (tomas 3-4, bullet time): el arco se ve de frente
+};
+function encuadrar(vista) {
+  vista = VISTAS[vista] ? vista : "arriba";
+  caja.copy(cajaPosada(actual)); caja.getCenter(centro); caja.getSize(tam);
+  const r = tam.length() / 2;
+  // Isométrica: frente-derecha del modelo (glTF: nariz hacia +Z, derecha hacia -X).
+  const dir = new THREE.Vector3(...VISTAS[vista]).normalize();
+  camara.position.copy(centro).addScaledVector(dir, r * 4);
+  camara.up.set(0, 1, 0);
+  camara.lookAt(centro);
+  camara.updateMatrixWorld();
+  // Medio alto/ancho real en pantalla: las 8 esquinas de la caja en ejes de cámara.
+  const inv = camara.matrixWorldInverse, p = new THREE.Vector3();
+  let mx = 0, my = 0;
+  for (let i = 0; i < 8; i++) {
+    p.set(i & 1 ? caja.max.x : caja.min.x, i & 2 ? caja.max.y : caja.min.y, i & 4 ? caja.max.z : caja.min.z)
+     .applyMatrix4(inv);
+    const c = centro.clone().applyMatrix4(inv);
+    mx = Math.max(mx, Math.abs(p.x - c.x)); my = Math.max(my, Math.abs(p.y - c.y));
+  }
+  camara.zoom = 1; camara.userData.mx = mx * 1.1; camara.userData.my = my * 1.1;
+  controles.target.copy(centro);
+  ajustar(); controles.update();
+  for (const [id, v] of [["vArriba", "arriba"], ["vAbajo", "abajo"], ["vDebajo", "debajo"]])
+    document.getElementById(id).setAttribute("aria-pressed", String(v === vista));
+}
+
+function ajustar() {
+  const w = innerWidth, h = innerHeight, a = w / h;
+  const mx = camara.userData.mx || 5, my = camara.userData.my || 5;
+  renderer.setSize(w, h, false);
+  renderer.getDrawingBufferSize(resolucion);
+  matContorno.uniforms.grosor.value = GROSOR_PX * renderer.getPixelRatio();
+  const hy = Math.max(my, mx / a);          // cabe a lo ancho y a lo alto
+  Object.assign(camara, { left: -hy * a, right: hy * a, top: hy, bottom: -hy });
+  camara.updateProjectionMatrix();
+}
+
+const obtener = async id => cache[id] || (cache[id] = await loader.loadAsync(`${id}.glb`));
+
+// Reproduce un clip una vez y se queda en el último cuadro. t: segundo fijo (para capturas), "fin" = al final.
+function reproducir(obj, clip, t) {
+  const m = new THREE.AnimationMixer(obj);
+  const a = m.clipAction(clip);
+  a.setLoop(THREE.LoopOnce); a.clampWhenFinished = true; a.play();
+  if (t === "fin") a.time = clip.duration;
+  else if (t != null && !isNaN(t)) { a.time = Math.min(+t, clip.duration); a.paused = true; }
+  m.update(0); mixers.push(m);
+  return a;
+}
+
+// Recolorea las celdas de un paracaídas ya estilizado, p. ej. {vela_1: 0x6f93c9}. Materiales: vela_1, vela_2, vela_3.
+function colorearVela(obj, colores) {
+  obj.traverse(o => {
+    if (!o.isMesh || o.name === "contorno") return;
+    for (const m of [].concat(o.material)) if (m.name in colores) m.uniforms.color.value.set(colores[m.name]);
+  });
+}
+
+// modo: nombre de una acción, "todas" (las poses lado a lado) o vacío (la primera acción).
+async function cargar(id, modo) {
+  const gltf = await obtener(id);
+  const modelo = MODELOS.find(m => m.id === id);
+  const clips = gltf.animations;
+  const todas = modo === "todas" && clips.length > 1;
+  const lista = todas ? clips : [clips.find(c => c.name === modo) || clips[0] || null];
+  if (actual) escena.remove(actual);
+  actual = new THREE.Group();
+  mixers = [];
+  let tris = 0, x = 0;
+  for (const clip of lista) {
+    const o = clonarEsqueleto(gltf.scene);          // el original queda limpio para recargar
+    if (clip) reproducir(o, clip, q.get("t") ?? (!modo && modelo.fin ? "fin" : null));
+    tris = estilizar(o);
+    actual.add(o);
+    if (todas) {
+      // Fila de poses a lo largo de (1, 0, 1): es la horizontal de pantalla en las dos isométricas.
+      const c = cajaPosada(o), ancho = Math.max(c.max.x - c.min.x, c.max.z - c.min.z);
+      const d = x + ancho / 2;
+      o.position.set(d / Math.SQRT2, 0, d / Math.SQRT2);
+      x += ancho + 0.3;
+    }
+  }
+  escena.add(actual);
+  helice = actual.getObjectByName("Helice");
+  document.getElementById("helice").disabled = !helice;
+  const acc = document.getElementById("acciones");
+  acc.innerHTML = "";
+  for (const clip of clips) {
+    const b = document.createElement("button");
+    b.textContent = clip.name;
+    b.setAttribute("aria-pressed", String(!todas && clip === lista[0]));
+    b.onclick = () => cargar(id, clip.name);
+    acc.append(b);
+  }
+  if (clips.length > 1) {
+    const b = document.createElement("button");
+    b.textContent = "Todas las poses";
+    b.setAttribute("aria-pressed", String(todas));
+    b.onclick = () => cargar(id, "todas");
+    acc.append(b);
+  }
+  if (id === "paracaidas") {
+    const b = document.createElement("button");
+    b.textContent = "Montaje";
+    b.onclick = () => montaje();
+    acc.append(b);
+  }
+  cajaPosada(actual.children[0]).getSize(tam);
+  document.getElementById("info").textContent =
+    `${modelo.nombre} · ${tris} triángulos` + (todas ? "" : clips.length ? ` · «${lista[0].name}»` : "") +
+    `\n${tam.x.toFixed(2)} × ${tam.y.toFixed(2)} × ${tam.z.toFixed(2)} m`;
+  for (const b of document.querySelectorAll("#modelos button"))
+    b.setAttribute("aria-pressed", String(b.dataset.id === id));
+  encuadrar(q.get("vista") || modelo.vista);
+}
+
+// Montaje: paracaidista y tándem en «vertical», cada uno con su paracaídas colgado del hueso «enganche».
+// El del tándem es 1.3× más grande y con otro color de celdas (así se distinguen en la escena).
+async function montaje() {
+  const [gP, gT, gV] = await Promise.all(["paracaidista", "tandem", "paracaidas"].map(obtener));
+  if (actual) escena.remove(actual);
+  actual = new THREE.Group();
+  mixers = [];
+  const abrir = [];
+  let tris = 0;
+  const filas = [{ g: gP, x: -3.2, escala: 1.0, colores: null },
+                 { g: gT, x: 3.2, escala: 1.3, colores: { vela_1: 0x6f93c9 } }];
+  for (const f of filas) {
+    const persona = clonarEsqueleto(f.g.scene);
+    persona.updateMatrixWorld(true);                   // pose de reposo: el cuerpo de pie
+    const eng = persona.getObjectByName("enganche");
+    // La vela se alinea con el cuerpo (no con los ejes propios del hueso) y sigue al pecho.
+    const qCuerpo = persona.getWorldQuaternion(new THREE.Quaternion());
+    const vela = clonarEsqueleto(gV.scene);
+    vela.quaternion.copy(eng.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(qCuerpo));
+    vela.scale.setScalar(f.escala / eng.getWorldScale(new THREE.Vector3()).x);
+    eng.add(vela);
+    reproducir(persona, f.g.animations.find(c => c.name === "vertical"), "fin");
+    abrir.push(reproducir(vela, gV.animations.find(c => c.name === "abrir"), q.get("t") ?? "fin"));
+    tris += estilizar(persona);
+    if (f.colores) colorearVela(vela, f.colores);
+    persona.position.x = f.x;
+    actual.add(persona);
+  }
+  escena.add(actual);
+  helice = null;
+  document.getElementById("helice").disabled = true;
+  const acc = document.getElementById("acciones");
+  acc.innerHTML = "";
+  const b = document.createElement("button");
+  b.textContent = "Abrir los dos";
+  b.onclick = () => abrir.forEach(a => { a.paused = false; a.reset().play(); });
+  acc.append(b);
+  document.getElementById("info").textContent =
+    `Montaje · paracaidista + tándem con sus paracaídas · ${tris} triángulos`;
+  for (const bt of document.querySelectorAll("#modelos button")) bt.setAttribute("aria-pressed", "false");
+  encuadrar(q.get("vista") || "arriba");
+}
+
+const cont = document.getElementById("modelos");
+for (const m of MODELOS) {
+  const b = document.createElement("button");
+  b.textContent = m.nombre; b.dataset.id = m.id; b.disabled = true;
+  b.onclick = () => cargar(m.id);
+  cont.append(b);
+  fetch(`${m.id}.glb`, { method: "HEAD" }).then(r => { b.disabled = !r.ok; }).catch(() => {});
+}
+document.getElementById("vArriba").onclick = () => encuadrar("arriba");
+document.getElementById("vAbajo").onclick = () => encuadrar("abajo");
+document.getElementById("vDebajo").onclick = () => encuadrar("debajo");
+document.getElementById("helice").onclick = e => {
+  girar = !girar; e.currentTarget.setAttribute("aria-pressed", String(girar));
+};
+addEventListener("resize", ajustar);
+
+const reloj = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = reloj.getDelta();
+  if (girar && helice) helice.rotation.z += dt * 40;   // eje de la hélice = Z local en glTF
+  for (const m of mixers) m.update(dt);
+  controles.update();
+  renderer.render(escena, camara);
+});
+
+(q.has("montaje") ? montaje()
+  : cargar(q.get("modelo") || "avioneta", q.get("poses") === "todas" ? "todas" : q.get("accion"))).catch(e => {
+  document.getElementById("info").textContent = "No se pudo cargar: " + e.message;
+});
+</script>
+</body>
+</html>

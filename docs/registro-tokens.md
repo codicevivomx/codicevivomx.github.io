@@ -48,3 +48,5 @@ Weekly (7 day)
 Resets Thu, Nov 19 at 2:00 PM
 Weekly Fable
 56%
+
+| 2026-11-22 → 26 | caida-libre «El salto»: 4 modelos 3D (avioneta, paracaidista, tándem, paracaídas) + lámina taller → versión cine (9 tomas, mesa por estaciones, herramientas renderizadas, registrador de cinta, cotas) | Claude Code · Opus 5.5 | sin medir | sin medir | Sí | 7 rondas de ajustes con capturas; modelos con meshopt (657 → 175 KB); 178 fps escritorio / ~124 emulación de celular |

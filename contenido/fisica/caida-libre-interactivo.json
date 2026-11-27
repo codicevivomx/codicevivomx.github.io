@@ -308,5 +308,182 @@
         "retro": "2h ÷ g = {tp2} es t², no t. Saca la raíz: t = √{tp2} = {tp} s."
       }
     ]
+  },
+  "taller": {
+    "nota": "Lámina 3D «El salto» (plantilla/interactivos/caida-libre/taller/). Usa g, t y n de valoresIniciales, las fórmulas de lecturas y el bloque prediccion; aquí van solo los datos nuevos.",
+    "altitud": 3500,
+    "masaTandem": 2,
+    "escalaVelaTandem": 1.3,
+    "formulas": {
+      "g2": "g/2",
+      "hk": "g*k*k/2",
+      "vk": "g*k",
+      "sk": "g*(2*k-1)/2",
+      "sn1": "g*(2*n1-1)/2",
+      "kmh": "v*36/10",
+      "alt": "altitud-h",
+      "triN": "2*n-1",
+      "triN1": "2*n1-1",
+      "triTot": "n*n",
+      "tri": "g/2"
+    },
+    "decimales": { "t": 1, "h": 1, "v": 1, "kmh": 0, "alt": 0 },
+    "escena3d": {
+      "duracion": 17,
+      "escalaMaqueta": 1.8,
+      "velocidadAvioneta": 14,
+      "separacionTandem": 7,
+      "velocimetroMax": 60,
+      "cronometroVuelta": 30,
+      "cuentaDesde": 3,
+      "cuentaInicio": 4.6,
+      "cuentaPaso": 0.8,
+      "tituloDe": 0.3,
+      "tituloA": 3.6,
+      "mezclaPose": 0.4,
+      "abrirCruce": 1.0,
+      "notaVelocidadAvioneta": "velocidadAvioneta es un dato visual (solo para que la avioneta salga de cuadro), no un dato de física",
+      "llenadoRevelacion": 0.86
+    },
+    "textos": {
+      "etiqueta": "Códice Vivo · Física UNAM · Caída libre",
+      "titulo": "El salto: <span>{t} segundos</span> antes de abrir",
+      "aria": "Escena 3D: una avioneta a {altitud} m; una paracaidista y un tándem saltan, caen {t} s junto a una cinta de medir y abren sus paracaídas.",
+      "respaldo": "La avioneta a {altitud} m con la paracaidista parada en el estribo de la puerta, lista para saltar.",
+      "altitudTitulo": "{altitud} m",
+      "altitudSub": "SOBRE EL SUELO",
+      "cargando": "Cargando 3D…",
+      "ver": "Ver la escena",
+      "pausar": "Pausar",
+      "seguir": "Seguir",
+      "otraVez": "Ver otra vez",
+      "saltar": "Saltar ▶",
+      "lineaTiempo": "Línea de tiempo de la escena",
+      "prediccionTitulo": "Predice antes de saltar",
+      "prediccionPregunta": "La paracaidista sale del reposo (g = {g} m/s²). ¿Cuánto cae solo durante el segundo {n}, de t = {n1} s a t = {n} s?",
+      "miPrediccion": "mi predicción",
+      "sinPrediccion": "todavía no predigo",
+      "conPrediccion": "creo que cae {x} m",
+      "acierto": "¡Le atinaste!",
+      "exacto": "¡Exacto!",
+      "casi": "Casi.",
+      "continuar": "Continuar",
+      "sin3d": "No se pudo cargar el 3D; se queda la imagen fija.",
+      "pasaste": "Te pasaste por {dif} m.",
+      "corto": "Te quedaste corto por {dif} m.",
+      "resultado": "Resultado",
+      "girar": "Arrastra para girar la escena.",
+      "comparacion": "{x} m → real {sn} m",
+      "ficha": "g = {g} m/s² · sale del reposo|sin aire (modelo de examen)|h = {g2}·t² · v = {g}·t",
+      "cuadernoH": "h = {g2}·t² = {h} m",
+      "cuadernoV": "v = {g}·t = {v} m/s",
+      "cuadernoTramos": "{lista} m",
+      "cuaderno": "cuaderno",
+      "cuadernoEspera": "observa los instrumentos…",
+      "cuadernoAnotado": "resultado anotado",
+      "pausasTitulo": "pausas de causa",
+      "pausasEspera": "aquí se explican los porqués",
+      "datos": "datos",
+      "cronometro": "cronómetro · {t} s",
+      "velocimetro": "{v} m/s · {kmh} km/h",
+      "altimetro": "altímetro · cayó {h} m",
+      "tandem": "tándem · {masaTandem}× masa",
+      "sola": "sola · 1× masa",
+      "peso": "P",
+      "pesoTandem": "{masaTandem}P",
+      "segundo": "{k} s",
+      "marca": "{x} m",
+      "tramo": "+{x} m",
+      "storyboard": "Storyboard · {nTomas} tomas + {nPausas} pausas",
+      "dejarHoja": "Dejar la hoja en la mesa",
+      "mesa": "Mesa de trabajo del taller",
+      "pie": "Taller Códice Vivo · caída libre · el salto"
+    },
+    "tomas": [
+      { "de": 0, "a": 4, "n": "Toma 1 · plano general", "t": "La avioneta llega", "d": "Plano general: ubica dónde estamos." },
+      { "de": 4, "a": 7, "n": "Toma 2 · primer plano", "t": "En la puerta", "d": "Primer plano: la paracaidista en reposo, v = 0." },
+      { "de": 7, "a": 10, "n": "Toma 3 · seguimiento lateral", "t": "El primer segundo", "d": "Cámara lenta: el primer segundo dura {lenta} s; cae {s1} m." },
+      { "de": 10, "a": 13.4, "n": "Toma 4 · contrapicado", "t": "Segundos 2 y 3", "d": "Desde abajo: +{s2} m y +{s3} m." },
+      { "de": 13.4, "a": 17, "n": "Toma 5 · plano de revelación", "t": "Las tres fotos", "d": "Se abre el paracaídas y vemos {s1} · {s2} · {s3}." }
+    ],
+    "pausas": [
+      {
+        "id": "tandem",
+        "en": 9.2,
+        "n": "Pausa de causa · bullet time",
+        "t": "¿La pesada cae más rápido?",
+        "q": "El tándem tiene {masaTandem} veces la masa de la paracaidista sola. ¿Quién va adelante?",
+        "opciones": [
+          { "texto": "El tándem", "retro": "Tiene {masaTandem} veces el peso ({masaTandem}P), pero también {masaTandem} veces la masa que mover: a = {masaTandem}P ÷ {masaTandem}m = g. Van juntos." },
+          { "texto": "La sola", "retro": "No: ninguna fuerza extra la empuja. Las dos aceleraciones valen g = {g} m/s²." },
+          { "texto": "Van juntos", "correcta": true, "retro": "{masaTandem} veces el peso, pero también {masaTandem} veces la masa (más inercia): a = F ÷ m = {masaTandem}P ÷ {masaTandem}m = g. Por eso la masa no aparece en h = g·t²/2." }
+        ]
+      },
+      {
+        "id": "grafica",
+        "en": 13.4,
+        "n": "Pausa de causa · gráfica en vivo",
+        "t": "¿Por qué {s1} · {s2} · {s3}?",
+        "q": "Cada triangulito bajo la gráfica vale {tri} m. ¿Cuántos caben en la franja del segundo {n}?",
+        "aria": "Gráfica velocidad contra tiempo: una recta; bajo ella, franjas de triangulitos de {tri} m cada uno.",
+        "opciones": [
+          { "formula": "triN1", "retro": "Esa es la franja del segundo {n1} ({sn1} m). La del segundo {n} tiene {triN} triangulitos: {sn} m." },
+          { "formula": "triN", "correcta": true, "retro": "Las franjas tienen {tramosTri} triangulitos: {tramos} m. El área bajo la gráfica v-t es la distancia, y crece como los impares." },
+          { "formula": "triTot", "retro": "{triTot} triangulitos son los {hn} m de los {n} segundos juntos. Solo el segundo {n}: {triN} triangulitos, {sn} m." }
+        ]
+      }
+    ],
+    "cine": {
+      "nota": "Guion de cine de la lámina del taller (plantilla/interactivos/caida-libre/taller/). Tiempos de escena en s; enT = tiempo físico de caída (s) y deAbrir = s de escena después de abrir. La física se mide en tiempo físico: la cámara lenta no cambia g.",
+      "duracion": 45,
+      "salto": 19,
+      "irAlSalto": 15.2,
+      "mezclaPose": 0.8,
+      "tituloDe": 3,
+      "tituloA": 8.5,
+      "cuentaDesde": 3,
+      "cuentaInicio": 16,
+      "cuentaPaso": 1,
+      "ritmo": { "lenta": "1/3", "etiqueta": "⅓", "realTras": 0.25, "rampaEntrada": 0.8, "rampaSalida": 1.2, "avisoBajo": 0.95 },
+      "pausas": { "tandem": 0.75, "grafica": 3 },
+      "tierra": { "profundidad": 420, "nieblaDe": 220, "nieblaA": 2300 },
+      "paletas": {
+        "nota": "OKLCH: croma × sin subir la luminosidad; contraste estira L alrededor de pivote; verde, cielo y coral empujan esos tonos. ?paleta=neutra = colores originales.",
+        "predeterminada": { "croma": 1.55, "contraste": 1.2, "pivote": 0.8, "verde": 0.4, "cielo": 0.3, "coral": 0.4 }
+      },
+      "instrumentos": {
+        "altimetroMax": 4000,
+        "altimetroPaso": 100,
+        "registro": { "intervalo": 0.1 },
+        "textos": {
+          "altimetroEscala": "×1000 m",
+          "altimetroNota": "{h} m ≈ {grados}° de aguja",
+          "registro": "registrador de cinta · un punto cada {dt} s",
+          "registroSeg": "seg {k}",
+          "cronoVuelta": "cronómetro · {t} s · vuelta {k} s",
+          "cotaSeg": "seg {k}",
+          "cotaTramo": "+{x} m",
+          "cotaMarca": "{x} m"
+        }
+      },
+      "textos": {
+        "irAlSalto": "Ir al salto ⏭",
+        "lenta": "Cámara lenta ×{ritmo}",
+        "lentaAria": "La escena va en cámara lenta; el cronómetro marca el tiempo físico real.",
+        "pestanas": ["Instrumentos", "Cuaderno", "Datos"],
+        "pestanasAria": "Estaciones de la mesa"
+      },
+      "tomas": [
+        { "de": 0, "cam": "establecimiento", "n": "Toma 1 · plano de establecimiento", "t": "Desde la tierra", "d": "La cámara mira el suelo, a {altitud} m, y sube hasta la avioneta." },
+        { "de": 8, "cam": "travelling", "n": "Toma 2 · travelling", "t": "Junto a la avioneta", "d": "La cámara viaja al lado de la avioneta, a su misma velocidad." },
+        { "de": 14, "cam": "puerta", "n": "Toma 3 · primer plano", "t": "En la puerta", "d": "La paracaidista en reposo, v = 0. Cuenta regresiva." },
+        { "enT": 0, "cam": "salto", "n": "Toma 4 · rampa de velocidad", "t": "El segundo 1", "d": "Sale en tiempo real y entra la cámara lenta ×{ritmo}: cae {s1} m." },
+        { "enT": 1, "cam": "picado", "n": "Toma 5 · tilt down", "t": "El segundo 2", "d": "Cámara lenta, con la tierra al fondo: +{s2} m." },
+        { "enT": 2, "cam": "persecucion", "n": "Toma 6 · picado cercano", "t": "El segundo 3", "d": "Cámara lenta: +{s3} m, el tramo más largo." },
+        { "enT": 3, "cam": "abrir", "n": "Toma 7 · rampa a tiempo real", "t": "Abre el paracaídas", "d": "De vuelta a tiempo real: la vela se infla." },
+        { "deAbrir": 4.5, "cam": "revelacion", "n": "Toma 8 · plano de revelación", "t": "Las tres fotos", "d": "{s1} · {s2} · {s3} m: cada segundo cae más." },
+        { "deAbrir": 11.5, "cam": "paisaje", "n": "Toma 9 · grúa", "t": "Sobre el paisaje", "d": "La cámara sube sobre el río, el pueblo y el volcán. Al final, gira la escena tú." }
+      ]
+    }
   }
 }

@@ -1,0 +1,225 @@
+/* Lámina «Caída libre · El salto» — taller (boceto 9). Fuentes locales (OFL). */
+@font-face{font-family:"Geist";font-weight:400 600;font-display:swap;src:url(../../../../assets/fuentes/geist-latin.woff2) format("woff2")}
+@font-face{font-family:"Geist Mono";font-weight:400 500;font-display:swap;src:url(../../../../assets/fuentes/geist-mono-latin.woff2) format("woff2")}
+@font-face{font-family:"Bricolage Grotesque";font-weight:600 800;font-display:swap;src:url(../../../../assets/fuentes/bricolage-grotesque-latin.woff2) format("woff2")}
+@font-face{font-family:"Caveat";font-weight:400 700;font-display:swap;src:url(../../../laminas2/fuentes/caveat-700.woff2) format("woff2")}
+
+:root{--tinta:#22212B;--azul:#3D6FCB;--coral:#D9694F;--menta:#3FA581}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;font-family:Geist,system-ui,sans-serif;color:var(--tinta);overflow-x:clip}
+body{min-height:100vh;background:radial-gradient(120% 90% at 50% 30%,transparent 55%,rgba(40,20,5,.35)),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.0035 0.09' numOctaves='4' seed='3'/><feColorMatrix values='0 0 0 0 0.62  0 0 0 0 0.44  0 0 0 0 0.27  0 0 0 -1.1 1.05'/></filter><rect width='900' height='600' fill='%23C8A27A'/><rect width='900' height='600' filter='url(%23f)' opacity='.55'/></svg>") #C8A27A;background-size:auto,900px 600px}
+.wrap{max-width:1200px;margin:0 auto;padding:18px 14px 40px;display:grid;gap:22px;grid-template-columns:1fr}
+.sombra{box-shadow:0 1px 1px rgba(0,0,0,.08),0 8px 14px rgba(40,20,5,.22),0 22px 40px rgba(40,20,5,.18)}
+
+/* lámina de la escena: papel de acuarela con borde pintado */
+.lamina{position:relative;background:#FBFAF5;padding:14px;border-radius:3px;transform:rotate(-.35deg)}
+.lamina header{padding:4px 20px 10px}
+.eti{font-family:"Geist Mono",monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#6A6878}
+h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(26px,5.4vw,44px);line-height:1;letter-spacing:-.03em;margin:6px 0 0}
+h1 span{color:var(--coral)}
+.maqueta{position:relative;height:min(62vh,620px);min-height:430px;background:linear-gradient(#BFDDEC,#DCEEF5 60%,#EEF6F3);overflow:hidden}
+.maqueta canvas#esc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.maqueta img#respaldo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%}
+canvas#borde{position:absolute;inset:-2px;width:calc(100% + 4px);height:calc(100% + 4px);pointer-events:none;z-index:3}
+.claqueta{position:absolute;left:34px;bottom:34px;background:#22212B;color:#fff;border-radius:6px;padding:0 0 6px;min-width:170px;pointer-events:none;z-index:4}
+.claqueta::before{content:"";display:block;height:10px;border-radius:6px 6px 0 0;background:repeating-linear-gradient(-45deg,#fff 0 8px,#22212B 8px 16px);margin-bottom:6px}
+.claqueta .eti{color:#BFC3D6;padding:0 10px}.claqueta b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:16px;padding:0 10px}
+.cuenta{position:absolute;inset:0;display:grid;place-items:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:min(32vw,170px);color:#fff;text-shadow:0 6px 30px rgba(20,30,80,.3);pointer-events:none;z-index:4}
+.titulo3d{position:absolute;left:0;right:0;top:5%;text-align:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(42px,10vw,90px);color:#fff;text-shadow:0 6px 30px rgba(20,30,80,.3);pointer-events:none;z-index:4}
+.titulo3d small{display:block;font-family:"Geist Mono",monospace;font-weight:500;font-size:13px;letter-spacing:.12em}
+/* aviso de cámara lenta (arriba a la derecha, como el REC de una cámara) */
+.lenta{position:absolute;right:34px;top:34px;display:flex;align-items:center;gap:8px;background:#22212B;color:#fff;border-radius:6px;padding:6px 11px;font:600 12px "Geist Mono",monospace;letter-spacing:.1em;text-transform:uppercase;pointer-events:none;z-index:4}
+.lenta i{width:9px;height:9px;border-radius:50%;background:#E5533D;box-shadow:0 0 0 3px rgba(229,83,61,.25)}
+.medida{position:absolute;left:34px;top:34px;margin:0;background:rgba(255,255,255,.92);border-radius:8px;padding:8px 10px;font:12px/1.4 "Geist Mono",monospace;z-index:5;white-space:pre-wrap;max-width:70%}
+#carga{position:absolute;right:36px;top:36px;font:12px "Geist Mono",monospace;background:#fff;padding:6px 10px;border-radius:8px;z-index:4}
+@media (max-width:700px){.claqueta{left:20px;bottom:22px;min-width:0}.claqueta b{font-size:14px}#carga{right:22px;top:22px}.lenta{right:20px;top:20px;font-size:10px;padding:5px 8px}.medida{left:20px;top:20px}}
+
+/* etiquetas de la escena (HTML sobre el lienzo, sin encimarse) */
+.capa-etiquetas{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.et3d{position:absolute;left:0;top:0;white-space:nowrap;font:500 13px "Geist Mono",monospace;color:#2A2A33;will-change:transform}
+.et3d.marca{font-size:13px}
+.et3d.tramo,.et3d.chip{background:rgba(255,255,255,.88);padding:2px 7px;border-radius:8px}
+.et3d.peso{font-weight:700;font-size:16px;color:#C77964}
+@media (max-width:700px){.et3d{font-size:11px}.et3d.peso{font-size:14px}}
+
+.controles{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 20px 4px}
+.btn{font:600 15px Geist,sans-serif;border:0;border-radius:999px;padding:12px 22px;min-height:46px;cursor:pointer;background:var(--coral);color:#fff;box-shadow:0 3px 0 #A94C36}
+.btn:disabled{opacity:.4;cursor:not-allowed}.btn.sec{background:#fff;color:#22212B;box-shadow:0 3px 0 #D8D3C8;border:1px solid #E5E0D6}
+input[type=range]{flex:1;min-width:140px;accent-color:var(--azul);height:44px}
+
+/* papeles */
+.cinta::before{content:"";position:absolute;top:-11px;left:50%;width:92px;height:24px;transform:translateX(-50%) rotate(3deg);background:rgba(255,248,220,.6);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.mano{font-family:Caveat,cursive;font-weight:700;font-size:25px;line-height:28px;margin:0}
+.hoja{position:relative;background:#FFFEFA;border-radius:2px;padding:18px 16px 16px 46px;
+  background-image:linear-gradient(90deg,transparent 34px,#E9A8A0 34px,#E9A8A0 35.5px,transparent 35.5px),repeating-linear-gradient(transparent 0 27px,#DCE6F2 27px 28px);background-position:0 0,0 10px}
+.hoja p{margin:4px 0 10px;line-height:1.35}.hoja .mano{color:#3D6FCB}
+.postit{position:relative;background:linear-gradient(#FFE88A,#FFDD5E);padding:16px 16px 18px;border-radius:2px}
+.postit .mano{color:#3A2E10}
+.ficha{position:relative;background:#D8BE8E;background-image:repeating-linear-gradient(transparent 0 25px,rgba(120,80,30,.18) 25px 26px);padding:14px 16px;border-radius:3px}
+.ficha .mano{color:#3A2A14;font-size:21px;line-height:26px}
+.milimetrico{position:relative;background:#F2FAF3;padding:16px;border-radius:2px;
+  background-image:linear-gradient(rgba(63,165,129,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(63,165,129,.18) 1px,transparent 1px),linear-gradient(rgba(63,165,129,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(63,165,129,.35) 1px,transparent 1px);
+  background-size:8px 8px,8px 8px,40px 40px,40px 40px}
+.milimetrico .mano{color:#2D7A5E}
+.milimetrico svg{width:100%;max-width:280px;height:auto;display:block;margin:6px auto;background:rgba(255,255,255,.7);border-radius:4px}
+.ops{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.op{font:500 15px "Geist Mono",monospace;border:1.5px solid #22212B;background:#fff;color:#22212B;border-radius:10px;min-height:44px;cursor:pointer;box-shadow:2px 2px 0 #22212B}
+.op[aria-pressed="true"]{background:#22212B;color:#fff}.op:disabled{cursor:default}
+.retro{font-size:14px;line-height:1.4;margin:8px 0 0}.retro b{color:var(--coral)}.retro.ok b{color:var(--menta)}
+details.tomas{background:#FFFEFA;padding:10px 14px;border-radius:3px}
+.lista{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:4px;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.lista li{font-size:13px;padding:7px 9px;border-radius:6px;background:#F3F0E8;cursor:pointer}.lista li span{display:block;color:#6A6878;font-size:12px}
+.lista li.on{background:#22212B;color:#fff}.lista li.on span{color:#cfcfe0}
+.oculto{display:none}
+:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+footer{display:flex;align-items:center;gap:10px}footer .eti{color:#3A2A14}
+
+/* ---- mesa: recta (cenital), con estaciones; el relieve lo dan el canto del tapete y los objetos renderizados ---- */
+.mesa3d{position:relative;margin-top:30px;padding-bottom:30px}
+.escala{position:relative}
+.plano{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:26px;padding:150px 26px 34px;align-items:start;container-type:inline-size}
+/* tapete con grosor visible en el canto (capas abajo y a la derecha: la luz viene de arriba a la izquierda) */
+.tapete{position:absolute;inset:0;border-radius:14px;z-index:0;background:#2C5A4D;
+  background-image:linear-gradient(rgba(255,255,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.10) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.22) 1px,transparent 1px);
+  background-size:20px 20px,20px 20px,100px 100px,100px 100px;
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.08),inset 0 2px 0 rgba(255,255,255,.12),1px 2px 0 #24493F,2px 4px 0 #1F4037,3px 6px 0 #1A372F,4px 8px 0 #152E27,4px 9px 0 #102520,10px 24px 30px rgba(40,20,5,.45)}
+.tapete::after{content:"CÓDICE VIVO · TALLER";position:absolute;right:18px;bottom:10px;font:500 12px "Geist Mono",monospace;letter-spacing:.2em;color:rgba(255,255,255,.35)}
+/* la luz de la mesa viene de la lámpara (arriba a la izquierda) */
+.lampara{position:absolute;inset:0;border-radius:14px;pointer-events:none;z-index:0;background:radial-gradient(120% 90% at 100% 100%,rgba(0,0,0,.24),transparent 60%)}
+/* lámpara pre-renderizada (Blender): en su esquina, arriba a la izquierda; nada la tapa */
+/* lámpara de metal y su charco de luz (mismo encuadre de Blender, 6.0 × 4.2 m, al ancho de la mesa): la base
+   apoyada en la franja de arriba del tapete y el brazo sobre la bandeja. El charco es una capa fija con mezcla: aclara y entibia lo que queda debajo, sin costo por cuadro. */
+.t-lampara,.t-luz{position:absolute;left:0;width:100%;height:auto;aspect-ratio:6/4.2;pointer-events:none;top:calc(var(--base-y,74px) - 25.2cqw)}
+.t-lampara{z-index:6}
+.plano{overflow-x:clip}   /* el charco escalado no se sale a los lados (arriba sí asoma la lámpara) */
+/* dos pasadas de la misma capa: «screen» aclara lo oscuro (tapete, madera) y una normal tenue entibia el papel blanco */
+.t-luz{z-index:4;mix-blend-mode:screen;opacity:.6;transform:scale(1.45);transform-origin:64% 40%}   /* el charco se abre desde la pantalla */
+.t-luz+.t-luz{mix-blend-mode:multiply;opacity:.55}   /* el texto oscuro sigue legible */   /* sobre el papel blanco: tinte cálido */
+.estacion{position:relative;z-index:1;min-width:0}
+/* estación de papeles: bandeja de madera con borde y grosor */
+.bandeja{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;padding:18px 16px 20px;border-radius:12px;
+  background:linear-gradient(135deg,#D8B98A,#C79F6C 60%,#B98F5D);
+  box-shadow:inset 0 0 0 6px rgba(120,80,40,.22),inset 0 3px 0 rgba(255,255,255,.35),inset 0 -4px 8px rgba(0,0,0,.25),1px 2px 0 #9C7447,2px 4px 0 #8A6540,3px 6px 0 #775636,8px 18px 20px rgba(0,0,0,.4)}
+.t-cuaderno,.t-mili{grid-column:span 6}.t-postit,.t-ficha{grid-column:span 3}
+.obj{position:relative;z-index:1}
+.obj .sombra3d{box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 1px 1.5px rgba(0,0,0,.55),10px 14px 16px -4px rgba(0,0,0,.42)}
+.miniatura{pointer-events:none}.miniatura .eti{font-size:12px}.miniatura .mano{font-size:24px;line-height:28px}
+.t-cuaderno .hoja{min-height:150px;padding-top:20px;border-radius:2px 6px 6px 2px;box-shadow:0 0 0 .5px rgba(0,0,0,.15),1px 2px 0 #EEEBE3,2px 4px 0 #E4E0D6,3px 6px 0 #D9D4C8,4px 8px 0 #9A6B4F,0 1px 1.5px rgba(0,0,0,.5),14px 20px 18px -4px rgba(0,0,0,.45)}
+.t-cuaderno .hoja::after{content:"";position:absolute;left:-9px;top:10px;bottom:10px;width:18px;background:radial-gradient(circle at 50% 50%,#2B2D35 0 3.2px,transparent 3.6px) 0 0/18px 16px,radial-gradient(circle at 30% 50%,transparent 4px,#B9BDC6 4.2px 6px,transparent 6.3px) 0 0/18px 16px}
+.t-mili .milimetrico{min-height:150px;box-shadow:0 0 0 .5px rgba(0,0,0,.15),2px 2px 0 #E5F1E7,4px 4px 0 #D7E8DA,0 1px 1.5px rgba(0,0,0,.5),12px 16px 16px -4px rgba(0,0,0,.42)}
+.t-postit .postit{box-shadow:0 0 0 .5px rgba(0,0,0,.15),1px 1px 0 #F4D04E,2px 2px 0 #EFCB47,3px 3px 0 #E8C33F,4px 4px 0 #E1BB37,5px 5px 0 #D9B330,6px 6px 0 #CFA92A,0 1px 1.5px rgba(0,0,0,.5),16px 20px 18px -4px rgba(0,0,0,.45)}
+.t-ficha .ficha{box-shadow:0 0 0 .5px rgba(0,0,0,.2),1px 2px 0 #B99B68,2px 3px 0 #A88B5A,0 1px 1.5px rgba(0,0,0,.5),12px 16px 16px -4px rgba(0,0,0,.42)}
+.obj.toca{cursor:pointer}
+.obj.vacia{opacity:0}
+/* estación de instrumentos: estuche pre-renderizado (Blender) con cada instrumento hundido en su hueco.
+   Posiciones en % del estuche a 1× (560 × 440 px): las mismas medidas de HUECOS en modelos/mesa/fuentes/mesa.py */
+.estuche{position:relative;width:100%;aspect-ratio:560/440;container-type:inline-size;--tapa:40.91%}
+.estuche::before{content:"";position:absolute;left:0;right:0;top:calc(-1 * var(--tapa));bottom:0;background:url(../../../modelos/mesa/estuche.webp) center/100% 100% no-repeat;pointer-events:none}
+.est-instr{padding-top:32.14%}   /* lugar para la tapa (180/560 del ancho) */
+/* altímetro analógico: descansa sobre la espuma de la tapa, junto al digital */
+.i-altiA{left:74%;top:calc(-1 * var(--tapa) + 9.5%);width:19%}
+.estuche .e-altiA{left:61%;top:calc(-1 * var(--tapa) + 20%)!important;white-space:normal;max-width:24%}
+/* registrador de cinta: el aparato y la tira que sale sobre la mesa (45 m caben siempre: escala al ancho) */
+.est-registro{grid-column:1/-1;position:relative;background:linear-gradient(#E9E2D2,#DDD3BE);border-radius:10px;padding:8px 10px 10px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.4),1px 2px 0 #B9AE95,2px 4px 0 #A79C83,8px 14px 16px rgba(0,0,0,.35)}
+.est-registro svg{display:block;width:100%;height:auto}
+.est-registro .etq{display:inline-block;margin-top:4px}
+/* cotas de plano técnico junto al video: 0 · 5 · 20 · 45 m; cada tramo se llena con su color en su segundo */
+.escena-fila{display:flex;gap:10px;align-items:stretch}
+.escena-fila .maqueta{flex:1;min-width:0}
+.cotas{width:82px;flex:none;display:flex;flex-direction:column;padding:22px 0 22px;font:500 11px "Geist Mono",monospace;color:#22212B}
+.cota-0{height:0;position:relative}
+.cota-tramo{position:relative;border-left:2px solid #22212B;margin-left:16px;min-height:0}
+.cota-tramo::before{content:"";position:absolute;left:-2px;top:0;width:3px;height:var(--k,0%);background:var(--c);transition:none}
+.cota-tramo::after,.cota-0::after{content:"";position:absolute;left:-8px;bottom:0;width:14px;border-top:2px solid #22212B}
+.cota-0::after{bottom:auto;top:0}
+.cota-tramo .fin,.cota-0 .fin{position:absolute;left:10px;bottom:-7px;white-space:nowrap}
+.cota-0 .fin{bottom:auto;top:-7px}
+.cota-tramo .rot{position:absolute;left:10px;top:50%;transform:translateY(-50%);line-height:1.15;opacity:.28;color:var(--c);font-weight:700}
+.cota-tramo.on .rot{opacity:1}
+.cota-tramo.on{border-left-color:var(--c)}
+.cota-tramo.s1{--c:#C9971F}.cota-tramo.s2{--c:#2E9A6F}.cota-tramo.s3{--c:#D9694F}
+.estuche svg{position:absolute;height:auto;display:block}
+.i-crono{left:6.82%;top:25.8%;width:27.1%}
+.i-velo{left:37.5%;top:27.5%;width:27.1%}
+.i-alti{left:69.6%;top:28.3%;width:24.3%}
+.estuche .etq{position:absolute;top:68.4%;transform:translateX(-50%);white-space:nowrap;font-size:clamp(8.5px,2.05cqw,12px)!important;padding:.25em .55em!important;line-height:1.25;text-align:center}
+/* estuche angosto (celular): las etiquetas pasan debajo del estuche, alineadas con su instrumento */
+
+.e-crono{left:20.4%}.e-velo{left:51.1%}
+.estuche .e-crono,.estuche .e-velo{white-space:normal;max-width:29%}   /* con la vuelta, dos renglones antes que encimarse */.e-alti{left:81.8%;top:71%!important}
+.etq{display:inline-block;font:500 12px "Geist Mono",monospace;background:#FFFEFA;padding:3px 8px;border-radius:3px;box-shadow:2px 4px 6px rgba(0,0,0,.35);z-index:2}
+/* regla y lápiz en sus ranuras */
+.t-regla{position:absolute;left:6.4%;top:77%;width:87.1%;height:5.9%;border-radius:2px;--div:9;
+  background:repeating-linear-gradient(90deg,#22212B 0 1px,transparent 1px calc(100% / var(--div) / 5)) 0 0/100% 40% no-repeat,repeating-linear-gradient(90deg,#22212B 0 1.4px,transparent 1.4px calc(100% / var(--div))) 0 0/100% 62% no-repeat,linear-gradient(#F3F5F8,#C9CED6 45%,#EEF1F5 55%,#A8AEB8);
+  box-shadow:0 0 0 .5px rgba(0,0,0,.4),inset 0 -2px 0 rgba(0,0,0,.18)}
+.t-regla span{position:absolute;bottom:1px;font:500 clamp(6px,1.5cqw,9px) "Geist Mono",monospace;color:#22212B}
+.t-lapiz{position:absolute;left:23.6%;top:86.8%;width:52.9%;height:auto}
+/* pestañas (solo celular) */
+.pestanas{display:none}
+@media (max-width:700px){
+  .mesa3d{margin-top:14px;padding-bottom:20px}
+  .pestanas{display:flex;gap:6px;margin:0 0 10px;position:relative;z-index:6}
+  .pestanas button{flex:1;font:600 13px Geist,sans-serif;border:0;border-radius:10px 10px 4px 4px;padding:10px 6px;min-height:44px;background:#E9E2D2;color:#22212B;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);cursor:pointer}
+  .pestanas button[aria-selected="true"]{background:#2C5A4D;color:#fff;box-shadow:0 3px 0 #1A372F}
+  .plano{grid-template-columns:1fr;gap:14px;padding:112px 8px 40px}   /* abajo: lugar para la marca del tapete */
+  .plano{--base-y:56px}
+  .t-luz{transform:scale(1.15)}
+  .estuche{aspect-ratio:400/560;--tapa:32.14%}
+  .estuche::before{background-image:url(../../../modelos/mesa/estuche-v.webp)}
+  .est-instr{padding-top:45%}
+  .i-altiA{left:66%;top:calc(-1 * var(--tapa) + 3.5%);width:28%}
+  .estuche .e-altiA{left:42%;top:calc(-1 * var(--tapa) + 13%)!important;max-width:38%}
+  /* cotas: franja horizontal debajo del video */
+  .escena-fila{flex-direction:column;gap:6px}
+  .cotas{width:auto;flex-direction:row;padding:4px 14px 18px 14px;font-size:10px}
+  .cota-tramo{border-left:0;border-top:2px solid #22212B;margin:10px 0 0;height:30px}
+  .cota-tramo::before{left:0;top:-2px;height:3px;width:var(--k,0%)}
+  .cota-tramo::after,.cota-0::after{left:auto;right:0;bottom:auto;top:-8px;width:0;height:14px;border-top:0;border-left:2px solid #22212B}
+  .cota-0{width:0;margin-top:10px}.cota-0::after{left:0;right:auto}
+  .cota-tramo .fin{left:auto;right:0;bottom:auto;top:-22px;transform:translateX(50%)}
+  .cota-0 .fin{left:0;top:-22px;transform:translateX(-50%)}
+  .cota-tramo .rot{left:50%;top:6px;transform:translateX(-50%);text-align:center;white-space:nowrap}
+  .cota-tramo.on{border-top-color:var(--c)}
+  .i-crono{left:7.27%;top:7.04%;width:37.95%}
+  .i-velo{left:54.78%;top:8.39%;width:37.95%}
+  .i-alti{left:20.49%;top:47.62%;width:34.03%}
+  .estuche .etq{font-size:12px!important;white-space:normal;max-width:44%;transform:translate(-50%,0)}
+  .e-crono{left:26.25%;top:40.7%!important}.e-velo{left:73.75%;top:40.7%!important}
+  .e-alti{left:77%;top:57%!important;max-width:40%!important}
+  .t-regla{left:5%;top:84.1%;width:90%;height:5.36%}
+  .t-lapiz{left:17.5%;top:91.4%;width:65%}
+  .bandeja{padding:14px 12px 16px;gap:12px}
+  .t-postit,.t-ficha{grid-column:span 6}   /* pestaña Datos: uno arriba del otro, a todo el ancho */
+  .etq{font-size:10px;padding:2px 5px}
+  /* solo la estación de la pestaña elegida */
+  .mesa3d[data-tab="instrumentos"] .est-papeles,.mesa3d[data-tab="cuaderno"] .est-instr,.mesa3d[data-tab="datos"] .est-instr,
+  .mesa3d[data-tab="cuaderno"] .est-registro,.mesa3d[data-tab="datos"] .est-registro{display:none}
+  .mesa3d[data-tab="cuaderno"] .bandeja [data-tab="datos"],.mesa3d[data-tab="datos"] .bandeja [data-tab="cuaderno"]{display:none}
+}
+
+/* PC (≥ 1000 px): lámina y mesa lado a lado. El video queda fijo (sticky) mientras se recorre la mesa;
+   en la columna de 42 % las estaciones van una sobre otra; la hoja se lee sobre la mesa. */
+@media (min-width:1000px){
+  .wrap{max-width:1500px;grid-template-columns:minmax(0,58fr) minmax(0,42fr);align-items:start;column-gap:26px}
+  .lamina{position:sticky;top:12px;align-self:start}
+  .maqueta{height:min(calc(100vh - 230px),620px);min-height:340px}
+  h1{font-size:clamp(26px,2.5vw,40px)}
+  .mesa3d{margin-top:0;padding:0 6px 40px 0}
+  .plano{grid-template-columns:1fr;gap:22px;padding:150px 18px 30px}
+  .etq{font-size:11px;padding:3px 6px}
+  details.tomas,footer{grid-column:1/-1}
+  .levantada{top:6px}
+}
+
+/* hoja levantada (de frente para leer) */
+.levantada{position:absolute;z-index:20;left:50%;top:-40px;width:min(94vw,520px);transform-origin:top left;will-change:transform;filter:drop-shadow(0 28px 30px rgba(0,0,0,.35))}
+.levantada .cerrar{position:absolute;right:10px;top:8px;border:0;background:#22212B;color:#fff;border-radius:999px;width:34px;height:34px;font-size:18px;cursor:pointer;z-index:2}
+@media (max-width:700px){.levantada{position:fixed;left:3vw!important;top:auto!important;bottom:10px;max-height:56vh;overflow:auto;width:94vw;border-radius:6px}}
+@media (prefers-reduced-motion:reduce){.levantada{transition:none!important}}
+
+/* captura de la imagen fija: solo la escena, sin capas de texto */
+.captura-respaldo .lenta,.captura-respaldo .claqueta,.captura-respaldo .cuenta,.captura-respaldo .titulo3d,.captura-respaldo #carga,.captura-respaldo #borde,.captura-respaldo .capa-etiquetas{display:none!important}
+.captura-respaldo .mesa3d,.captura-respaldo details,.captura-respaldo footer,.captura-respaldo .lamina header,.captura-respaldo .controles{display:none!important}
+.captura-respaldo .wrap{padding:0;max-width:none;display:block}.captura-respaldo .lamina{position:static}.captura-respaldo .lamina{transform:none;padding:0}
+.captura-respaldo .maqueta{height:100vh;min-height:0}
